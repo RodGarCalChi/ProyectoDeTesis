@@ -12,14 +12,18 @@ import {
   SidebarFooter,
   Sidebar,
 } from '@/components/ui/sidebar';
-import { LayoutDashboard, Package, Warehouse, Users, Settings, LogOut, PackageSearch, Boxes } from 'lucide-react';
+import { LayoutDashboard, Package, Warehouse, Users, Settings, LogOut, PackageSearch, Boxes, Truck, Send, BarChart3 } from 'lucide-react';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/receiving', label: 'Receiving', icon: Truck },
   { href: '/orders', label: 'Orders', icon: Package },
+  { href: '/dispatch', label: 'Dispatch', icon: Send },
   { href: '/inventory', label: 'Inventory', icon: Boxes },
   { href: '/optimizer', label: 'Optimizer', icon: PackageSearch },
+  { href: '/reports', label: 'Reports', icon: BarChart3 },
   { href: '/users', label: 'Users', icon: Users },
+  { href: '/settings', label: 'Settings', icon: Settings },
 ];
 
 export default function Nav() {
@@ -55,12 +59,6 @@ export default function Nav() {
       </SidebarContent>
       <SidebarFooter className="p-2">
         <SidebarMenu>
-            <SidebarMenuItem>
-                <SidebarMenuButton tooltip="Settings">
-                    <Settings />
-                    <span>Settings</span>
-                </SidebarMenuButton>
-            </SidebarMenuItem>
             <SidebarMenuItem>
                 <SidebarMenuButton tooltip="Logout">
                     <LogOut />

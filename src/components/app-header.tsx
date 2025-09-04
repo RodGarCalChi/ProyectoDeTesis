@@ -17,9 +17,14 @@ import {
 
 const pathToTitle: { [key: string]: string } = {
   '/dashboard': 'Dashboard',
+  '/receiving': 'Receiving',
   '/orders': 'Order Management',
+  '/dispatch': 'Dispatch',
+  '/inventory': 'Inventory Management',
   '/optimizer': 'Space Optimizer',
+  '/reports': 'Reports',
   '/users': 'User Management',
+  '/settings': 'Settings',
 };
 
 export default function AppHeader() {
