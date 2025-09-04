@@ -10,12 +10,14 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarFooter,
+  Sidebar,
 } from '@/components/ui/sidebar';
-import { LayoutDashboard, Package, Warehouse, Users, Settings, LogOut, PackageSearch } from 'lucide-react';
+import { LayoutDashboard, Package, Warehouse, Users, Settings, LogOut, PackageSearch, Boxes } from 'lucide-react';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/orders', label: 'Orders', icon: Package },
+  { href: '/inventory', label: 'Inventory', icon: Boxes },
   { href: '/optimizer', label: 'Optimizer', icon: PackageSearch },
   { href: '/users', label: 'Users', icon: Users },
 ];
@@ -24,9 +26,9 @@ export default function Nav() {
   const pathname = usePathname();
 
   return (
-    <>
+    <Sidebar>
       <SidebarHeader>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 p-2">
             <Warehouse className="w-8 h-8 text-primary" />
             <h1 className="text-2xl font-bold">PharmaFlow</h1>
         </div>
@@ -67,6 +69,6 @@ export default function Nav() {
             </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
-    </>
+    </Sidebar>
   );
 }
