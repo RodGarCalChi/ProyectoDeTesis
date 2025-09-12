@@ -16,9 +16,8 @@ import { LayoutDashboard, Package, Warehouse, Users, Settings, LogOut, PackageSe
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/receiving', label: 'Receiving', icon: Truck },
+  { href: '/receiving', label: 'Movimientos', icon: Truck },
   { href: '/orders', label: 'Orders', icon: Package },
-  { href: '/dispatch', label: 'Dispatch', icon: Send },
   { href: '/inventory', label: 'Inventory', icon: Boxes },
   { href: '/optimizer', label: 'Optimizer', icon: PackageSearch },
   { href: '/reports', label: 'Reports', icon: BarChart3 },

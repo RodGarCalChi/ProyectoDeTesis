@@ -17,9 +17,8 @@ import {
 
 const pathToTitle: { [key: string]: string } = {
   '/dashboard': 'Dashboard',
-  '/receiving': 'Receiving',
+  '/receiving': 'Movimientos de Inventario',
   '/orders': 'Order Management',
-  '/dispatch': 'Dispatch',
   '/inventory': 'Inventory Management',
   '/optimizer': 'Space Optimizer',
   '/reports': 'Reports',
