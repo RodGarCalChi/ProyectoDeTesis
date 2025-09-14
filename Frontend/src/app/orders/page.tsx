@@ -42,7 +42,7 @@ const orders = [
   {
     id: "ORD-001",
     orderNumber: "ORD-2024-001",
-    type: "PURCHASE" as const,
+    type: "DISPATCH" as const,
     status: "PENDING" as const,
     supplier: "Farmacéutica ABC",
     customer: null,
@@ -54,7 +54,7 @@ const orders = [
   {
     id: "ORD-002",
     orderNumber: "ORD-2024-002",
-    type: "SALE" as const,
+    type: "DISPATCH" as const,
     status: "CONFIRMED" as const,
     supplier: null,
     customer: "Hospital Central",
@@ -66,7 +66,7 @@ const orders = [
   {
     id: "ORD-003",
     orderNumber: "ORD-2024-003",
-    type: "PURCHASE" as const,
+    type: "DISPATCH" as const,
     status: "PROCESSING" as const,
     supplier: "Laboratorios XYZ",
     customer: null,
@@ -78,7 +78,7 @@ const orders = [
   {
     id: "ORD-004",
     orderNumber: "ORD-2024-004",
-    type: "SALE" as const,
+    type: "DISPATCH" as const,
     status: "SHIPPED" as const,
     supplier: null,
     customer: "Clínica San José",
@@ -113,7 +113,7 @@ export default function OrdersPage() {
   };
 
   const getTypeVariant = (type: string) => {
-    return type === "PURCHASE" ? "default" : "secondary";
+    return "default";
   };
 
   const filteredOrders = orders.filter(order => {
@@ -122,8 +122,7 @@ export default function OrdersPage() {
                          (order.customer?.toLowerCase().includes(searchTerm.toLowerCase()));
     
     if (selectedTab === "all") return matchesSearch;
-    if (selectedTab === "purchase") return matchesSearch && order.type === "PURCHASE";
-    if (selectedTab === "sale") return matchesSearch && order.type === "SALE";
+    if (selectedTab === "dispatch") return matchesSearch && order.type === "DISPATCH";
     return matchesSearch;
   });
 
@@ -133,7 +132,7 @@ export default function OrdersPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Gestión de Órdenes</h1>
-          <p className="text-muted-foreground">Administra órdenes de compra y venta</p>
+          <p className="text-muted-foreground">Administra órdenes de despacho de mercadería</p>
         </div>
         <Button>
           <PlusCircle className="h-4 w-4 mr-2" />
@@ -192,8 +191,7 @@ export default function OrdersPage() {
         <Tabs value={selectedTab} onValueChange={setSelectedTab}>
           <TabsList>
             <TabsTrigger value="all">Todas</TabsTrigger>
-            <TabsTrigger value="purchase">Compras</TabsTrigger>
-            <TabsTrigger value="sale">Ventas</TabsTrigger>
+            <TabsTrigger value="dispatch">Despachos</TabsTrigger>
           </TabsList>
         </Tabs>
         
@@ -248,7 +246,7 @@ export default function OrdersPage() {
                   <TableCell className="font-medium">{order.orderNumber}</TableCell>
                   <TableCell>
                     <Badge variant={getTypeVariant(order.type)}>
-                      {order.type === "PURCHASE" ? "Compra" : "Venta"}
+                      Despacho
                     </Badge>
                   </TableCell>
                   <TableCell>{order.supplier || order.customer}</TableCell>
@@ -299,7 +297,7 @@ export default function OrdersPage() {
           <DialogHeader>
             <DialogTitle>Detalles de la Orden</DialogTitle>
             <DialogDescription>
-              {selectedOrder?.orderNumber} - {selectedOrder?.type === "PURCHASE" ? "Orden de Compra" : "Orden de Venta"}
+              {selectedOrder?.orderNumber} - Orden de Despacho
             </DialogDescription>
           </DialogHeader>
           

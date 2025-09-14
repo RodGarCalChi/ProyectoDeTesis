@@ -51,11 +51,11 @@ const reportTemplates = [
     lastGenerated: "2024-01-15",
   },
   {
-    id: "sales",
-    name: "Reporte de Ventas",
-    description: "Análisis de ventas por período y cliente",
+    id: "dispatch",
+    name: "Reporte de Despachos",
+    description: "Análisis de despachos por período y cliente",
     icon: TrendingUp,
-    category: "Ventas",
+    category: "Despachos",
     lastGenerated: "2024-01-14",
   },
   {
@@ -77,7 +77,7 @@ const reportTemplates = [
   {
     id: "financial",
     name: "Reporte Financiero",
-    description: "Análisis financiero de compras y ventas",
+    description: "Análisis financiero de despachos",
     icon: DollarSign,
     category: "Financiero",
     lastGenerated: "2024-01-12",
@@ -104,8 +104,8 @@ const recentReports = [
   },
   {
     id: "2",
-    name: "Ventas Diciembre 2023",
-    type: "Ventas",
+    name: "Despachos Diciembre 2023",
+    type: "Despachos",
     generatedAt: "2024-01-14 09:15",
     generatedBy: "María González",
     status: "Completado",
@@ -123,13 +123,13 @@ const recentReports = [
 ];
 
 // Chart data
-const salesData = [
-  { month: 'Ene', ventas: 45000, compras: 32000 },
-  { month: 'Feb', ventas: 52000, compras: 38000 },
-  { month: 'Mar', ventas: 48000, compras: 35000 },
-  { month: 'Abr', ventas: 61000, compras: 42000 },
-  { month: 'May', ventas: 55000, compras: 40000 },
-  { month: 'Jun', ventas: 67000, compras: 45000 },
+const dispatchData = [
+  { month: 'Ene', despachos: 45000, ingresos: 32000 },
+  { month: 'Feb', despachos: 52000, ingresos: 38000 },
+  { month: 'Mar', despachos: 48000, ingresos: 35000 },
+  { month: 'Abr', despachos: 61000, ingresos: 42000 },
+  { month: 'May', despachos: 55000, ingresos: 40000 },
+  { month: 'Jun', despachos: 67000, ingresos: 45000 },
 ];
 
 const inventoryData = [
@@ -211,7 +211,7 @@ export default function ReportsPage() {
               <CardContent className="p-6">
                 <div className="flex items-center space-x-2">
                   <TrendingUp className="h-4 w-4 text-green-500" />
-                  <span className="text-sm font-medium">Ventas del Mes</span>
+                  <span className="text-sm font-medium">Despachos del Mes</span>
                 </div>
                 <div className="text-2xl font-bold mt-2">$67,000</div>
                 <p className="text-xs text-muted-foreground">+8% vs mes anterior</p>
@@ -243,18 +243,18 @@ export default function ReportsPage() {
           <div className="grid gap-6 md:grid-cols-2">
             <Card>
               <CardHeader>
-                <CardTitle>Ventas vs Compras</CardTitle>
-                <CardDescription>Comparación mensual de ingresos y egresos</CardDescription>
+                <CardTitle>Despachos vs Ingresos</CardTitle>
+                <CardDescription>Comparación mensual de despachos e ingresos de mercadería</CardDescription>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={salesData}>
+                  <BarChart data={dispatchData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis />
                     <Tooltip />
-                    <Bar dataKey="ventas" fill="#0088FE" name="Ventas" />
-                    <Bar dataKey="compras" fill="#FF8042" name="Compras" />
+                    <Bar dataKey="despachos" fill="#0088FE" name="Despachos" />
+                    <Bar dataKey="ingresos" fill="#FF8042" name="Ingresos" />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
