@@ -4,8 +4,10 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.example.backend.enumeraciones.Rol;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.example.backend.enumeraciones.Rol;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -42,7 +44,7 @@ public class Usuario {
     @NotBlank(message = "El rol es obligatorio")
     @Size(max = 30, message = "El rol no puede exceder 30 caracteres")
     @Column(name = "rol", nullable = false, length = 30)
-    private String rol;
+    private Rol rol;
     
     @Column(name = "activo", nullable = false)
     private Boolean activo = true;
@@ -58,7 +60,7 @@ public class Usuario {
     // Constructores
     public Usuario() {}
     
-    public Usuario(String nombre, String apellido, String email, String telefono, String rol) {
+    public Usuario(String nombre, String apellido, String email, String telefono, Rol rol) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.email = email;
@@ -108,11 +110,11 @@ public class Usuario {
         this.telefono = telefono;
     }
     
-    public String getRol() {
+    public Rol getRol() {
         return rol;
     }
     
-    public void setRol(String rol) {
+    public void setRol(Rol rol) {
         this.rol = rol;
     }
     

@@ -2,6 +2,7 @@ package org.example.backend.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import org.example.backend.enumeraciones.Rol;
 
 @Entity
 @Table(name = "recepcion")
@@ -10,7 +11,7 @@ public class Recepcion extends Usuario {
 
     public Recepcion() {}
 
-    public Recepcion(String nombre, String apellido, String email, String telefono, String rol, String areaAsignada) {
+    public Recepcion(String nombre, String apellido, String email, String telefono, Rol rol, String areaAsignada) {
         super(nombre, apellido, email, telefono, rol);
         this.areaAsignada = areaAsignada;
     }

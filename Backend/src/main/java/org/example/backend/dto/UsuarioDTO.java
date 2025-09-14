@@ -15,8 +15,12 @@ public class UsuarioDTO {
     private String nombre;
     
     @NotBlank(message = "El apellido es obligatorio")
-    @Size(max = 50, message = "El apellido no puede exceder 50 caracteres")
-    private String apellido;
+    @Size(max = 50, message = "El apellido paterno no puede exceder 50 caracteres")
+    private String apellidoPaterno;
+
+    @NotBlank(message = "El apellido es obligatorio")
+    @Size(max = 50, message = "El apellido materno no puede exceder 50 caracteres")
+    private String apellidoMaterno;
     
     @NotBlank(message = "El email es obligatorio")
     @Email(message = "El email debe tener un formato válido")
@@ -24,7 +28,7 @@ public class UsuarioDTO {
     private String email;
     
     @Size(max = 20, message = "El teléfono no puede exceder 20 caracteres")
-    private String telefono;
+    private String celular;
     
     @NotBlank(message = "El rol es obligatorio")
     @Size(max = 30, message = "El rol no puede exceder 30 caracteres")
@@ -37,14 +41,16 @@ public class UsuarioDTO {
     // Constructores
     public UsuarioDTO() {}
     
-    public UsuarioDTO(Long id, String nombre, String apellido, String email, 
-                     String telefono, String rol, Boolean activo, 
+    public UsuarioDTO(Long id, String nombre, String apellidoPaterno,
+            String apellidoMaterno, String email,
+                      String celular, String rol, Boolean activo,
                      LocalDateTime fechaCreacion, LocalDateTime fechaActualizacion) {
         this.id = id;
         this.nombre = nombre;
-        this.apellido = apellido;
+        this.apellidoPaterno = apellidoPaterno;
+        this.apellidoMaterno=apellidoMaterno;
         this.email = email;
-        this.telefono = telefono;
+        this.celular = celular;
         this.rol = rol;
         this.activo = activo;
         this.fechaCreacion = fechaCreacion;
@@ -68,14 +74,17 @@ public class UsuarioDTO {
         this.nombre = nombre;
     }
     
-    public String getApellido() {
-        return apellido;
+    public String getApellidoPaterno() {
+        return apellidoPaterno;
     }
+    public String getApellidoMaterno() {return apellidoMaterno;}
     
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
+    public void setApellidoPaterno(String apellidoPaterno) {
+        this.apellidoPaterno = apellidoPaterno;
     }
-    
+    public void setApellidoMaterno(String apellidoMaterno){this.apellidoMaterno=apellidoMaterno;}
+
+
     public String getEmail() {
         return email;
     }
@@ -85,11 +94,11 @@ public class UsuarioDTO {
     }
     
     public String getTelefono() {
-        return telefono;
+        return celular;
     }
     
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
+    public void setTelefono(String celular) {
+        this.celular = celular;
     }
     
     public String getRol() {
@@ -126,6 +135,6 @@ public class UsuarioDTO {
     
     // Método de utilidad
     public String getNombreCompleto() {
-        return nombre + " " + apellido;
+        return nombre + " " + apellidoPaterno+" "+apellidoMaterno;
     }
 }

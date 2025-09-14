@@ -2,6 +2,7 @@ package org.example.backend.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import org.example.backend.enumeraciones.Rol;
 
 @Entity
 @Table(name="Vigilancia")
@@ -11,7 +12,7 @@ public class Vigilancia extends Usuario {
 
     public Vigilancia() {}
 
-    public Vigilancia(String nombre, String apellido, String email, String telefono, String rol, String turno) {
+    public Vigilancia(String nombre, String apellido, String email, String telefono, Rol rol, String turno) {
         super(nombre, apellido, email, telefono, rol);
         this.turno = turno;
     }
