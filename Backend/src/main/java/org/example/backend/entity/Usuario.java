@@ -3,33 +3,41 @@ package org.example.backend.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.example.backend.enumeraciones.Rol;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.example.backend.enumeraciones.Rol;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Table(name = "usuarios")
 @Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "tipo_usuario")
 public class Usuario {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @UuidGenerator
+    private UUID id;
     
-    @NotBlank(message = "El nombre es obligatorio")
-    @Size(max = 50, message = "El nombre no puede exceder 50 caracteres")
-    @Column(name = "nombre", nullable = false, length = 50)
-    private String nombre;
+    @NotBlank(message = "Los nombres son obligatorios")
+    @Size(max = 100, message = "Los nombres no pueden exceder 100 caracteres")
+    @Column(name = "nombres", nullable = false, length = 100)
+    private String nombres;
     
-    @NotBlank(message = "El apellido es obligatorio")
-    @Size(max = 50, message = "El apellido no puede exceder 50 caracteres")
-    @Column(name = "apellido", nullable = false, length = 50)
-    private String apellido;
+    @NotBlank(message = "Los apellidos son obligatorios")
+    @Size(max = 100, message = "Los apellidos no pueden exceder 100 caracteres")
+    @Column(name = "apellidos", nullable = false, length = 100)
+    private String apellidos;
+
+    @NotBlank(message = "El documento es obligatorio")
+    @Size(max = 20, message = "El documento no puede exceder 20 caracteres")
+    @Column(name = "documento", nullable = false, length = 20)
+    private String documento;
     
     @NotBlank(message = "El email es obligatorio")
     @Email(message = "El email debe tener un formato válido")
@@ -37,17 +45,20 @@ public class Usuario {
     @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
     
-    @Size(max = 20, message = "El teléfono no puede exceder 20 caracteres")
-    @Column(name = "telefono", length = 20)
-    private String telefono;
+    @NotBlank(message = "El password es obligatorio")
+    @Column(name="password_hash", nullable = false, length = 100)
+    private String passwordHash;
     
-    @NotBlank(message = "El rol es obligatorio")
-    @Size(max = 30, message = "El rol no puede exceder 30 caracteres")
+    @NotNull(message = "El rol es obligatorio")
+    @Enumerated(EnumType.STRING)
     @Column(name = "rol", nullable = false, length = 30)
     private Rol rol;
     
     @Column(name = "activo", nullable = false)
     private Boolean activo = true;
+
+    @Column(name = "ultimo_acceso")
+    private LocalDateTime ultimoAcceso;
     
     @CreationTimestamp
     @Column(name = "fecha_creacion", nullable = false, updatable = false)
@@ -56,42 +67,52 @@ public class Usuario {
     @UpdateTimestamp
     @Column(name = "fecha_actualizacion", nullable = false)
     private LocalDateTime fechaActualizacion;
-    
+
     // Constructores
     public Usuario() {}
     
-    public Usuario(String nombre, String apellido, String email, String telefono, Rol rol) {
-        this.nombre = nombre;
-        this.apellido = apellido;
+    public Usuario(String nombres, String apellidos, String documento, 
+                  String email, String passwordHash, Rol rol) {
+        this.nombres = nombres;
+        this.apellidos = apellidos;
+        this.documento = documento;
         this.email = email;
-        this.telefono = telefono;
+        this.passwordHash = passwordHash;
         this.rol = rol;
         this.activo = true;
     }
     
     // Getters y Setters
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
     
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
     
-    public String getNombre() {
-        return nombre;
+    public String getNombres() {
+        return nombres;
     }
     
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setNombres(String nombres) {
+        this.nombres = nombres;
     }
     
-    public String getApellido() {
-        return apellido;
+    public String getApellidos() {
+        return apellidos;
     }
     
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
+    public void setApellidos(String apellidos) {
+        this.apellidos = apellidos;
+    }
+    
+    public String getDocumento() {
+        return documento;
+    }
+    
+    public void setDocumento(String documento) {
+        this.documento = documento;
     }
     
     public String getEmail() {
@@ -102,12 +123,12 @@ public class Usuario {
         this.email = email;
     }
     
-    public String getTelefono() {
-        return telefono;
+    public String getPasswordHash() {
+        return passwordHash;
     }
     
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
     
     public Rol getRol() {
@@ -124,6 +145,14 @@ public class Usuario {
     
     public void setActivo(Boolean activo) {
         this.activo = activo;
+    }
+    
+    public LocalDateTime getUltimoAcceso() {
+        return ultimoAcceso;
+    }
+    
+    public void setUltimoAcceso(LocalDateTime ultimoAcceso) {
+        this.ultimoAcceso = ultimoAcceso;
     }
     
     public LocalDateTime getFechaCreacion() {
@@ -144,7 +173,7 @@ public class Usuario {
     
     // Métodos de utilidad
     public String getNombreCompleto() {
-        return nombre + " " + apellido;
+        return nombres + " " + apellidos;
     }
     
     // equals y hashCode
@@ -166,12 +195,13 @@ public class Usuario {
     public String toString() {
         return "Usuario{" +
                 "id=" + id +
-                ", nombre='" + nombre + '\'' +
-                ", apellido='" + apellido + '\'' +
+                ", nombres='" + nombres + '\'' +
+                ", apellidos='" + apellidos + '\'' +
+                ", documento='" + documento + '\'' +
                 ", email='" + email + '\'' +
-                ", telefono='" + telefono + '\'' +
                 ", rol='" + rol + '\'' +
                 ", activo=" + activo +
+                ", ultimoAcceso=" + ultimoAcceso +
                 ", fechaCreacion=" + fechaCreacion +
                 ", fechaActualizacion=" + fechaActualizacion +
                 '}';
