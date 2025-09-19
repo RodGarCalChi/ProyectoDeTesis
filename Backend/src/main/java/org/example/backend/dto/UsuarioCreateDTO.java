@@ -6,52 +6,35 @@ import jakarta.validation.constraints.Size;
 
 public class UsuarioCreateDTO {
     
-    @NotBlank(message = "El nombre es obligatorio")
-    @Size(max = 50, message = "El nombre no puede exceder 50 caracteres")
-    private String nombre;
-    
-    @NotBlank(message = "El apellido es obligatorio")
-    @Size(max = 50, message = "El apellido no puede exceder 50 caracteres")
-    private String apellido;
+    @NotBlank(message = "El username es obligatorio")
+    @Size(max = 50, message = "El username no puede exceder 50 caracteres")
+    private String username;
     
     @NotBlank(message = "El email es obligatorio")
     @Email(message = "El email debe tener un formato válido")
     @Size(max = 100, message = "El email no puede exceder 100 caracteres")
     private String email;
     
-    @Size(max = 20, message = "El teléfono no puede exceder 20 caracteres")
-    private String telefono;
-    
-    @NotBlank(message = "El rol es obligatorio")
-    @Size(max = 30, message = "El rol no puede exceder 30 caracteres")
-    private String rol;
+    @NotBlank(message = "La contraseña es obligatoria")
+    @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
+    private String password;
     
     // Constructores
     public UsuarioCreateDTO() {}
     
-    public UsuarioCreateDTO(String nombre, String apellido, String email, String telefono, String rol) {
-        this.nombre = nombre;
-        this.apellido = apellido;
+    public UsuarioCreateDTO(String username, String email, String password) {
+        this.username = username;
         this.email = email;
-        this.telefono = telefono;
-        this.rol = rol;
+        this.password = password;
     }
     
     // Getters y Setters
-    public String getNombre() {
-        return nombre;
+    public String getUsername() {
+        return username;
     }
     
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-    
-    public String getApellido() {
-        return apellido;
-    }
-    
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
+    public void setUsername(String username) {
+        this.username = username;
     }
     
     public String getEmail() {
@@ -62,19 +45,11 @@ public class UsuarioCreateDTO {
         this.email = email;
     }
     
-    public String getTelefono() {
-        return telefono;
+    public String getPassword() {
+        return password;
     }
     
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
-    }
-    
-    public String getRol() {
-        return rol;
-    }
-    
-    public void setRol(String rol) {
-        this.rol = rol;
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

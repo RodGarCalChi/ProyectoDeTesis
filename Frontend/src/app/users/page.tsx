@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useUsuarios } from '@/hooks/useUsuarios';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -49,53 +50,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 
-// Mock data
-const users = [
-  {
-    id: "1",
-    firstName: "Juan",
-    lastName: "Pérez",
-    email: "juan.perez@pharmaflow.com",
-    phone: "+1234567890",
-    role: "Admin",
-    isActive: true,
-    createdAt: "2024-01-10",
-    lastLogin: "2024-01-15 10:30",
-  },
-  {
-    id: "2",
-    firstName: "María",
-    lastName: "González",
-    email: "maria.gonzalez@pharmaflow.com",
-    phone: "+1234567891",
-    role: "Manager",
-    isActive: true,
-    createdAt: "2024-01-08",
-    lastLogin: "2024-01-15 09:15",
-  },
-  {
-    id: "3",
-    firstName: "Carlos",
-    lastName: "Rodríguez",
-    email: "carlos.rodriguez@pharmaflow.com",
-    phone: "+1234567892",
-    role: "Recepcionista",
-    isActive: true,
-    createdAt: "2024-01-05",
-    lastLogin: "2024-01-14 16:45",
-  },
-  {
-    id: "4",
-    firstName: "Ana",
-    lastName: "Martínez",
-    email: "ana.martinez@pharmaflow.com",
-    phone: "+1234567893",
-    role: "Operador",
-    isActive: false,
-    createdAt: "2024-01-03",
-    lastLogin: "2024-01-10 14:20",
-  },
-];
+// Los datos ahora vienen del backend
 
 const roles = [
   { id: "1", name: "Admin", description: "Acceso completo al sistema" },
@@ -105,16 +60,14 @@ const roles = [
 ];
 
 export default function UsersPage() {
+  const { usuarios, loading, error, createUsuario } = useUsuarios();
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedUser, setSelectedUser] = useState<typeof users[0] | null>(null);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [newUser, setNewUser] = useState({
-    firstName: "",
-    lastName: "",
+    username: "",
     email: "",
-    phone: "",
-    role: "",
-    isActive: true,
+    password: "",
   });
 
   const getRoleVariant = (role: string) => {
@@ -127,26 +80,33 @@ export default function UsersPage() {
     }
   };
 
-  const filteredUsers = users.filter(user => 
-    user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  const filteredUsers = usuarios.filter(user => 
+    user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.role.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleCreateUser = () => {
-    // Aquí iría la lógica para crear el usuario
-    console.log("Creating user:", newUser);
-    setIsCreateDialogOpen(false);
-    setNewUser({
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      role: "",
-      isActive: true,
-    });
+  const handleCreateUser = async () => {
+    try {
+      await createUsuario(newUser);
+      setIsCreateDialogOpen(false);
+      setNewUser({
+        username: "",
+        email: "",
+        password: "",
+      });
+    } catch (error) {
+      console.error("Error creating user:", error);
+    }
   };
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-64">Cargando usuarios...</div>;
+  }
+
+  if (error) {
+    return <div className="text-red-500 text-center">Error: {error}</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -171,25 +131,14 @@ export default function UsersPage() {
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName">Nombre</Label>
-                  <Input
-                    id="firstName"
-                    value={newUser.firstName}
-                    onChange={(e) => setNewUser({...newUser, firstName: e.target.value})}
-                    placeholder="Nombre"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName">Apellido</Label>
-                  <Input
-                    id="lastName"
-                    value={newUser.lastName}
-                    onChange={(e) => setNewUser({...newUser, lastName: e.target.value})}
-                    placeholder="Apellido"
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="username">Nombre de Usuario</Label>
+                <Input
+                  id="username"
+                  value={newUser.username}
+                  onChange={(e) => setNewUser({...newUser, username: e.target.value})}
+                  placeholder="usuario123"
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
@@ -202,36 +151,14 @@ export default function UsersPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phone">Teléfono</Label>
+                <Label htmlFor="password">Contraseña</Label>
                 <Input
-                  id="phone"
-                  value={newUser.phone}
-                  onChange={(e) => setNewUser({...newUser, phone: e.target.value})}
-                  placeholder="+1234567890"
+                  id="password"
+                  type="password"
+                  value={newUser.password}
+                  onChange={(e) => setNewUser({...newUser, password: e.target.value})}
+                  placeholder="••••••••"
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="role">Rol</Label>
-                <Select value={newUser.role} onValueChange={(value) => setNewUser({...newUser, role: value})}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecciona un rol" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {roles.map((role) => (
-                      <SelectItem key={role.id} value={role.name}>
-                        {role.name} - {role.description}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="isActive"
-                  checked={newUser.isActive}
-                  onCheckedChange={(checked) => setNewUser({...newUser, isActive: checked})}
-                />
-                <Label htmlFor="isActive">Usuario activo</Label>
               </div>
             </div>
             <DialogFooter>
@@ -252,7 +179,7 @@ export default function UsersPage() {
               <Users className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm font-medium">Total Usuarios</span>
             </div>
-            <div className="text-2xl font-bold mt-2">{users.length}</div>
+            <div className="text-2xl font-bold mt-2">{usuarios.length}</div>
           </CardContent>
         </Card>
         <Card>
@@ -262,7 +189,7 @@ export default function UsersPage() {
               <span className="text-sm font-medium">Activos</span>
             </div>
             <div className="text-2xl font-bold mt-2 text-green-600">
-              {users.filter(u => u.isActive).length}
+              {usuarios.filter(u => u.role !== 'INACTIVE').length}
             </div>
           </CardContent>
         </Card>
@@ -273,7 +200,7 @@ export default function UsersPage() {
               <span className="text-sm font-medium">Inactivos</span>
             </div>
             <div className="text-2xl font-bold mt-2 text-red-600">
-              {users.filter(u => !u.isActive).length}
+              {usuarios.filter(u => u.role === 'INACTIVE').length}
             </div>
           </CardContent>
         </Card>
@@ -284,7 +211,7 @@ export default function UsersPage() {
               <span className="text-sm font-medium">Administradores</span>
             </div>
             <div className="text-2xl font-bold mt-2 text-blue-600">
-              {users.filter(u => u.role === "Admin").length}
+              {usuarios.filter(u => u.role === "ADMIN").length}
             </div>
           </CardContent>
         </Card>
@@ -341,33 +268,33 @@ export default function UsersPage() {
                   <TableCell>
                     <div className="flex items-center space-x-3">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.firstName} ${user.lastName}`} />
+                        <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.username}`} />
                         <AvatarFallback>
-                          {user.firstName[0]}{user.lastName[0]}
+                          {user.username.substring(0, 2).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <div className="font-medium">{user.firstName} {user.lastName}</div>
+                        <div className="font-medium">{user.username}</div>
                         <div className="text-sm text-muted-foreground">
-                          Creado: {new Date(user.createdAt).toLocaleDateString()}
+                          ID: {user.id}
                         </div>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.phone}</TableCell>
+                  <TableCell>-</TableCell>
                   <TableCell>
                     <Badge variant={getRoleVariant(user.role)}>
                       {user.role}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={user.isActive ? "default" : "secondary"}>
-                      {user.isActive ? "Activo" : "Inactivo"}
+                    <Badge variant={user.role !== 'INACTIVE' ? "default" : "secondary"}>
+                      {user.role !== 'INACTIVE' ? "Activo" : "Inactivo"}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
-                    {user.lastLogin}
+                    -
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
@@ -387,7 +314,7 @@ export default function UsersPage() {
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem>
-                          {user.isActive ? "Desactivar" : "Activar"}
+                          {user.role !== 'INACTIVE' ? "Desactivar" : "Activar"}
                         </DropdownMenuItem>
                         <DropdownMenuItem className="text-red-600">
                           <Trash2 className="h-4 w-4 mr-2" />

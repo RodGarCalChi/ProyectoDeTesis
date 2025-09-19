@@ -13,9 +13,21 @@ public class BackendApplication {
         SpringApplication.run(BackendApplication.class, args);
         System.out.println("\nAplicación iniciada correctamente!");
         System.out.println("Los endpoints están disponibles en:");
-        System.out.println("- http://localhost:8081/api/recepciones");
-        System.out.println("- http://localhost:8081/api/vigilancias");
+        System.out.println("- http://localhost:8081/api/usuarios");
+        System.out.println("- Frontend conectado desde: http://localhost:9002");
     }
 
-
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/api/**")
+                        .allowedOrigins("http://localhost:9002")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedHeaders("*")
+                        .allowCredentials(true);
+            }
+        };
+    }
 }
