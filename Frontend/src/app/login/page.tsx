@@ -2,21 +2,54 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [role, setRole] = React.useState("");
+  const { login, isLoading } = useAuth();
+  const [formData, setFormData] = React.useState({
+    email: "recepcion@pharmaflow.com",
+    password: "password"
+  });
+  const [error, setError] = React.useState("");
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    // Limpiar error cuando el usuario empiece a escribir
+    if (error) setError("");
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate role-based redirection
-    if (role === "admin") {
-      router.push("/dashboard");
-    } else if (role === "receiving") {
-      router.push("/movimientos");
-    } else {
-      // Default redirection for other roles or no role selected
-      router.push("/dashboard");
+    setError("");
+
+    try {
+      const result = await login(formData.email, formData.password);
+      
+      if (result.success && result.user) {
+        // Redirigir según el rol del usuario
+        switch (result.user.role) {
+          case 'Recepcion':
+            router.push('/movimientos');
+            break;
+          case 'DirectorTecnico':
+          case 'Administrador':
+            router.push('/dashboard');
+            break;
+          default:
+            router.push('/dashboard');
+            break;
+        }
+      } else {
+        setError(result.message);
+      }
+    } catch (error) {
+      setError('Error de conexión. Verifique que el servidor esté funcionando.');
+      console.error('Login error:', error);
     }
   };
 
@@ -43,6 +76,13 @@ export default function LoginPage() {
           </div>
 
           <form onSubmit={handleLogin} className="space-y-6">
+            {/* Error Message */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                <p className="text-sm text-red-600">{error}</p>
+              </div>
+            )}
+
             {/* Email Field */}
             <div>
               <label
@@ -53,10 +93,12 @@ export default function LoginPage() {
               </label>
               <input
                 id="email"
+                name="email"
                 type="email"
                 placeholder="m@example.com"
                 required
-                defaultValue="admin@pharmaflow.com"
+                value={formData.email}
+                onChange={handleInputChange}
                 className="w-full px-4 py-3 bg-gray-200 border-2 border-gray-400 rounded-lg text-gray-700 placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
               />
             </div>
@@ -71,62 +113,60 @@ export default function LoginPage() {
               </label>
               <input
                 id="password"
+                name="password"
                 type="password"
                 required
-                defaultValue="password"
+                value={formData.password}
+                onChange={handleInputChange}
                 className="w-full px-4 py-3 bg-gray-200 border-2 border-gray-400 rounded-lg text-gray-700 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
               />
             </div>
 
-            {/* Role Selector */}
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <svg
-                  className="w-4 h-4 text-gray-600"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <span className="text-sm text-gray-600">Choose option...</span>
-              </div>
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                required
-                className="w-full px-4 py-3 bg-gray-200 border-2 border-gray-400 rounded-lg text-gray-700 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors appearance-none cursor-pointer"
-              >
-                <option value="" disabled>Operador</option>
-                <option value="admin">Admin</option>
-                <option value="manager">Manager</option>
-                <option value="receiving">Recepcionista</option>
-                <option value="operator">Operador</option>
-              </select>
+            {/* Info sobre usuarios disponibles */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <p className="text-xs text-blue-600 mb-1">
+                <strong>Usuarios de prueba:</strong>
+              </p>
+              <p className="text-xs text-blue-600">
+                • recepcion@pharmaflow.com (Recepción)
+              </p>
+              <p className="text-xs text-blue-600">
+                • admin@pharmaflow.com (Administrador)
+              </p>
+              <p className="text-xs text-blue-600">
+                Contraseña: password
+              </p>
             </div>
 
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+              disabled={isLoading}
+              className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
             >
-              Iniciar Sesión
-              <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
-                <svg
-                  className="w-3 h-3 text-blue-500"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
+              {isLoading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  Iniciando sesión...
+                </>
+              ) : (
+                <>
+                  Iniciar Sesión
+                  <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
+                    <svg
+                      className="w-3 h-3 text-blue-500"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                </>
+              )}
             </button>
           </form>
         </div>

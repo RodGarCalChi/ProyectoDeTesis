@@ -2,9 +2,12 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { useAuth } from '@/contexts/AuthContext';
 
-export default function MovimientosPage() {
+function MovimientosContent() {
   const router = useRouter();
+  const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState('entrada');
   const [formData, setFormData] = useState({
     referencia: '',
@@ -18,7 +21,8 @@ export default function MovimientosPage() {
     notas: ''
   });
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await logout();
     router.push('/login');
   };
 
@@ -341,5 +345,13 @@ export default function MovimientosPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function MovimientosPage() {
+  return (
+    <ProtectedRoute requiredRole="Recepcion">
+      <MovimientosContent />
+    </ProtectedRoute>
   );
 }
