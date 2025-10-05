@@ -5,7 +5,7 @@ public enum Rol {
     Recepcion,
     Operaciones,
     Calidad,
-    Transportes,
-    Administracion,
+    Despacho,
+    AreaAdministrativa,
     DirectorTecnico
 }

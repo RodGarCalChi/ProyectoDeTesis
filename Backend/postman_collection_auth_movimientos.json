@@ -1,0 +1,712 @@
+{
+	"info": {
+		"_postman_id": "pharmaflow-auth-movimientos",
+		"name": "PharmaFlow - Autenticación y Movimientos",
+		"description": "Colección de pruebas para el sistema de autenticación y movimientos de inventario de PharmaFlow",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Autenticación",
+			"item": [
+				{
+					"name": "Login - Usuario Recepción (Válido)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has token\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.token).to.not.be.undefined;",
+									"    pm.globals.set(\"auth_token\", jsonData.token);",
+									"});",
+									"",
+									"pm.test(\"User role is Recepcion\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.usuario.role).to.eql(\"Recepcion\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"recepcion@pharmaflow.com\",\n    \"password\": \"password\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login - Usuario Admin (Válido)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has token\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.token).to.not.be.undefined;",
+									"});",
+									"",
+									"pm.test(\"User role is DirectorTecnico\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.usuario.role).to.eql(\"DirectorTecnico\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@pharmaflow.com\",\n    \"password\": \"password\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login - Credenciales Inválidas",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response has error message\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.not.be.undefined;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"usuario@inexistente.com\",\n    \"password\": \"wrongpassword\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Logout successful\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.include(\"exitoso\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Movimientos - Validación de Acceso",
+			"item": [
+				{
+					"name": "Validar Acceso - Usuario Recepción (Autorizado)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Primero hacer login para obtener token de recepción",
+									"pm.sendRequest({",
+									"    url: pm.globals.get(\"base_url\") + \"/api/auth/login\",",
+									"    method: 'POST',",
+									"    header: {",
+									"        'Content-Type': 'application/json'",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            \"email\": \"recepcion@pharmaflow.com\",",
+									"            \"password\": \"password\"",
+									"        })",
+									"    }",
+									"}, function (err, response) {",
+									"    if (response.code === 200) {",
+									"        var jsonData = response.json();",
+									"        pm.globals.set(\"recepcion_token\", jsonData.token);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Access granted\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.rol).to.eql(\"Recepcion\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{recepcion_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/movimientos/validar-acceso",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"movimientos",
+								"validar-acceso"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validar Acceso - Usuario Admin (Denegado)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Hacer login como admin",
+									"pm.sendRequest({",
+									"    url: pm.globals.get(\"base_url\") + \"/api/auth/login\",",
+									"    method: 'POST',",
+									"    header: {",
+									"        'Content-Type': 'application/json'",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            \"email\": \"admin@pharmaflow.com\",",
+									"            \"password\": \"password\"",
+									"        })",
+									"    }",
+									"}, function (err, response) {",
+									"    if (response.code === 200) {",
+									"        var jsonData = response.json();",
+									"        pm.globals.set(\"admin_token\", jsonData.token);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});",
+									"",
+									"pm.test(\"Access denied\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"    pm.expect(jsonData.message).to.include(\"Acceso denegado\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/movimientos/validar-acceso",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"movimientos",
+								"validar-acceso"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validar Acceso - Sin Token (No Autorizado)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"Token required message\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"    pm.expect(jsonData.message).to.include(\"Token\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/movimientos/validar-acceso",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"movimientos",
+								"validar-acceso"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Movimientos - Operaciones CRUD",
+			"item": [
+				{
+					"name": "Registrar Entrada - Datos Válidos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Entry registered successfully\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.movimientoId).to.not.be.undefined;",
+									"    pm.expect(jsonData.referencia).to.eql(\"PO-12345\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{recepcion_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"referencia\": \"PO-12345\",\n    \"proveedor\": \"Laboratorio Farmacéutico ABC\",\n    \"producto\": \"Paracetamol 500mg\",\n    \"cantidad\": 100,\n    \"ubicacion\": \"Almacén Principal - Estante A1\",\n    \"recibidoPor\": \"María García\",\n    \"dia\": \"2024-01-15\",\n    \"hora\": \"14:30\",\n    \"notas\": \"Producto en perfecto estado, temperatura controlada durante el transporte\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/movimientos/entrada",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"movimientos",
+								"entrada"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Registrar Entrada - Datos Incompletos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Validation error message\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"    pm.expect(jsonData.message).to.include(\"obligatorio\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{recepcion_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"referencia\": \"\",\n    \"proveedor\": \"Laboratorio Farmacéutico ABC\",\n    \"producto\": \"Paracetamol 500mg\",\n    \"cantidad\": 100\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/movimientos/entrada",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"movimientos",
+								"entrada"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Registrar Salida - Datos Válidos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Exit registered successfully\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.movimientoId).to.not.be.undefined;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{recepcion_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"referencia\": \"SO-67890\",\n    \"destino\": \"Farmacia Central\",\n    \"producto\": \"Ibuprofeno 400mg\",\n    \"cantidad\": 50,\n    \"ubicacion\": \"Almacén Principal - Estante B2\",\n    \"autorizadoPor\": \"Carlos Rodríguez\",\n    \"dia\": \"2024-01-15\",\n    \"hora\": \"16:45\",\n    \"notas\": \"Entrega urgente para farmacia central\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/movimientos/salida",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"movimientos",
+								"salida"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Movimientos - Datos Maestros",
+			"item": [
+				{
+					"name": "Obtener Proveedores",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Proveedores list returned\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.proveedores).to.not.be.undefined;",
+									"    pm.expect(Object.keys(jsonData.proveedores).length).to.be.greaterThan(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{recepcion_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/movimientos/proveedores",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"movimientos",
+								"proveedores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Productos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Productos list returned\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.productos).to.not.be.undefined;",
+									"    pm.expect(Object.keys(jsonData.productos).length).to.be.greaterThan(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{recepcion_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/movimientos/productos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"movimientos",
+								"productos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Ubicaciones",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Ubicaciones list returned\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.ubicaciones).to.not.be.undefined;",
+									"    pm.expect(Object.keys(jsonData.ubicaciones).length).to.be.greaterThan(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{recepcion_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/movimientos/ubicaciones",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"movimientos",
+								"ubicaciones"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Set base URL if not already set",
+					"if (!pm.globals.has(\"base_url\")) {",
+					"    pm.globals.set(\"base_url\", \"http://localhost:8080\");",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}
