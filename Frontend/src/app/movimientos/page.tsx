@@ -318,16 +318,267 @@ function MovimientosContent() {
           </div>
         )}
 
-        {/* Salida Form (placeholder) */}
+        {/* Salida Form */}
         {activeTab === 'salida' && (
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
-            <div className="text-center py-12">
-              <svg className="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-              </svg>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Registrar Salida de Mercadería</h3>
-              <p className="text-gray-500">Esta funcionalidad estará disponible próximamente.</p>
+          <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
+                  <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-red-700">Registrar Salida de Mercadería</h3>
+              </div>
+              <p className="text-sm text-gray-600">
+                Registre los productos que salen del almacén para despacho o transferencia
+              </p>
             </div>
+
+            <form onSubmit={handleSubmit} className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                {/* Número de Orden */}
+                <div>
+                  <label htmlFor="numeroOrden" className="block text-sm font-medium text-gray-700 mb-2">
+                    Número de Orden/Guía
+                  </label>
+                  <input
+                    type="text"
+                    id="numeroOrden"
+                    name="numeroOrden"
+                    placeholder="Ej: ORD-12345, GR-67890"
+                    className="w-full px-3 py-2 bg-gray-200 border-2 border-gray-400 rounded text-gray-700 placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
+                  />
+                </div>
+
+                {/* Tipo de Salida */}
+                <div>
+                  <label htmlFor="tipoSalida" className="block text-sm font-medium text-gray-700 mb-2">
+                    Tipo de Salida
+                  </label>
+                  <div className="relative">
+                    <select
+                      id="tipoSalida"
+                      name="tipoSalida"
+                      className="w-full px-3 py-2 bg-gray-200 border-2 border-gray-400 rounded text-gray-700 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors appearance-none cursor-pointer"
+                    >
+                      <option value="">Seleccione tipo de salida</option>
+                      <option value="venta">Venta a Cliente</option>
+                      <option value="transferencia">Transferencia entre Almacenes</option>
+                      <option value="devolucion">Devolución a Proveedor</option>
+                      <option value="ajuste">Ajuste de Inventario</option>
+                      <option value="merma">Merma/Vencimiento</option>
+                    </select>
+                    <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Cliente/Destino */}
+                <div>
+                  <label htmlFor="destino" className="block text-sm font-medium text-gray-700 mb-2">
+                    Cliente/Destino
+                  </label>
+                  <div className="relative">
+                    <select
+                      id="destino"
+                      name="destino"
+                      className="w-full px-3 py-2 bg-gray-200 border-2 border-gray-400 rounded text-gray-700 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors appearance-none cursor-pointer"
+                    >
+                      <option value="">Seleccione destino</option>
+                      <option value="farmacia1">Farmacia Central</option>
+                      <option value="farmacia2">Botica San Juan</option>
+                      <option value="hospital1">Hospital Nacional</option>
+                      <option value="almacen2">Almacén Secundario</option>
+                    </select>
+                    <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Producto */}
+                <div>
+                  <label htmlFor="productoSalida" className="block text-sm font-medium text-gray-700 mb-2">
+                    Producto
+                  </label>
+                  <div className="relative">
+                    <select
+                      id="productoSalida"
+                      name="productoSalida"
+                      className="w-full px-3 py-2 bg-gray-200 border-2 border-gray-400 rounded text-gray-700 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors appearance-none cursor-pointer"
+                    >
+                      <option value="">Seleccione un producto</option>
+                      <option value="producto1">Paracetamol 500mg - Stock: 150</option>
+                      <option value="producto2">Ibuprofeno 400mg - Stock: 25</option>
+                      <option value="producto3">Amoxicilina 250mg - Stock: 80</option>
+                    </select>
+                    <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Lote */}
+                <div>
+                  <label htmlFor="lote" className="block text-sm font-medium text-gray-700 mb-2">
+                    Lote
+                  </label>
+                  <div className="relative">
+                    <select
+                      id="lote"
+                      name="lote"
+                      className="w-full px-3 py-2 bg-gray-200 border-2 border-gray-400 rounded text-gray-700 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors appearance-none cursor-pointer"
+                    >
+                      <option value="">Seleccione un lote</option>
+                      <option value="lote1">L2024001 - Vence: 2025-12-15</option>
+                      <option value="lote2">L2024002 - Vence: 2025-08-20</option>
+                      <option value="lote3">L2024003 - Vence: 2025-03-10</option>
+                    </select>
+                    <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Cantidad */}
+                <div>
+                  <label htmlFor="cantidadSalida" className="block text-sm font-medium text-gray-700 mb-2">
+                    Cantidad a Despachar
+                  </label>
+                  <input
+                    type="number"
+                    id="cantidadSalida"
+                    name="cantidadSalida"
+                    placeholder="0"
+                    min="0"
+                    className="w-full px-3 py-2 bg-gray-200 border-2 border-gray-400 rounded text-gray-700 placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
+                  />
+                </div>
+
+                {/* Ubicación Origen */}
+                <div>
+                  <label htmlFor="ubicacionOrigen" className="block text-sm font-medium text-gray-700 mb-2">
+                    Ubicación Origen
+                  </label>
+                  <div className="relative">
+                    <select
+                      id="ubicacionOrigen"
+                      name="ubicacionOrigen"
+                      className="w-full px-3 py-2 bg-gray-200 border-2 border-gray-400 rounded text-gray-700 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors appearance-none cursor-pointer"
+                    >
+                      <option value="">Seleccione ubicación</option>
+                      <option value="almacen1">Almacén Principal - Estante A1</option>
+                      <option value="almacen2">Almacén Secundario - Estante B2</option>
+                      <option value="almacen3">Área de Cuarentena - Estante C3</option>
+                    </select>
+                    <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Despachado por */}
+                <div>
+                  <label htmlFor="despachadoPor" className="block text-sm font-medium text-gray-700 mb-2">
+                    Despachado por
+                  </label>
+                  <input
+                    type="text"
+                    id="despachadoPor"
+                    name="despachadoPor"
+                    placeholder="Nombre del empleado"
+                    className="w-full px-3 py-2 bg-gray-200 border-2 border-gray-400 rounded text-gray-700 placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
+                  />
+                </div>
+
+                {/* Día */}
+                <div>
+                  <label htmlFor="diaSalida" className="block text-sm font-medium text-gray-700 mb-2">
+                    Día
+                  </label>
+                  <input
+                    type="date"
+                    id="diaSalida"
+                    name="diaSalida"
+                    className="w-full px-3 py-2 bg-gray-200 border-2 border-gray-400 rounded text-gray-700 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
+                  />
+                </div>
+
+                {/* Hora */}
+                <div>
+                  <label htmlFor="horaSalida" className="block text-sm font-medium text-gray-700 mb-2">
+                    Hora
+                  </label>
+                  <input
+                    type="time"
+                    id="horaSalida"
+                    name="horaSalida"
+                    className="w-full px-3 py-2 bg-gray-200 border-2 border-gray-400 rounded text-gray-700 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
+                  />
+                </div>
+              </div>
+
+              {/* Motivo/Observaciones */}
+              <div className="mb-6">
+                <label htmlFor="motivoSalida" className="block text-sm font-medium text-gray-700 mb-2">
+                  Motivo/Observaciones
+                </label>
+                <textarea
+                  id="motivoSalida"
+                  name="motivoSalida"
+                  placeholder="Ingrese el motivo de la salida y cualquier observación relevante..."
+                  rows={4}
+                  className="w-full px-3 py-2 bg-gray-200 border-2 border-gray-400 rounded text-gray-700 placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors resize-vertical"
+                />
+              </div>
+
+              {/* Verificación BPAs */}
+              <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <h4 className="text-sm font-medium text-yellow-800 mb-3">Verificación BPAs - DIGEMID</h4>
+                <div className="space-y-2">
+                  <label className="flex items-center">
+                    <input type="checkbox" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                    <span className="ml-2 text-sm text-gray-700">Producto verificado y en condiciones óptimas</span>
+                  </label>
+                  <label className="flex items-center">
+                    <input type="checkbox" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                    <span className="ml-2 text-sm text-gray-700">Fecha de vencimiento verificada</span>
+                  </label>
+                  <label className="flex items-center">
+                    <input type="checkbox" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                    <span className="ml-2 text-sm text-gray-700">Documentación de salida completa</span>
+                  </label>
+                  <label className="flex items-center">
+                    <input type="checkbox" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                    <span className="ml-2 text-sm text-gray-700">Trazabilidad registrada correctamente</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Botones de acción */}
+              <div className="flex gap-4">
+                <button
+                  type="submit"
+                  className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-6 rounded transition-colors"
+                >
+                  Registrar Salida
+                </button>
+                <button
+                  type="button"
+                  className="bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-2 px-6 rounded transition-colors"
+                >
+                  Limpiar
+                </button>
+                <button
+                  type="button"
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded transition-colors"
+                >
+                  Imprimir Guía
+                </button>
+              </div>
+            </form>
           </div>
         )}
 

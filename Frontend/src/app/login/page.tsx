@@ -8,12 +8,13 @@ export default function LoginPage() {
   const router = useRouter();
   const { login, isLoading } = useAuth();
   const [formData, setFormData] = React.useState({
-    email: "recepcion@pharmaflow.com",
-    password: "password"
+    email: "",
+    password: "",
+    rol: ""
   });
   const [error, setError] = React.useState("");
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -27,28 +28,52 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
 
+    // Validar que se hayan ingresado todos los campos
+    if (!formData.email || !formData.password || !formData.rol) {
+      setError("Todos los campos son obligatorios");
+      return;
+    }
+
+    // Mapeo de roles a datos de usuario y pantallas
+    const rolMap: { [key: string]: { firstName: string; redirect: string } } = {
+      "Recepcion": { firstName: "María", redirect: "/movimientos" },
+      "Jefe_Ejecutivas": { firstName: "Patricia", redirect: "/ordenes" },
+      "Control": { firstName: "Ana", redirect: "/control" },
+      "Inventario": { firstName: "Luis", redirect: "/dashboard" },
+      "Operaciones": { firstName: "Juan", redirect: "/dashboard" },
+      "Despacho": { firstName: "Carlos", redirect: "/dashboard" },
+      "DirectorTecnico": { firstName: "Director", redirect: "/dashboard" },
+      "Administrador": { firstName: "Admin", redirect: "/dashboard" },
+      "Cliente": { firstName: "Pedro", redirect: "/dashboard" }
+    };
+
+    const userData = rolMap[formData.rol];
+
+    if (!userData) {
+      setError("Rol seleccionado inválido.");
+      return;
+    }
+
     try {
-      const result = await login(formData.email, formData.password);
-      
-      if (result.success && result.user) {
-        // Redirigir según el rol del usuario
-        switch (result.user.role) {
-          case 'Recepcion':
-            router.push('/movimientos');
-            break;
-          case 'DirectorTecnico':
-          case 'Administrador':
-            router.push('/dashboard');
-            break;
-          default:
-            router.push('/dashboard');
-            break;
-        }
-      } else {
-        setError(result.message);
-      }
+      // Simular usuario autenticado sin llamar al backend
+      const mockUser = {
+        id: Math.floor(Math.random() * 1000),
+        username: formData.email.split('@')[0],
+        email: formData.email,
+        role: formData.rol,
+        firstName: userData.firstName
+      };
+
+      // Guardar datos de autenticación simulados
+      const mockToken = `mock_token_${formData.rol}_${Date.now()}`;
+      localStorage.setItem('token', mockToken);
+      localStorage.setItem('user', JSON.stringify(mockUser));
+
+      // Redirigir según el rol
+      router.push(userData.redirect);
+
     } catch (error) {
-      setError('Error de conexión. Verifique que el servidor esté funcionando.');
+      setError('Error interno. Intente nuevamente.');
       console.error('Login error:', error);
     }
   };
@@ -122,19 +147,54 @@ export default function LoginPage() {
               />
             </div>
 
-            {/* Info sobre usuarios disponibles */}
+            {/* Selector de Rol */}
+            <div>
+              <label
+                htmlFor="rol"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Tipo de Usuario
+              </label>
+              <select
+                id="rol"
+                name="rol"
+                required
+                value={formData.rol}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 bg-gray-200 border-2 border-gray-400 rounded-lg text-gray-700 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors appearance-none cursor-pointer"
+              >
+                <option value="">Seleccione su rol</option>
+                <option value="Recepcion">👥 Recepción - María</option>
+                <option value="Jefe_Ejecutivas">👔 Jefe de Ejecutivas - Patricia</option>
+                <option value="Control">🔍 Control de Calidad - Ana</option>
+                <option value="Inventario">📦 Inventario - Luis</option>
+                <option value="Operaciones">⚙️ Operaciones - Juan</option>
+                <option value="Despacho">🚚 Despacho - Carlos</option>
+                <option value="DirectorTecnico">👨‍⚕️ Director Técnico</option>
+                <option value="Administrador">🔧 Administrador</option>
+                <option value="Cliente">👤 Cliente - Pedro</option>
+              </select>
+              {/* Flecha del select */}
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
+
+            {/* Info sobre el sistema */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <p className="text-xs text-blue-600 mb-2">
+                <strong>Sistema de Demostración:</strong>
+              </p>
               <p className="text-xs text-blue-600 mb-1">
-                <strong>Usuarios de prueba:</strong>
+                • Puede usar cualquier email y contraseña
+              </p>
+              <p className="text-xs text-blue-600 mb-1">
+                • Seleccione el tipo de usuario para acceder a diferentes pantallas
               </p>
               <p className="text-xs text-blue-600">
-                • recepcion@pharmaflow.com (Recepción)
-              </p>
-              <p className="text-xs text-blue-600">
-                • admin@pharmaflow.com (Administrador)
-              </p>
-              <p className="text-xs text-blue-600">
-                Contraseña: password
+                • Cada rol tiene acceso a funcionalidades específicas del sistema
               </p>
             </div>
 

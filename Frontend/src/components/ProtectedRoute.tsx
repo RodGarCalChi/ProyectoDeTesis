@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredRole?: string;
+  requiredRole?: string | string[];
   redirectTo?: string;
 }
 
@@ -27,21 +27,35 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
       }
 
       // Si se requiere un rol específico y el usuario no lo tiene
-      if (requiredRole && user?.role !== requiredRole) {
-        // Redirigir según el rol del usuario
-        switch (user?.role) {
-          case 'Recepcion':
-            router.push('/movimientos');
-            break;
-          case 'DirectorTecnico':
-          case 'Administrador':
-            router.push('/dashboard');
-            break;
-          default:
-            router.push('/unauthorized');
-            break;
+      if (requiredRole) {
+        const allowedRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
+        const hasRequiredRole = allowedRoles.includes(user?.role || '');
+        
+        if (!hasRequiredRole) {
+          // Redirigir según el rol del usuario
+          switch (user?.role) {
+            case 'Recepcion':
+              router.push('/movimientos');
+              break;
+            case 'Jefe_Ejecutivas':
+              router.push('/ordenes');
+              break;
+            case 'Control':
+              router.push('/control');
+              break;
+            case 'Inventario':
+              router.push('/dashboard');
+              break;
+            case 'DirectorTecnico':
+            case 'Administrador':
+              router.push('/dashboard');
+              break;
+            default:
+              router.push('/unauthorized');
+              break;
+          }
+          return;
         }
-        return;
       }
     }
   }, [user, isLoading, isAuthenticated, requiredRole, router, redirectTo]);
@@ -58,10 +72,19 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     );
   }
 
-  // Si no está autenticado o no tiene el rol requerido, no mostrar nada
-  // (la redirección se maneja en el useEffect)
-  if (!isAuthenticated || (requiredRole && user?.role !== requiredRole)) {
+  // Si no está autenticado, no mostrar nada (la redirección se maneja en el useEffect)
+  if (!isAuthenticated) {
     return null;
+  }
+
+  // Si se requiere un rol específico, verificar si el usuario lo tiene
+  if (requiredRole) {
+    const allowedRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
+    const hasRequiredRole = allowedRoles.includes(user?.role || '');
+    
+    if (!hasRequiredRole) {
+      return null;
+    }
   }
 
   // Si todo está bien, mostrar el contenido

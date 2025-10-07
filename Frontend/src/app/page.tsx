@@ -2,20 +2,49 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Home() {
   const router = useRouter();
+  const { user, isLoading, isAuthenticated } = useAuth();
 
   useEffect(() => {
-    // Redirigir automáticamente al login
-    router.push("/login");
-  }, [router]);
+    if (!isLoading) {
+      if (!isAuthenticated) {
+        // Si no está autenticado, redirigir al login
+        router.push("/login");
+      } else {
+        // Si está autenticado, redirigir según el rol
+        switch (user?.role) {
+          case 'Recepcion':
+            router.push('/movimientos');
+            break;
+          case 'Jefe_Ejecutivas':
+            router.push('/ordenes');
+            break;
+          case 'Control':
+            router.push('/control');
+            break;
+          case 'Inventario':
+          case 'DirectorTecnico':
+          case 'Administrador':
+            router.push('/dashboard');
+            break;
+          default:
+            router.push('/login');
+            break;
+        }
+      }
+    }
+  }, [user, isLoading, isAuthenticated, router]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-        <p className="text-gray-600">Redirigiendo...</p>
+        <p className="text-gray-600">
+          {isLoading ? "Verificando sesión..." : "Redirigiendo..."}
+        </p>
       </div>
     </div>
   );

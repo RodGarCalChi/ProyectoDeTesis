@@ -51,29 +51,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setIsLoading(true);
       
-      const response = await apiService.login({ email, password });
+      // COMENTADO: Acceso original del personal de recepción
+      // const response = await apiService.login({ email, password });
       
-      if (response.token && response.usuario) {
-        // Guardar datos de autenticación
-        apiService.saveAuthData(response.token, response.usuario);
-        setUser(response.usuario);
-        
+      // NUEVO: Sistema de códigos - el login real se maneja en LoginPage
+      // Este método ahora solo verifica si ya hay un usuario autenticado
+      const currentUser = getCurrentUser();
+      
+      if (currentUser) {
+        setUser(currentUser);
         return {
           success: true,
-          message: response.message,
-          user: response.usuario
+          message: 'Login exitoso',
+          user: currentUser
         };
       } else {
         return {
           success: false,
-          message: response.message || 'Error en el login'
+          message: 'No se encontró usuario autenticado'
         };
       }
     } catch (error) {
       console.error('Login error:', error);
       return {
         success: false,
-        message: error instanceof Error ? error.message : 'Error de conexión'
+        message: error instanceof Error ? error.message : 'Error de autenticación'
       };
     } finally {
       setIsLoading(false);
