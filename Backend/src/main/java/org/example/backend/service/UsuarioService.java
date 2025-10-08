@@ -5,6 +5,7 @@ import org.example.backend.entity.Usuario;
 import org.example.backend.enumeraciones.Rol;
 import org.example.backend.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,8 @@ public class UsuarioService {
     
     @Autowired
     private UsuarioRepository usuarioRepository;
+    
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     
     public Usuario crearUsuario(String nombres, String apellidos, String documento, 
                                String email, String password, String rolStr) {
@@ -37,8 +40,11 @@ public class UsuarioService {
             throw new RuntimeException("Rol inválido: " + rolStr);
         }
         
-        // Crear nuevo usuario
-        Usuario usuario = new Usuario(nombres, apellidos, documento, email, password, rol);
+        // Hashear la contraseña antes de guardar
+        String passwordHash = passwordEncoder.encode(password);
+        
+        // Crear nuevo usuario con contraseña hasheada
+        Usuario usuario = new Usuario(nombres, apellidos, documento, email, passwordHash, rol);
         
         return usuarioRepository.save(usuario);
     }
@@ -52,10 +58,25 @@ public class UsuarioService {
         
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
-            // En producción, aquí deberías usar BCrypt para comparar passwords hasheados
-            boolean passwordValido = usuario.getPasswordHash().equals(password);
             
-            if (passwordValido && usuario.getActivo()) {
+            // Verificar que el usuario esté activo
+            if (!usuario.getActivo()) {
+                return false;
+            }
+            
+            String storedHash = usuario.getPasswordHash();
+            boolean passwordValido = false;
+            
+            // Verificar si el hash almacenado es un hash BCrypt válido
+            if (storedHash.startsWith("$2a$") || storedHash.startsWith("$2b$") || storedHash.startsWith("$2y$")) {
+                // Es un hash BCrypt, usar matches
+                passwordValido = passwordEncoder.matches(password, storedHash);
+            } else {
+                // No es un hash BCrypt, comparar directamente (para compatibilidad con datos existentes)
+                passwordValido = storedHash.equals(password);
+            }
+            
+            if (passwordValido) {
                 // Actualizar último acceso
                 usuario.setUltimoAcceso(LocalDateTime.now());
                 usuarioRepository.save(usuario);

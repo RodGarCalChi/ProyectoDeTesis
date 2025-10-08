@@ -37,17 +37,16 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
             case 'Recepcion':
               router.push('/movimientos');
               break;
-            case 'Jefe_Ejecutivas':
+            case 'AreaAdministrativa':
               router.push('/ordenes');
               break;
-            case 'Control':
+            case 'Calidad':
               router.push('/control');
               break;
-            case 'Inventario':
-              router.push('/dashboard');
-              break;
+            case 'Operaciones':
+            case 'Despacho':
             case 'DirectorTecnico':
-            case 'Administrador':
+            case 'Cliente':
               router.push('/dashboard');
               break;
             default:

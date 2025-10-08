@@ -6,13 +6,13 @@ import { useAuth } from "@/contexts/AuthContext";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, isLoading } = useAuth();
   const [formData, setFormData] = React.useState({
     email: "",
     password: "",
     rol: ""
   });
   const [error, setError] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -28,34 +28,40 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
 
-    // Validar que se hayan ingresado todos los campos
-    if (!formData.email || !formData.password || !formData.rol) {
-      setError("Todos los campos son obligatorios");
+    console.log('=== LOGIN DEBUG ===');
+    console.log('formData:', formData);
+
+    // Validar campos requeridos
+    if (!formData.email || !formData.password) {
+      setError("Email y contraseña son obligatorios");
       return;
     }
 
-    // Mapeo de roles a datos de usuario y pantallas
-    const rolMap: { [key: string]: { firstName: string; redirect: string } } = {
-      "Recepcion": { firstName: "María", redirect: "/movimientos" },
-      "Jefe_Ejecutivas": { firstName: "Patricia", redirect: "/ordenes" },
-      "Control": { firstName: "Ana", redirect: "/control" },
-      "Inventario": { firstName: "Luis", redirect: "/dashboard" },
-      "Operaciones": { firstName: "Juan", redirect: "/dashboard" },
-      "Despacho": { firstName: "Carlos", redirect: "/dashboard" },
-      "DirectorTecnico": { firstName: "Director", redirect: "/dashboard" },
-      "Administrador": { firstName: "Admin", redirect: "/dashboard" },
-      "Cliente": { firstName: "Pedro", redirect: "/dashboard" }
-    };
-
-    const userData = rolMap[formData.rol];
-
-    if (!userData) {
-      setError("Rol seleccionado inválido.");
+    // Validar que se seleccione un rol
+    if (!formData.rol) {
+      setError("Seleccione un tipo de usuario");
       return;
     }
 
     try {
-      // Simular usuario autenticado sin llamar al backend
+      // Modo demostración con roles simulados
+      const rolMap: { [key: string]: { firstName: string; redirect: string } } = {
+        "Cliente": { firstName: "Pedro", redirect: "/dashboard" },
+        "Recepcion": { firstName: "María", redirect: "/movimientos" },
+        "Operaciones": { firstName: "Juan", redirect: "/dashboard" },
+        "Calidad": { firstName: "Ana", redirect: "/control" },
+        "Despacho": { firstName: "Carlos", redirect: "/dashboard" },
+        "AreaAdministrativa": { firstName: "Patricia", redirect: "/ordenes" },
+        "DirectorTecnico": { firstName: "Director", redirect: "/dashboard" }
+      };
+
+      const userData = rolMap[formData.rol];
+      if (!userData) {
+        setError("Rol seleccionado inválido.");
+        return;
+      }
+
+      // Simular usuario autenticado
       const mockUser = {
         id: Math.floor(Math.random() * 1000),
         username: formData.email.split('@')[0],
@@ -65,7 +71,7 @@ export default function LoginPage() {
       };
 
       // Guardar datos de autenticación simulados
-      const mockToken = `mock_token_${formData.rol}_${Date.now()}`;
+      const mockToken = `demo_token_${formData.rol}_${Date.now()}`;
       localStorage.setItem('token', mockToken);
       localStorage.setItem('user', JSON.stringify(mockUser));
 
@@ -73,8 +79,8 @@ export default function LoginPage() {
       router.push(userData.redirect);
 
     } catch (error) {
-      setError('Error interno. Intente nuevamente.');
       console.error('Login error:', error);
+      setError('Error interno. Intente nuevamente.');
     }
   };
 
@@ -155,49 +161,37 @@ export default function LoginPage() {
               >
                 Tipo de Usuario
               </label>
-              <select
-                id="rol"
-                name="rol"
-                required
-                value={formData.rol}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 bg-gray-200 border-2 border-gray-400 rounded-lg text-gray-700 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors appearance-none cursor-pointer"
-              >
-                <option value="">Seleccione su rol</option>
-                <option value="Recepcion">👥 Recepción - María</option>
-                <option value="Jefe_Ejecutivas">👔 Jefe de Ejecutivas - Patricia</option>
-                <option value="Control">🔍 Control de Calidad - Ana</option>
-                <option value="Inventario">📦 Inventario - Luis</option>
-                <option value="Operaciones">⚙️ Operaciones - Juan</option>
-                <option value="Despacho">🚚 Despacho - Carlos</option>
-                <option value="DirectorTecnico">👨‍⚕️ Director Técnico</option>
-                <option value="Administrador">🔧 Administrador</option>
-                <option value="Cliente">👤 Cliente - Pedro</option>
-              </select>
-              {/* Flecha del select */}
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+              <div className="relative">
+                <select
+                  id="rol"
+                  name="rol"
+                  required
+                  value={formData.rol}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 bg-gray-200 border-2 border-gray-400 rounded-lg text-gray-700 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors appearance-none cursor-pointer"
+                >
+                  <option value="">Seleccione su rol</option>
+                  <option value="Cliente">👤 Cliente</option>
+                  <option value="Recepcion">👥 Recepción</option>
+                  <option value="Operaciones">⚙️ Operaciones</option>
+                  <option value="Calidad">🔍 Control de Calidad</option>
+                  <option value="Despacho">🚚 Despacho</option>
+                  <option value="AreaAdministrativa">👔 Área Administrativa</option>
+                  <option value="DirectorTecnico">👨‍⚕️ Director Técnico</option>
+                </select>
+                {/* Flecha del select */}
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                  <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
               </div>
             </div>
 
-            {/* Info sobre el sistema */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <p className="text-xs text-blue-600 mb-2">
-                <strong>Sistema de Demostración:</strong>
-              </p>
-              <p className="text-xs text-blue-600 mb-1">
+            {/* Info sobre el sistema 
                 • Puede usar cualquier email y contraseña
-              </p>
-              <p className="text-xs text-blue-600 mb-1">
                 • Seleccione el tipo de usuario para acceder a diferentes pantallas
-              </p>
-              <p className="text-xs text-blue-600">
-                • Cada rol tiene acceso a funcionalidades específicas del sistema
-              </p>
-            </div>
-
+                • Cada rol tiene acceso a funcionalidades específicas del sistema*/}
             {/* Submit Button */}
             <button
               type="submit"

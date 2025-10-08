@@ -17,7 +17,6 @@ import java.util.UUID;
 @Entity
 @Table(name = "usuarios")
 @Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name = "tipo_usuario")
 public class Usuario {
     
     @Id
@@ -46,7 +45,7 @@ public class Usuario {
     private String email;
     
     @NotBlank(message = "El password es obligatorio")
-    @Column(name="password_hash", nullable = false, length = 100)
+    @Column(name="password_hash", nullable = false, length = 255)
     private String passwordHash;
     
     @NotNull(message = "El rol es obligatorio")

@@ -23,27 +23,27 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPage }) => {
     const pages = [];
 
     // Páginas comunes para roles con acceso al sistema
-    if (['Inventario', 'Jefe_Ejecutivas', 'Control', 'DirectorTecnico', 'Administrador'].includes(role || '')) {
+    if (['Operaciones', 'AreaAdministrativa', 'Calidad', 'DirectorTecnico'].includes(role || '')) {
       pages.push({ key: 'dashboard', label: 'Inventario', path: '/dashboard' });
     }
 
     // Movimientos - disponible para Recepcion y otros roles
-    if (['Recepcion', 'Inventario', 'Jefe_Ejecutivas', 'DirectorTecnico', 'Administrador'].includes(role || '')) {
+    if (['Recepcion', 'Operaciones', 'AreaAdministrativa', 'DirectorTecnico'].includes(role || '')) {
       pages.push({ key: 'movimientos', label: 'Movimientos', path: '/movimientos' });
     }
 
-    // Órdenes - principalmente para Jefe de Ejecutivas
-    if (['Jefe_Ejecutivas', 'DirectorTecnico', 'Administrador'].includes(role || '')) {
+    // Órdenes - principalmente para Área Administrativa
+    if (['AreaAdministrativa', 'DirectorTecnico'].includes(role || '')) {
       pages.push({ key: 'ordenes', label: 'Órdenes', path: '/ordenes' });
     }
 
-    // Control - para rol de Control
-    if (['Control', 'DirectorTecnico', 'Administrador'].includes(role || '')) {
+    // Control - para rol de Calidad
+    if (['Calidad', 'DirectorTecnico'].includes(role || '')) {
       pages.push({ key: 'control', label: 'Control', path: '/control' });
     }
 
     // Registro - para gestión de inventario
-    if (['Inventario', 'Jefe_Ejecutivas', 'DirectorTecnico', 'Administrador'].includes(role || '')) {
+    if (['Operaciones', 'AreaAdministrativa', 'DirectorTecnico'].includes(role || '')) {
       pages.push({ key: 'registro-inventario', label: 'Registro', path: '/registro-inventario' });
     }
 
@@ -69,13 +69,14 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPage }) => {
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-600">
+              {user?.role === 'Cliente' && 'Cliente'}
               {user?.role === 'Recepcion' && 'Recepción'}
-              {user?.role === 'Jefe_Ejecutivas' && 'Jefe de Ejecutivas'}
-              {user?.role === 'Control' && 'Control'}
-              {user?.role === 'Inventario' && 'Inventario'}
+              {user?.role === 'Operaciones' && 'Operaciones'}
+              {user?.role === 'Calidad' && 'Control de Calidad'}
+              {user?.role === 'Despacho' && 'Despacho'}
+              {user?.role === 'AreaAdministrativa' && 'Área Administrativa'}
               {user?.role === 'DirectorTecnico' && 'Director Técnico'}
-              {user?.role === 'Administrador' && 'Administrador'}
-              : {user?.firstName}
+              : {user?.username}
             </span>
             <button
               onClick={handleLogout}

@@ -7,7 +7,7 @@ interface AuthContextType {
   user: Usuario | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<{ success: boolean; message: string; user?: Usuario }>;
+  login: (email: string, password: string, rol?: string) => Promise<{ success: boolean; message: string; user?: Usuario }>;
   logout: () => Promise<void>;
   hasRole: (role: string) => boolean;
 }
@@ -47,36 +47,47 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     loadUser();
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string, rol?: string) => {
     try {
       setIsLoading(true);
       
-      // COMENTADO: Acceso original del personal de recepción
-      // const response = await apiService.login({ email, password });
+      // Llamar al backend para autenticación real
+      const loginRequest = { email, password };
+      if (rol) {
+        loginRequest.rol = rol;
+      }
       
-      // NUEVO: Sistema de códigos - el login real se maneja en LoginPage
-      // Este método ahora solo verifica si ya hay un usuario autenticado
-      const currentUser = getCurrentUser();
+      const response = await apiService.login(loginRequest);
       
-      if (currentUser) {
-        setUser(currentUser);
+      if (response.token && response.usuario) {
+        // Mapear el usuario del backend al formato del frontend
+        const user: Usuario = {
+          id: response.usuario.id,
+          username: response.usuario.username,
+          email: response.usuario.email,
+          role: response.usuario.role,
+          firstName: response.usuario.username // Usar username como firstName por defecto
+        };
+        
+        // Guardar datos de autenticación
+        apiService.saveAuthData(response.token, user);
+        setUser(user);
+        
         return {
           success: true,
-          message: 'Login exitoso',
-          user: currentUser
+          message: response.message || 'Login exitoso',
+          user: user
         };
       } else {
         return {
           success: false,
-          message: 'No se encontró usuario autenticado'
+          message: response.message || 'Error en el login'
         };
       }
     } catch (error) {
       console.error('Login error:', error);
-      return {
-        success: false,
-        message: error instanceof Error ? error.message : 'Error de autenticación'
-      };
+      // Propagar el error para que el componente de login pueda manejarlo
+      throw error;
     } finally {
       setIsLoading(false);
     }

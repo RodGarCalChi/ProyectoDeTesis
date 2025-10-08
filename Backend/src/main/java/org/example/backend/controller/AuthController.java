@@ -26,6 +26,7 @@ public class AuthController {
         try {
             String email = loginRequest.getEmail();
             String password = loginRequest.getPassword();
+            String rolSolicitado = loginRequest.getRol();
             
             // Validar que los campos no estén vacíos
             if (email == null || email.trim().isEmpty()) {
@@ -52,6 +53,15 @@ public class AuthController {
             if (!usuarioService.validarCredenciales(email.toLowerCase(), password)) {
                 return ResponseEntity.badRequest()
                     .body(new LoginResponseDTO("Contraseña incorrecta o usuario inactivo"));
+            }
+            
+            // Si se proporciona un rol, validar que coincida con el rol del usuario
+            if (rolSolicitado != null && !rolSolicitado.trim().isEmpty()) {
+                String rolUsuario = usuario.getRol().name();
+                if (!rolUsuario.equals(rolSolicitado.trim())) {
+                    return ResponseEntity.badRequest()
+                        .body(new LoginResponseDTO("El rol solicitado (" + rolSolicitado + ") no coincide con el rol del usuario (" + rolUsuario + ")"));
+                }
             }
             
             // Crear DTO del usuario

@@ -19,15 +19,16 @@ export default function Home() {
           case 'Recepcion':
             router.push('/movimientos');
             break;
-          case 'Jefe_Ejecutivas':
+          case 'AreaAdministrativa':
             router.push('/ordenes');
             break;
-          case 'Control':
+          case 'Calidad':
             router.push('/control');
             break;
-          case 'Inventario':
+          case 'Operaciones':
+          case 'Despacho':
           case 'DirectorTecnico':
-          case 'Administrador':
+          case 'Cliente':
             router.push('/dashboard');
             break;
           default:

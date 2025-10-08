@@ -5,6 +5,7 @@ const API_BASE_URL = 'http://localhost:8081/api';
 export interface LoginRequest {
   email: string;
   password: string;
+  rol?: string; // Rol opcional
 }
 
 export interface Usuario {

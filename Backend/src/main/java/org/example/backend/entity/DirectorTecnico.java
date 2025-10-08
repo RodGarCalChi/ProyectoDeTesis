@@ -7,7 +7,6 @@ import org.example.backend.enumeraciones.Rol;
 
 @Entity
 @Table(name = "directores_tecnicos")
-@DiscriminatorValue("DIRECTOR_TECNICO")
 public class DirectorTecnico extends Usuario {
     
     @NotBlank(message = "La colegiatura es obligatoria")
