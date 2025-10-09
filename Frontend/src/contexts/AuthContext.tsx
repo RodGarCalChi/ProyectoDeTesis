@@ -52,7 +52,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsLoading(true);
       
       // Llamar al backend para autenticación real
-      const loginRequest = { email, password };
+      const loginRequest: any = { email, password };
       if (rol) {
         loginRequest.rol = rol;
       }

@@ -8,7 +8,19 @@ import { useAuth } from '@/contexts/AuthContext';
 function MovimientosContent() {
   const router = useRouter();
   const { user, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState('entrada');
+  
+  // Determinar qué tabs mostrar según el rol
+  const getAvailableTabs = () => {
+    if (user?.role === 'Recepcion') {
+      return ['entrada']; // Solo entrada para Recepción
+    } else if (user?.role === 'Despacho') {
+      return ['salida']; // Solo salida para Despacho
+    }
+    return ['entrada', 'salida']; // Ambos para otros roles
+  };
+
+  const availableTabs = getAvailableTabs();
+  const [activeTab, setActiveTab] = useState(availableTabs[0]);
   const [formData, setFormData] = useState({
     referencia: '',
     proveedor: '',
@@ -69,37 +81,67 @@ function MovimientosContent() {
           <h2 className="text-xl font-semibold text-gray-800">Movimientos de Inventario</h2>
         </div>
 
-        {/* Tabs */}
-        <div className="mb-6">
-          <div className="flex w-full max-w-md">
-            <button
-              onClick={() => setActiveTab('entrada')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-l-lg border-2 transition-colors ${
-                activeTab === 'entrada'
-                  ? 'bg-gray-200 border-gray-400 text-gray-900'
-                  : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-              </svg>
-              Entrada
-            </button>
-            <button
-              onClick={() => setActiveTab('salida')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-r-lg border-2 border-l-0 transition-colors ${
-                activeTab === 'salida'
-                  ? 'bg-gray-200 border-gray-400 text-gray-900'
-                  : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-              </svg>
-              Salida
-            </button>
+        {/* Tabs - Solo mostrar tabs disponibles según el rol */}
+        {availableTabs.length > 1 && (
+          <div className="mb-6">
+            <div className="flex w-full max-w-md">
+              {availableTabs.includes('entrada') && (
+                <button
+                  onClick={() => setActiveTab('entrada')}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 ${
+                    availableTabs.length === 1 ? 'rounded-lg' : 'rounded-l-lg'
+                  } border-2 transition-colors ${
+                    activeTab === 'entrada'
+                      ? 'bg-gray-200 border-gray-400 text-gray-900'
+                      : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                  </svg>
+                  Entrada
+                </button>
+              )}
+              {availableTabs.includes('salida') && (
+                <button
+                  onClick={() => setActiveTab('salida')}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 ${
+                    availableTabs.length === 1 ? 'rounded-lg' : 'rounded-r-lg'
+                  } border-2 ${
+                    availableTabs.length > 1 ? 'border-l-0' : ''
+                  } transition-colors ${
+                    activeTab === 'salida'
+                      ? 'bg-gray-200 border-gray-400 text-gray-900'
+                      : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                  </svg>
+                  Salida
+                </button>
+              )}
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* Mostrar información del rol si solo tiene acceso a una funcionalidad */}
+        {availableTabs.length === 1 && (
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-center gap-2">
+              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-sm text-blue-800">
+                <strong>Rol {user?.role}:</strong> {
+                  user?.role === 'Recepcion' 
+                    ? 'Tienes acceso solo a registrar entradas de mercadería.' 
+                    : 'Tienes acceso solo a registrar salidas de mercadería.'
+                }
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Entrada Form */}
         {activeTab === 'entrada' && (

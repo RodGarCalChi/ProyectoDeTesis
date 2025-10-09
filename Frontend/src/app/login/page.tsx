@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [formData, setFormData] = React.useState({
     email: "",
     password: "",
@@ -43,44 +44,35 @@ export default function LoginPage() {
       return;
     }
 
+    setIsLoading(true);
+
     try {
-      // Modo demostración con roles simulados
-      const rolMap: { [key: string]: { firstName: string; redirect: string } } = {
-        "Cliente": { firstName: "Pedro", redirect: "/dashboard" },
-        "Recepcion": { firstName: "María", redirect: "/movimientos" },
-        "Operaciones": { firstName: "Juan", redirect: "/dashboard" },
-        "Calidad": { firstName: "Ana", redirect: "/control" },
-        "Despacho": { firstName: "Carlos", redirect: "/dashboard" },
-        "AreaAdministrativa": { firstName: "Patricia", redirect: "/ordenes" },
-        "DirectorTecnico": { firstName: "Director", redirect: "/dashboard" }
-      };
+      // Usar la validación del API del backend
+      const result = await login(formData.email, formData.password, formData.rol);
 
-      const userData = rolMap[formData.rol];
-      if (!userData) {
-        setError("Rol seleccionado inválido.");
-        return;
+      if (result.success && result.user) {
+        // Redirigir según el rol del usuario autenticado
+        const rolRedirectMap: { [key: string]: string } = {
+          "Cliente": "/dashboard",
+          "Recepcion": "/movimientos",
+          "Operaciones": "/dashboard",
+          "Calidad": "/control",
+          "Despacho": "/dashboard",
+          "AreaAdministrativa": "/ordenes",
+          "DirectorTecnico": "/dashboard"
+        };
+
+        const redirectPath = rolRedirectMap[result.user.role] || "/dashboard";
+        router.push(redirectPath);
+      } else {
+        setError(result.message || 'Credenciales inválidas');
       }
-
-      // Simular usuario autenticado
-      const mockUser = {
-        id: Math.floor(Math.random() * 1000),
-        username: formData.email.split('@')[0],
-        email: formData.email,
-        role: formData.rol,
-        firstName: userData.firstName
-      };
-
-      // Guardar datos de autenticación simulados
-      const mockToken = `demo_token_${formData.rol}_${Date.now()}`;
-      localStorage.setItem('token', mockToken);
-      localStorage.setItem('user', JSON.stringify(mockUser));
-
-      // Redirigir según el rol
-      router.push(userData.redirect);
 
     } catch (error) {
       console.error('Login error:', error);
-      setError('Error interno. Intente nuevamente.');
+      setError('Error de conexión. Intente nuevamente.');
+    } finally {
+      setIsLoading(false);
     }
   };
 

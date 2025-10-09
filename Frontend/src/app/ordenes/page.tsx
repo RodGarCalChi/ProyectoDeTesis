@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
+import { Navigation } from '@/components/Navigation';
 
 function OrdenesContent() {
   const router = useRouter();
@@ -84,56 +85,7 @@ function OrdenesContent() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <h1 className="text-xl font-bold text-gray-900">PharmaFlow</h1>
-            <span className="text-sm text-gray-600">Gestión de Órdenes</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600">Jefe de Ejecutivas: {user?.firstName}</span>
-            <button
-              onClick={handleLogout}
-              className="text-gray-600 hover:text-gray-900"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013 3v1" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Navigation */}
-      <nav className="bg-white border-b border-gray-200 px-6 py-2">
-        <div className="flex gap-6">
-          <button 
-            onClick={() => router.push('/dashboard')}
-            className="text-gray-600 hover:text-gray-900 pb-2 text-sm"
-          >
-            Inventario
-          </button>
-          <button 
-            onClick={() => router.push('/movimientos')}
-            className="text-gray-600 hover:text-gray-900 pb-2 text-sm"
-          >
-            Movimientos
-          </button>
-          <button 
-            onClick={() => router.push('/ordenes')}
-            className="text-blue-600 border-b-2 border-blue-600 pb-2 text-sm font-medium"
-          >
-            Órdenes
-          </button>
-          <button 
-            onClick={() => router.push('/control')}
-            className="text-gray-600 hover:text-gray-900 pb-2 text-sm"
-          >
-            Control
-          </button>
-        </div>
-      </nav>
+      <Navigation />
 
       {/* Main Content */}
       <div className="p-6">
@@ -405,7 +357,7 @@ function OrdenesContent() {
 
 export default function OrdenesPage() {
   return (
-    <ProtectedRoute requiredRole="Jefe_Ejecutivas">
+    <ProtectedRoute requiredRole={['AreaAdministrativa', 'DirectorTecnico']}>
       <OrdenesContent />
     </ProtectedRoute>
   );

@@ -1,15 +1,12 @@
 'use client';
 
 import React from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 
-interface NavigationProps {
-  currentPage: string;
-}
-
-export const Navigation: React.FC<NavigationProps> = ({ currentPage }) => {
+export const Navigation: React.FC = () => {
   const router = useRouter();
+  const pathname = usePathname();
   const { user, logout } = useAuth();
 
   const handleLogout = async () => {
@@ -22,13 +19,13 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPage }) => {
     const role = user?.role;
     const pages = [];
 
-    // Páginas comunes para roles con acceso al sistema
-    if (['Operaciones', 'AreaAdministrativa', 'Calidad', 'DirectorTecnico'].includes(role || '')) {
+    // Dashboard - disponible para la mayoría de roles
+    if (['Cliente', 'Operaciones', 'Despacho', 'DirectorTecnico'].includes(role || '')) {
       pages.push({ key: 'dashboard', label: 'Inventario', path: '/dashboard' });
     }
 
-    // Movimientos - disponible para Recepcion y otros roles
-    if (['Recepcion', 'Operaciones', 'AreaAdministrativa', 'DirectorTecnico'].includes(role || '')) {
+    // Movimientos - disponible para Recepcion (entrada) y Despacho (salida)
+    if (['Recepcion', 'Despacho', 'DirectorTecnico'].includes(role || '')) {
       pages.push({ key: 'movimientos', label: 'Movimientos', path: '/movimientos' });
     }
 
@@ -60,11 +57,11 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPage }) => {
           <div className="flex items-center gap-4">
             <h1 className="text-xl font-bold text-gray-900">PharmaFlow</h1>
             <span className="text-sm text-gray-600">
-              {currentPage === 'dashboard' && 'Dashboard - Inventario'}
-              {currentPage === 'movimientos' && 'Movimientos de Inventario'}
-              {currentPage === 'ordenes' && 'Gestión de Órdenes'}
-              {currentPage === 'control' && 'Control y Supervisión'}
-              {currentPage === 'registro-inventario' && 'Registro de Inventario'}
+              {pathname === '/dashboard' && 'Dashboard - Inventario'}
+              {pathname === '/movimientos' && 'Movimientos de Inventario'}
+              {pathname === '/ordenes' && 'Gestión de Órdenes'}
+              {pathname === '/control' && 'Control y Supervisión'}
+              {pathname === '/registro-inventario' && 'Registro de Inventario'}
             </span>
           </div>
           <div className="flex items-center gap-4">
@@ -100,7 +97,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPage }) => {
                 key={page.key}
                 onClick={() => router.push(page.path)}
                 className={`pb-2 text-sm transition-colors ${
-                  currentPage === page.key
+                  pathname === page.path
                     ? 'text-blue-600 border-b-2 border-blue-600 font-medium'
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
