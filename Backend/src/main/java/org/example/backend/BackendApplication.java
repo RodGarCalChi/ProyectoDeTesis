@@ -23,10 +23,10 @@ public class BackendApplication {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/api/**")
-                        .allowedOrigins("http://localhost:9002")
+                        .allowedOriginPatterns("*") // Usar allowedOriginPatterns en lugar de allowedOrigins
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
-                        .allowCredentials(true);
+                        .allowCredentials(true); // Ahora podemos usar true con allowedOriginPatterns
             }
         };
     }

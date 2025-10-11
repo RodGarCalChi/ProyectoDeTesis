@@ -1,0 +1,218 @@
+{
+  "info": {
+    "name": "PharmaFlow - CRUD Productos y Clientes ✅ FUNCIONANDO",
+    "description": "Colección completa y actualizada para probar los endpoints de productos y clientes",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Productos",
+      "item": [
+        {
+          "name": "Crear Producto - Paracetamol",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigoSKU\": \"PAR500MG\",\n  \"nombre\": \"Paracetamol 500mg\",\n  \"tipo\": \"Medicamento\",\n  \"condicionAlmacen\": \"Ambiente_15_25\",\n  \"requiereCadenaFrio\": false,\n  \"registroSanitario\": \"EE-12345-PE\",\n  \"unidadMedida\": \"Tabletas\",\n  \"vidaUtilMeses\": 36,\n  \"tempMin\": 15.0,\n  \"tempMax\": 25.0\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/productos",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "productos"]
+            }
+          }
+        },
+        {
+          "name": "Crear Producto - Insulina",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigoSKU\": \"INSULIN01\",\n  \"nombre\": \"Insulina Humana NPH\",\n  \"tipo\": \"Biologico\",\n  \"condicionAlmacen\": \"Refrigerado_2_8\",\n  \"requiereCadenaFrio\": true,\n  \"registroSanitario\": \"BIO-11111-PE\",\n  \"unidadMedida\": \"Viales\",\n  \"vidaUtilMeses\": 18,\n  \"tempMin\": 2.0,\n  \"tempMax\": 8.0\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/productos",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "productos"]
+            }
+          }
+        },
+        {
+          "name": "Obtener Todos los Productos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/productos?page=0&size=10&sortBy=nombre&sortDir=asc",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "productos"],
+              "query": [
+                {"key": "page", "value": "0"},
+                {"key": "size", "value": "10"},
+                {"key": "sortBy", "value": "nombre"},
+                {"key": "sortDir", "value": "asc"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Buscar Productos por Nombre",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/productos/buscar?nombre=paracetamol",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "productos", "buscar"],
+              "query": [
+                {"key": "nombre", "value": "paracetamol"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Obtener Productos de Cadena de Frío",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/productos/cadena-frio?requiereCadenaFrio=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "productos", "cadena-frio"],
+              "query": [
+                {"key": "requiereCadenaFrio", "value": "true"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Obtener Tipos de Producto",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/productos/tipos",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "productos", "tipos"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Clientes",
+      "item": [
+        {
+          "name": "Crear Cliente - Farmacia",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"razonSocial\": \"Farmacia Central S.A.C.\",\n  \"rucDni\": \"20123456789\",\n  \"direccionEntrega\": \"Av. Arequipa 1234, San Isidro\",\n  \"distrito\": \"San Isidro\",\n  \"telefono\": \"01-2345678\",\n  \"email\": \"ventas@farmaciacentral.com\",\n  \"tipoCliente\": \"Farmacia\",\n  \"formaPago\": \"Crédito 30 días\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/clientes",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "clientes"]
+            }
+          }
+        },
+        {
+          "name": "Crear Cliente - Hospital",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"razonSocial\": \"Hospital Nacional Dos de Mayo\",\n  \"rucDni\": \"20111222333\",\n  \"direccionEntrega\": \"Av. Grau 13, Cercado de Lima\",\n  \"distrito\": \"Cercado de Lima\",\n  \"telefono\": \"01-3281300\",\n  \"email\": \"logistica@hospitaldosdemayo.gob.pe\",\n  \"tipoCliente\": \"Hospital Público\",\n  \"formaPago\": \"Transferencia\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/clientes",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "clientes"]
+            }
+          }
+        },
+        {
+          "name": "Obtener Todos los Clientes",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/clientes?page=0&size=10&soloActivos=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "clientes"],
+              "query": [
+                {"key": "page", "value": "0"},
+                {"key": "size", "value": "10"},
+                {"key": "soloActivos", "value": "true"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Buscar Clientes por Tipo",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/clientes/buscar?tipoCliente=Farmacia",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "clientes", "buscar"],
+              "query": [
+                {"key": "tipoCliente", "value": "Farmacia"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Obtener Clientes Activos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/clientes/activos",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "clientes", "activos"]
+            }
+          }
+        },
+        {
+          "name": "Estadísticas por Tipo",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/clientes/estadisticas/tipo",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "clientes", "estadisticas", "tipo"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    }
+  ]
+}
