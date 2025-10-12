@@ -1,0 +1,259 @@
+{
+  "info": {
+    "name": "PharmaFlow - Recepción de Mercadería 📦",
+    "description": "Flujo completo de recepción de mercadería siguiendo BPAs y DIGEMID",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Crear Recepción Básica",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"numeroOrdenCompra\": \"OC-2024-001\",\n  \"numeroGuiaRemision\": \"GR-2024-001\",\n  \"proveedorId\": \"550e8400-e29b-41d4-a716-446655440001\",\n  \"fechaRecepcion\": \"2024-10-11T10:30:00\",\n  \"responsableRecepcion\": \"María García\",\n  \"temperaturaLlegada\": 5.2,\n  \"observaciones\": \"Mercadería llegó en buen estado\",\n  \"verificacionDocumentos\": true,\n  \"verificacionFisica\": true,\n  \"verificacionTemperatura\": true,\n  \"detalles\": []\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/recepciones",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "recepciones"]
+        }
+      }
+    },
+    {
+      "name": "2. Crear Recepción Completa",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"numeroOrdenCompra\": \"OC-2024-002\",\n  \"numeroGuiaRemision\": \"GR-2024-002\",\n  \"proveedorId\": \"550e8400-e29b-41d4-a716-446655440001\",\n  \"fechaRecepcion\": \"2024-10-11T14:15:00\",\n  \"responsableRecepcion\": \"Juan Pérez\",\n  \"temperaturaLlegada\": 3.8,\n  \"observaciones\": \"Recepción de medicamentos refrigerados\",\n  \"verificacionDocumentos\": true,\n  \"verificacionFisica\": true,\n  \"verificacionTemperatura\": true,\n  \"detalles\": [\n    {\n      \"productoId\": \"550e8400-e29b-41d4-a716-446655440010\",\n      \"loteId\": \"550e8400-e29b-41d4-a716-446655440020\",\n      \"cantidadEsperada\": 100,\n      \"cantidadRecibida\": 100,\n      \"cantidadAceptada\": 100,\n      \"cantidadRechazada\": 0,\n      \"fechaVencimiento\": \"2025-12-15\",\n      \"precioUnitario\": 12.50,\n      \"temperaturaRecepcion\": 3.5,\n      \"observaciones\": \"Producto en perfecto estado\",\n      \"conforme\": true\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/recepciones",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "recepciones"]
+        }
+      }
+    },
+    {
+      "name": "3. Obtener Todas las Recepciones",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/recepciones?page=0&size=10",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "recepciones"],
+          "query": [
+            {"key": "page", "value": "0"},
+            {"key": "size", "value": "10"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "4. Recepciones Pendientes",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/recepciones/pendientes",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "recepciones", "pendientes"]
+        }
+      }
+    },
+    {
+      "name": "5. Iniciar Verificación",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"inspector\": \"Ana López - Control de Calidad\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/recepciones/{{recepcionId}}/iniciar-verificacion",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "recepciones", "{{recepcionId}}", "iniciar-verificacion"]
+        }
+      }
+    },
+    {
+      "name": "6. Aprobar Verificación Documental",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"aprobado\": true\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/recepciones/{{recepcionId}}/verificacion-documental",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "recepciones", "{{recepcionId}}", "verificacion-documental"]
+        }
+      }
+    },
+    {
+      "name": "7. Aprobar Verificación Física",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"aprobado\": true\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/recepciones/{{recepcionId}}/verificacion-fisica",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "recepciones", "{{recepcionId}}", "verificacion-fisica"]
+        }
+      }
+    },
+    {
+      "name": "8. Aprobar Verificación Temperatura",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"aprobado\": true\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/recepciones/{{recepcionId}}/verificacion-temperatura",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "recepciones", "{{recepcionId}}", "verificacion-temperatura"]
+        }
+      }
+    },
+    {
+      "name": "9. Enviar a Cuarentena",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{baseUrl}}/api/recepciones/{{recepcionId}}/cuarentena",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "recepciones", "{{recepcionId}}", "cuarentena"]
+        }
+      }
+    },
+    {
+      "name": "10. Aprobar por Calidad",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"inspector\": \"Dr. Carlos Mendoza - Director Técnico\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/recepciones/{{recepcionId}}/aprobar-calidad",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "recepciones", "{{recepcionId}}", "aprobar-calidad"]
+        }
+      }
+    },
+    {
+      "name": "11. Rechazar por Calidad",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"inspector\": \"Dr. Carlos Mendoza - Director Técnico\",\n  \"motivo\": \"Productos no cumplen con especificaciones de calidad\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/recepciones/{{recepcionId}}/rechazar-calidad",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "recepciones", "{{recepcionId}}", "rechazar-calidad"]
+        }
+      }
+    },
+    {
+      "name": "12. Almacenar Productos",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{baseUrl}}/api/recepciones/{{recepcionId}}/almacenar",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "recepciones", "{{recepcionId}}", "almacenar"]
+        }
+      }
+    },
+    {
+      "name": "13. Estadísticas por Estado",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/recepciones/estadisticas/estado",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "recepciones", "estadisticas", "estado"]
+        }
+      }
+    },
+    {
+      "name": "14. Estados Disponibles",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/recepciones/estados",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "recepciones", "estados"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8081",
+      "type": "string"
+    },
+    {
+      "key": "recepcionId",
+      "value": "REPLACE_WITH_ACTUAL_ID",
+      "type": "string"
+    }
+  ]
+}

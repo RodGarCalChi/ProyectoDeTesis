@@ -70,7 +70,7 @@ export default function LoginPage() {
 
     } catch (error) {
       console.error('Login error:', error);
-      setError('Error de conexión. Intente nuevamente.');
+      setError('Error de al registrar datos. Intente nuevamente.');
     } finally {
       setIsLoading(false);
     }
