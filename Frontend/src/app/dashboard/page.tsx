@@ -6,262 +6,317 @@ import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigation } from '@/components/Navigation';
 
+interface InventoryItem {
+  id: string;
+  codigo: string;
+  producto: string;
+  lote: string;
+  fechaVencimiento: string;
+  stock: number;
+  stockMinimo: number;
+  ubicacion: string;
+  estado: 'Disponible' | 'Stock Bajo' | 'Próximo a Vencer' | 'Vencido' | 'Bloqueado';
+  proveedor: string;
+  temperatura?: number;
+  valorUnitario: number;
+}
+
+interface DashboardStats {
+  totalProductos: number;
+  stockBajo: number;
+  proximosVencer: number;
+  valorTotal: number;
+  alertasTemperatura: number;
+  movimientosHoy: number;
+}
+
 function DashboardContent() {
   const router = useRouter();
-  const { user, logout } = useAuth();
-  const [inventoryData, setInventoryData] = useState([
-    {
-      id: '1',
-      codigo: 'PAR500',
-      producto: 'Paracetamol 500mg',
-      lote: 'L2024001',
-      fechaVencimiento: '2025-12-15',
-      stock: 150,
-      stockMinimo: 50,
-      ubicacion: 'A1-B2-C3',
-      estado: 'Disponible',
-      proveedor: 'Lab. ABC'
-    },
-    {
-      id: '2',
-      codigo: 'IBU400',
-      producto: 'Ibuprofeno 400mg',
-      lote: 'L2024002',
-      fechaVencimiento: '2025-08-20',
-      stock: 25,
-      stockMinimo: 30,
-      ubicacion: 'A2-B1-C2',
-      estado: 'Stock Bajo',
-      proveedor: 'Dist. XYZ'
-    },
-    {
-      id: '3',
-      codigo: 'AMX250',
-      producto: 'Amoxicilina 250mg',
-      lote: 'L2024003',
-      fechaVencimiento: '2025-03-10',
-      stock: 80,
-      stockMinimo: 40,
-      ubicacion: 'B1-A3-C1',
-      estado: 'Próximo a Vencer',
-      proveedor: 'Sum. DEF'
-    }
-  ]);
-
-  const [stats, setStats] = useState({
-    totalProductos: 156,
-    stockBajo: 12,
-    proximosVencer: 8,
-    valorTotal: 125000
+  const { user } = useAuth();
+  const [inventoryData, setInventoryData] = useState<InventoryItem[]>([]);
+  const [stats, setStats] = useState<DashboardStats>({
+    totalProductos: 0,
+    stockBajo: 0,
+    proximosVencer: 0,
+    valorTotal: 0,
+    alertasTemperatura: 0,
+    movimientosHoy: 0
   });
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterCategory, setFilterCategory] = useState('');
+  const [filterEstado, setFilterEstado] = useState('');
 
-  const handleLogout = async () => {
-    await logout();
-    router.push('/login');
-  };
+  useEffect(() => {
+    // Simular carga de datos
+    setTimeout(() => {
+      setInventoryData([
+        {
+          id: '1',
+          codigo: 'PAR500',
+          producto: 'Paracetamol 500mg',
+          lote: 'L2024001',
+          fechaVencimiento: '2025-12-15',
+          stock: 150,
+          stockMinimo: 50,
+          ubicacion: 'A1-B2-C3',
+          estado: 'Disponible',
+          proveedor: 'Lab. ABC',
+          temperatura: 22.5,
+          valorUnitario: 12.50
+        }       
+ ,
+        {
+          id: '2',
+          codigo: 'IBU400',
+          producto: 'Ibuprofeno 400mg',
+          lote: 'L2024002',
+          fechaVencimiento: '2025-08-20',
+          stock: 25,
+          stockMinimo: 30,
+          ubicacion: 'A2-B1-C2',
+          estado: 'Stock Bajo',
+          proveedor: 'Dist. XYZ',
+          temperatura: 21.8,
+          valorUnitario: 18.90
+        },
+        {
+          id: '3',
+          codigo: 'AMX250',
+          producto: 'Amoxicilina 250mg',
+          lote: 'L2024003',
+          fechaVencimiento: '2025-03-10',
+          stock: 80,
+          stockMinimo: 40,
+          ubicacion: 'B1-A3-C1',
+          estado: 'Próximo a Vencer',
+          proveedor: 'Sum. DEF',
+          temperatura: 23.1,
+          valorUnitario: 25.00
+        },
+        {
+          id: '4',
+          codigo: 'ASP100',
+          producto: 'Aspirina 100mg',
+          lote: 'L2024004',
+          fechaVencimiento: '2024-02-28',
+          stock: 0,
+          stockMinimo: 20,
+          ubicacion: 'C1-A2-B1',
+          estado: 'Vencido',
+          proveedor: 'Med. GHI',
+          temperatura: 22.0,
+          valorUnitario: 8.75
+        }
+      ]);
+
+      setStats({
+        totalProductos: 156,
+        stockBajo: 12,
+        proximosVencer: 8,
+        valorTotal: 125000,
+        alertasTemperatura: 2,
+        movimientosHoy: 15
+      });
+
+      setLoading(false);
+    }, 1000);
+  }, []);
 
   const getEstadoColor = (estado: string) => {
     switch (estado) {
       case 'Disponible':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 text-green-800 border-green-200';
       case 'Stock Bajo':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 text-red-800 border-red-200';
       case 'Próximo a Vencer':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'Vencido':
+        return 'bg-red-100 text-red-800 border-red-200';
+      case 'Bloqueado':
+        return 'bg-gray-100 text-gray-800 border-gray-200';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const getEstadoIcon = (estado: string) => {
+    switch (estado) {
+      case 'Disponible':
+        return '✅';
+      case 'Stock Bajo':
+        return '⚠️';
+      case 'Próximo a Vencer':
+        return '⏰';
+      case 'Vencido':
+        return '❌';
+      case 'Bloqueado':
+        return '🔒';
+      default:
+        return '❓';
+    }
+  };
+
+  const filteredData = inventoryData.filter(item => {
+    const matchesSearch = item.producto.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.codigo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.lote.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesCategory = !filterCategory || 
+                           (filterCategory === 'analgesicos' && ['Paracetamol', 'Ibuprofeno', 'Aspirina'].some(med => item.producto.includes(med))) ||
+                           (filterCategory === 'antibioticos' && item.producto.includes('Amoxicilina')) ||
+                           (filterCategory === 'vitaminas' && item.producto.includes('Vitamina'));
+    
+    const matchesEstado = !filterEstado || item.estado === filterEstado;
+    
+    return matchesSearch && matchesCategory && matchesEstado;
+  });
+
+  const getRoleSpecificActions = () => {
+    switch (user?.role) {
+      case 'DirectorTecnico':
+        return [
+          { label: 'Gestionar Órdenes', path: '/ordenes', icon: '📋', color: 'blue' },
+          { label: 'Control de Calidad', path: '/control', icon: '🔬', color: 'green' },
+          { label: 'Reportes Ejecutivos', path: '/reportes', icon: '📊', color: 'purple' },
+          { label: 'Configuración', path: '/configuracion', icon: '⚙️', color: 'gray' }
+        ];
+      case 'Operaciones':
+        return [
+          { label: 'Almacenamiento', path: '/almacenamiento', icon: '🏪', color: 'indigo' },
+          { label: 'Movimientos Stock', path: '/movimientos-stock', icon: '📦', color: 'teal' },
+          { label: 'Registro Inventario', path: '/registro-inventario', icon: '📝', color: 'blue' }
+        ];
+      case 'Despacho':
+        return [
+          { label: 'Centro Despacho', path: '/despacho', icon: '🚚', color: 'orange' },
+          { label: 'Planificar Rutas', path: '/rutas', icon: '🗺️', color: 'blue' }
+        ];
+      case 'Cliente':
+        return [
+          { label: 'Mi Portal', path: '/cliente-portal', icon: '🏥', color: 'blue' },
+          { label: 'Nuevo Pedido', path: '/nuevo-pedido', icon: '🛒', color: 'green' }
+        ];
+      default:
+        return [];
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <Navigation />
 
-      {/* Main Content */}
-      <div className="p-6">
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <div className="flex items-center">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Productos</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalProductos}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <div className="flex items-center">
-              <div className="p-2 bg-red-100 rounded-lg">
-                <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.268 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Stock Bajo</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.stockBajo}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <div className="flex items-center">
-              <div className="p-2 bg-yellow-100 rounded-lg">
-                <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Próximos a Vencer</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.proximosVencer}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <div className="flex items-center">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Valor Total</p>
-                <p className="text-2xl font-bold text-gray-900">S/ {stats.valorTotal.toLocaleString()}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Search and Filters */}
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm mb-6 p-4">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+        <div className="p-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Buscar productos..."
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-                />
-                <svg className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+            <div>
+              <h1 className="text-3xl font-bold mb-2">
+                🏥 Dashboard PharmaFlow
+              </h1>
+              <p className="text-blue-100">
+                Sistema de Gestión Logística Farmacéutica - Bienvenido, {user?.username}
+              </p>
+              <div className="flex items-center gap-4 mt-3">
+                <span className="bg-blue-500 px-3 py-1 rounded-full text-sm">
+                  {user?.role}
+                </span>
+                <span className="text-blue-100 text-sm">
+                  📅 {new Date().toLocaleDateString('es-PE', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}
+                </span>
               </div>
-              <select className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
-                <option value="">Todas las categorías</option>
-                <option value="analgesicos">Analgésicos</option>
-                <option value="antibioticos">Antibióticos</option>
-                <option value="vitaminas">Vitaminas</option>
-              </select>
             </div>
-            <div className="flex gap-2">
-              <button className="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200">
-                Filtros
-              </button>
-              <button className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
-                Exportar
-              </button>
-              <button className="px-4 py-2 text-sm bg-green-600 text-white rounded hover:bg-green-700">
-                Nuevo Producto
-              </button>
+            <div className="text-right">
+              <div className="text-4xl mb-2">📊</div>
+              <p className="text-sm text-blue-100">Sistema Operativo</p>
             </div>
-          </div>
-        </div>
-
-        {/* Inventory Table */}
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Inventory</h2>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Código
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Producto
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Lote
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Vencimiento
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Stock
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Ubicación
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Estado
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Acciones
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {inventoryData.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {item.codigo}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {item.producto}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {item.lote}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {item.fechaVencimiento}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <div className="flex items-center">
-                        <span className={item.stock <= item.stockMinimo ? 'text-red-600 font-semibold' : ''}>
-                          {item.stock}
-                        </span>
-                        <span className="text-gray-400 ml-1">/ {item.stockMinimo}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {item.ubicacion}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getEstadoColor(item.estado)}`}>
-                        {item.estado}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex gap-2">
-                        <button className="text-blue-600 hover:text-blue-900">Ver</button>
-                        <button className="text-green-600 hover:text-green-900">Editar</button>
-                        <button className="text-red-600 hover:text-red-900">Eliminar</button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           </div>
         </div>
       </div>
-    </div>
-  );
-}
 
-export default function DashboardPage() {
-  return (
-    <ProtectedRoute requiredRole={['Cliente', 'Operaciones', 'Despacho', 'DirectorTecnico']}>
-      <DashboardContent />
-    </ProtectedRoute>
-  );
-}
+      <div className="p-6">
+        {/* Enhanced Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 mb-8">
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">Total Productos</p>
+                <p className="text-3xl font-bold text-gray-900">{stats.totalProductos}</p>
+                <p className="text-xs text-green-600 mt-1">↗️ +5% vs mes anterior</p>
+              </div>
+              <div className="p-3 bg-blue-100 rounded-full">
+                <span className="text-2xl">📦</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">Stock Bajo</p>
+                <p className="text-3xl font-bold text-red-600">{stats.stockBajo}</p>
+                <p className="text-xs text-red-600 mt-1">⚠️ Requiere atención</p>
+              </div>
+              <div className="p-3 bg-red-100 rounded-full">
+                <span className="text-2xl">⚠️</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">Próximos a Vencer</p>
+                <p className="text-3xl font-bold text-yellow-600">{stats.proximosVencer}</p>
+                <p className="text-xs text-yellow-600 mt-1">⏰ Próximos 30 días</p>
+              </div>
+              <div className="p-3 bg-yellow-100 rounded-full">
+                <span className="text-2xl">⏰</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">Valor Total</p>
+                <p className="text-3xl font-bold text-green-600">S/ {stats.valorTotal.toLocaleString()}</p>
+                <p className="text-xs text-green-600 mt-1">💰 Inventario valorizado</p>
+              </div>
+              <div className="p-3 bg-green-100 rounded-full">
+                <span className="text-2xl">💰</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">Alertas Temperatura</p>
+                <p className="text-3xl font-bold text-orange-600">{stats.alertasTemperatura}</p>
+                <p className="text-xs text-orange-600 mt-1">🌡️ Fuera de rango</p>
+              </div>
+              <div className="p-3 bg-orange-100 rounded-full">
+                <span className="text-2xl">🌡️</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">Movimientos Hoy</p>
+                <p className="text-3xl font-bold text-purple-600">{stats.movimientosHoy}</p>
+                <p className="text-xs text-purple-600 mt-1">🔄 Operaciones realizadas</p>
+              </div>
+              <div className="p-3 bg-purple-100 rounded-full">
+                <span className="text-2xl">🔄</span>
+              </div>
+            </div>
+          </div>
+        </div>
