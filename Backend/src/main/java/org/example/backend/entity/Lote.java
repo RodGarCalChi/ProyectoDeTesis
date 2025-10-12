@@ -1,17 +1,12 @@
 package org.example.backend.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import org.example.backend.enumeraciones.EstadoLote;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -19,57 +14,48 @@ import java.util.UUID;
 public class Lote {
     
     @Id
-    @UuidGenerator
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     
-    @NotBlank(message = "El código de lote es obligatorio")
-    @Size(max = 30, message = "El código de lote no puede exceder 30 caracteres")
-    @Column(name = "codigo_lote", nullable = false, length = 30)
-    private String codigoLote;
+    @NotNull
+    @Column(name = "numero", unique = true)
+    private String numero;
     
-    @NotNull(message = "La fecha de fabricación es obligatoria")
-    @Column(name = "fecha_fabricacion", nullable = false)
-    private LocalDate fechaFabricacion;
-    
-    @NotNull(message = "La fecha de vencimiento es obligatoria")
-    @Column(name = "fecha_vencimiento", nullable = false)
-    private LocalDate fechaVencimiento;
-    
-    @NotNull(message = "El estado del lote es obligatorio")
-    @Enumerated(EnumType.STRING)
-    @Column(name = "estado", nullable = false, length = 20)
-    private EstadoLote estado;
-    
-    @Size(max = 200, message = "El motivo de retención no puede exceder 200 caracteres")
-    @Column(name = "motivo_retencion", length = 200)
-    private String motivoRetencion;
-    
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "producto_id", nullable = false)
+    @JoinColumn(name = "producto_id")
     private Producto producto;
     
+    @Column(name = "fecha_fabricacion")
+    private LocalDate fechaFabricacion;
+    
+    @Column(name = "fecha_vencimiento")
+    private LocalDate fechaVencimiento;
+    
+    @Column(name = "cantidad_inicial")
+    private Integer cantidadInicial;
+    
+    @Column(name = "cantidad_disponible")
+    private Integer cantidadDisponible;
+    
+    @Column(name = "proveedor")
+    private String proveedor;
+    
+    @Column(name = "observaciones", columnDefinition = "TEXT")
+    private String observaciones;
+    
     @CreationTimestamp
-    @Column(name = "fecha_creacion", nullable = false, updatable = false)
+    @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion;
     
     @UpdateTimestamp
-    @Column(name = "fecha_actualizacion", nullable = false)
+    @Column(name = "fecha_actualizacion")
     private LocalDateTime fechaActualizacion;
     
-    // Constructores
+    // Constructors
     public Lote() {}
     
-    public Lote(String codigoLote, LocalDate fechaFabricacion, LocalDate fechaVencimiento, 
-               EstadoLote estado, String motivoRetencion, Producto producto) {
-        this.codigoLote = codigoLote;
-        this.fechaFabricacion = fechaFabricacion;
-        this.fechaVencimiento = fechaVencimiento;
-        this.estado = estado;
-        this.motivoRetencion = motivoRetencion;
-        this.producto = producto;
-    }
-    
-    // Getters y Setters
+    // Getters and Setters
     public UUID getId() {
         return id;
     }
@@ -78,12 +64,20 @@ public class Lote {
         this.id = id;
     }
     
-    public String getCodigoLote() {
-        return codigoLote;
+    public String getNumero() {
+        return numero;
     }
     
-    public void setCodigoLote(String codigoLote) {
-        this.codigoLote = codigoLote;
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
+    
+    public Producto getProducto() {
+        return producto;
+    }
+    
+    public void setProducto(Producto producto) {
+        this.producto = producto;
     }
     
     public LocalDate getFechaFabricacion() {
@@ -102,28 +96,36 @@ public class Lote {
         this.fechaVencimiento = fechaVencimiento;
     }
     
-    public EstadoLote getEstado() {
-        return estado;
+    public Integer getCantidadInicial() {
+        return cantidadInicial;
     }
     
-    public void setEstado(EstadoLote estado) {
-        this.estado = estado;
+    public void setCantidadInicial(Integer cantidadInicial) {
+        this.cantidadInicial = cantidadInicial;
     }
     
-    public String getMotivoRetencion() {
-        return motivoRetencion;
+    public Integer getCantidadDisponible() {
+        return cantidadDisponible;
     }
     
-    public void setMotivoRetencion(String motivoRetencion) {
-        this.motivoRetencion = motivoRetencion;
+    public void setCantidadDisponible(Integer cantidadDisponible) {
+        this.cantidadDisponible = cantidadDisponible;
     }
     
-    public Producto getProducto() {
-        return producto;
+    public String getProveedor() {
+        return proveedor;
     }
     
-    public void setProducto(Producto producto) {
-        this.producto = producto;
+    public void setProveedor(String proveedor) {
+        this.proveedor = proveedor;
+    }
+    
+    public String getObservaciones() {
+        return observaciones;
+    }
+    
+    public void setObservaciones(String observaciones) {
+        this.observaciones = observaciones;
     }
     
     public LocalDateTime getFechaCreacion() {
@@ -140,33 +142,5 @@ public class Lote {
     
     public void setFechaActualizacion(LocalDateTime fechaActualizacion) {
         this.fechaActualizacion = fechaActualizacion;
-    }
-    
-    // equals y hashCode
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Lote lote = (Lote) o;
-        return Objects.equals(id, lote.id) && Objects.equals(codigoLote, lote.codigoLote);
-    }
-    
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, codigoLote);
-    }
-    
-    // toString
-    @Override
-    public String toString() {
-        return "Lote{" +
-                "id=" + id +
-                ", codigoLote='" + codigoLote + '\'' +
-                ", fechaFabricacion=" + fechaFabricacion +
-                ", fechaVencimiento=" + fechaVencimiento +
-                ", estado=" + estado +
-                ", motivoRetencion='" + motivoRetencion + '\'' +
-                ", producto=" + (producto != null ? producto.getCodigoSKU() : "null") +
-                '}';
     }
 }

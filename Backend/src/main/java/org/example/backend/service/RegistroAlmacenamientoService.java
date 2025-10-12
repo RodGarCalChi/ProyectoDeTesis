@@ -273,7 +273,7 @@ public class RegistroAlmacenamientoService {
         dto.setNumeroGuiaRemision(registro.getNumeroGuiaRemision());
         dto.setClienteId(registro.getCliente().getId());
         dto.setClienteNombre(registro.getCliente().getRazonSocial());
-        dto.setClienteRuc(registro.getCliente().getRuc());
+        dto.setClienteRuc(registro.getCliente().getRucDni());
         dto.setFechaAlmacenamiento(registro.getFechaAlmacenamiento());
         dto.setOperadorResponsable(registro.getOperadorResponsable());
         dto.setEstado(registro.getEstado());
@@ -304,8 +304,8 @@ public class RegistroAlmacenamientoService {
         dto.setId(detalle.getId());
         dto.setProductoId(detalle.getProducto().getId());
         dto.setProductoNombre(detalle.getProducto().getNombre());
-        dto.setProductoSku(detalle.getProducto().getSku());
-        dto.setProductoTipo(detalle.getProducto().getTipo());
+        dto.setProductoSku(detalle.getProducto().getCodigoSKU());
+        dto.setProductoTipo(detalle.getProducto().getTipo().toString());
         
         if (detalle.getLote() != null) {
             dto.setLoteId(detalle.getLote().getId());
