@@ -2,6 +2,7 @@ package org.example.backend.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import org.example.backend.enumeraciones.EstadoLote;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -37,6 +38,11 @@ public class Lote {
     
     @Column(name = "cantidad_disponible")
     private Integer cantidadDisponible;
+    
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado")
+    private EstadoLote estado = EstadoLote.DISPONIBLE;
     
     @Column(name = "proveedor")
     private String proveedor;
@@ -110,6 +116,14 @@ public class Lote {
     
     public void setCantidadDisponible(Integer cantidadDisponible) {
         this.cantidadDisponible = cantidadDisponible;
+    }
+    
+    public EstadoLote getEstado() {
+        return estado;
+    }
+    
+    public void setEstado(EstadoLote estado) {
+        this.estado = estado;
     }
     
     public String getProveedor() {

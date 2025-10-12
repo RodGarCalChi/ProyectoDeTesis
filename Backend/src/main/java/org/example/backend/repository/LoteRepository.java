@@ -17,11 +17,11 @@ import java.util.UUID;
 @Repository
 public interface LoteRepository extends JpaRepository<Lote, UUID> {
     
-    // Buscar por código de lote
-    Optional<Lote> findByCodigoLote(String codigoLote);
+    // Buscar por número de lote
+    Optional<Lote> findByNumero(String numero);
     
-    // Verificar si existe por código de lote
-    boolean existsByCodigoLote(String codigoLote);
+    // Verificar si existe por número de lote
+    boolean existsByNumero(String numero);
     
     // Buscar por estado
     List<Lote> findByEstado(EstadoLote estado);
@@ -31,11 +31,11 @@ public interface LoteRepository extends JpaRepository<Lote, UUID> {
     List<Lote> findByProductoId(@Param("productoId") UUID productoId);
     
     // Buscar lotes próximos a vencer
-    @Query("SELECT l FROM Lote l WHERE l.fechaVencimiento <= :fechaLimite AND l.estado = 'DISPONIBLE'")
+    @Query("SELECT l FROM Lote l WHERE l.fechaVencimiento <= :fechaLimite AND l.estado = org.example.backend.enumeraciones.EstadoLote.DISPONIBLE")
     List<Lote> findLotesProximosAVencer(@Param("fechaLimite") LocalDate fechaLimite);
     
     // Buscar lotes vencidos
-    @Query("SELECT l FROM Lote l WHERE l.fechaVencimiento < CURRENT_DATE AND l.estado = 'DISPONIBLE'")
+    @Query("SELECT l FROM Lote l WHERE l.fechaVencimiento < CURRENT_DATE AND l.estado = org.example.backend.enumeraciones.EstadoLote.DISPONIBLE")
     List<Lote> findLotesVencidos();
     
     // Buscar lotes por rango de fechas de vencimiento
@@ -47,11 +47,11 @@ public interface LoteRepository extends JpaRepository<Lote, UUID> {
     
     // Búsqueda avanzada con filtros
     @Query("SELECT l FROM Lote l WHERE " +
-           "(:codigoLote IS NULL OR LOWER(l.codigoLote) LIKE LOWER(CONCAT('%', :codigoLote, '%'))) AND " +
+           "(:numero IS NULL OR LOWER(l.numero) LIKE LOWER(CONCAT('%', :numero, '%'))) AND " +
            "(:estado IS NULL OR l.estado = :estado) AND " +
            "(:productoId IS NULL OR l.producto.id = :productoId)")
     Page<Lote> findLotesWithFilters(
-            @Param("codigoLote") String codigoLote,
+            @Param("numero") String numero,
             @Param("estado") EstadoLote estado,
             @Param("productoId") UUID productoId,
             Pageable pageable
@@ -62,7 +62,7 @@ public interface LoteRepository extends JpaRepository<Lote, UUID> {
     List<Object[]> countLotesByEstado();
     
     // Lotes disponibles para un producto específico
-    @Query("SELECT l FROM Lote l WHERE l.producto.id = :productoId AND l.estado = 'DISPONIBLE' " +
+    @Query("SELECT l FROM Lote l WHERE l.producto.id = :productoId AND l.estado = org.example.backend.enumeraciones.EstadoLote.DISPONIBLE " +
            "ORDER BY l.fechaVencimiento ASC")
     List<Lote> findLotesDisponiblesByProducto(@Param("productoId") UUID productoId);
 }

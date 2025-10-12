@@ -163,7 +163,6 @@ export default function LoginPage() {
                   className="w-full px-4 py-3 bg-gray-200 border-2 border-gray-400 rounded-lg text-gray-700 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors appearance-none cursor-pointer"
                 >
                   <option value="">Seleccione su rol</option>
-                  <option value="Cliente">👤 Cliente</option>
                   <option value="Recepcion">👥 Recepción</option>
                   <option value="Operaciones">⚙️ Operaciones</option>
                   <option value="Calidad">🔍 Control de Calidad</option>

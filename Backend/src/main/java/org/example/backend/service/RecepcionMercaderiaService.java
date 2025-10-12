@@ -322,7 +322,7 @@ public class RecepcionMercaderiaService {
         
         if (detalle.getLote() != null) {
             dto.setLoteId(detalle.getLote().getId());
-            dto.setLoteNumero(detalle.getLote().getCodigoLote());
+            dto.setLoteNumero(detalle.getLote().getNumero());
         }
         
         dto.setCantidadEsperada(detalle.getCantidadEsperada());
