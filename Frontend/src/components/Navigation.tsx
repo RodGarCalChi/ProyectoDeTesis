@@ -21,12 +21,37 @@ export const Navigation: React.FC = () => {
 
     // Dashboard - disponible para la mayoría de roles
     if (['Cliente', 'Operaciones', 'Despacho', 'DirectorTecnico'].includes(role || '')) {
-      pages.push({ key: 'dashboard', label: 'Inventario', path: '/dashboard' });
+      pages.push({ key: 'dashboard', label: 'Dashboard', path: '/dashboard' });
     }
 
-    // Movimientos - disponible para Recepcion (entrada) y Despacho (salida)
-    if (['Recepcion', 'Despacho', 'DirectorTecnico'].includes(role || '')) {
-      pages.push({ key: 'movimientos', label: 'Movimientos', path: '/movimientos' });
+    // Portal del Cliente - solo para clientes
+    if (role === 'Cliente') {
+      pages.push({ key: 'cliente-portal', label: 'Mi Portal', path: '/cliente-portal' });
+    }
+
+    // Recepción de Mercadería - para Recepción
+    if (['Recepcion', 'DirectorTecnico'].includes(role || '')) {
+      pages.push({ key: 'recepcion-mercaderia', label: 'Recepción', path: '/recepcion-mercaderia' });
+    }
+
+    // Almacenamiento - para Operaciones
+    if (['Operaciones', 'DirectorTecnico'].includes(role || '')) {
+      pages.push({ key: 'almacenamiento', label: 'Almacenamiento', path: '/almacenamiento' });
+    }
+
+    // Movimientos de Stock - para Operaciones
+    if (['Operaciones', 'DirectorTecnico'].includes(role || '')) {
+      pages.push({ key: 'movimientos-stock', label: 'Movimientos', path: '/movimientos-stock' });
+    }
+
+    // Despacho - para rol de Despacho
+    if (['Despacho', 'DirectorTecnico'].includes(role || '')) {
+      pages.push({ key: 'despacho', label: 'Despacho', path: '/despacho' });
+    }
+
+    // Control de Calidad - para rol de Calidad
+    if (['Calidad', 'DirectorTecnico'].includes(role || '')) {
+      pages.push({ key: 'control', label: 'Control Calidad', path: '/control' });
     }
 
     // Órdenes - principalmente para Área Administrativa
@@ -34,9 +59,9 @@ export const Navigation: React.FC = () => {
       pages.push({ key: 'ordenes', label: 'Órdenes', path: '/ordenes' });
     }
 
-    // Control - para rol de Calidad
-    if (['Calidad', 'DirectorTecnico'].includes(role || '')) {
-      pages.push({ key: 'control', label: 'Control', path: '/control' });
+    // Movimientos (legacy) - disponible para algunos roles
+    if (['Recepcion', 'Despacho', 'DirectorTecnico'].includes(role || '')) {
+      pages.push({ key: 'movimientos', label: 'Movimientos', path: '/movimientos' });
     }
 
     // Registro - para gestión de inventario
@@ -58,9 +83,14 @@ export const Navigation: React.FC = () => {
             <h1 className="text-xl font-bold text-gray-900">PharmaFlow</h1>
             <span className="text-sm text-gray-600">
               {pathname === '/dashboard' && 'Dashboard - Inventario'}
-              {pathname === '/movimientos' && 'Movimientos de Inventario'}
+              {pathname === '/cliente-portal' && 'Portal del Cliente'}
+              {pathname === '/recepcion-mercaderia' && 'Recepción de Mercadería'}
+              {pathname === '/almacenamiento' && 'Gestión de Almacenamiento'}
+              {pathname === '/movimientos-stock' && 'Movimientos de Stock'}
+              {pathname === '/despacho' && 'Centro de Despacho'}
+              {pathname === '/control' && 'Control de Calidad'}
               {pathname === '/ordenes' && 'Gestión de Órdenes'}
-              {pathname === '/control' && 'Control y Supervisión'}
+              {pathname === '/movimientos' && 'Movimientos de Inventario'}
               {pathname === '/registro-inventario' && 'Registro de Inventario'}
             </span>
           </div>
