@@ -54,7 +54,7 @@ export default function LoginPage() {
         // Redirigir según el rol del usuario autenticado
         const rolRedirectMap: { [key: string]: string } = {
           "Cliente": "/dashboard",
-          "Recepcion": "/movimientos",
+          "Recepcion": "/recepcion-mercaderia",
           "Operaciones": "/dashboard",
           "Calidad": "/control",
           "Despacho": "/dashboard",

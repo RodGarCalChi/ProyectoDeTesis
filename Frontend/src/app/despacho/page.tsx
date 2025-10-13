@@ -179,9 +179,7 @@ function DespachoContent() {
               </p>
             </div>
             <div className="flex gap-3">
-              <button className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 font-medium">
-                📋 Planificar Ruta
-              </button>
+           
               <button className="px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">
                 📊 Reportes
               </button>
@@ -460,18 +458,7 @@ function DespachoContent() {
 
         {/* Quick Actions */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
-            <div className="flex items-center mb-4">
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <span className="text-2xl">🗺️</span>
-              </div>
-              <h4 className="ml-3 text-lg font-semibold text-gray-900">Planificar Rutas</h4>
-            </div>
-            <p className="text-gray-600 mb-4">Optimizar rutas de entrega por zona</p>
-            <button className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
-              Abrir Planificador
-            </button>
-          </div>
+  
 
           <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center mb-4">

@@ -136,3 +136,57 @@ export const isAuthenticated = () => {
 export const hasRole = (role: string) => {
   return apiService.hasRole(role);
 };
+
+// Funciones específicas para la API
+export const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
+  const token = localStorage.getItem('token');
+  
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(options.headers as Record<string, string>),
+  };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_BASE_URL}${url}`, {
+    ...options,
+    headers,
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  return response.json();
+};
+
+// API específica para clientes
+export const clientesApi = {
+  obtenerActivos: () => fetchWithAuth('/clientes/activos'),
+  obtenerTodos: (params?: any) => {
+    const queryString = params ? `?${new URLSearchParams(params)}` : '';
+    return fetchWithAuth(`/clientes${queryString}`);
+  }
+};
+
+// API específica para productos
+export const productosApi = {
+  obtenerTodos: (params?: any) => {
+    const queryString = params ? `?${new URLSearchParams(params)}` : '';
+    return fetchWithAuth(`/productos${queryString}`);
+  }
+};
+
+// API específica para recepciones
+export const recepcionesApi = {
+  crear: (data: any) => fetchWithAuth('/recepciones', {
+    method: 'POST',
+    body: JSON.stringify(data)
+  }),
+  obtenerTodas: (params?: any) => {
+    const queryString = params ? `?${new URLSearchParams(params)}` : '';
+    return fetchWithAuth(`/recepciones${queryString}`);
+  }
+};
