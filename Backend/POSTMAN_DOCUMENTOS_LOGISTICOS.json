@@ -1,0 +1,309 @@
+{
+  "info": {
+    "name": "PharmaFlow - Documentos Logísticos",
+    "description": "APIs para gestión de documentos logísticos en PharmaFlow",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080/api",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Actas de Recepción",
+      "item": [
+        {
+          "name": "Crear Acta de Recepción",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"numeroActa\": \"ACT-2024-001\",\n  \"fechaRecepcion\": \"2024-10-15T10:30:00\",\n  \"clienteId\": \"{{clienteId}}\",\n  \"responsableRecepcion\": \"Juan Pérez\",\n  \"lugarRecepcion\": \"Almacén Principal\",\n  \"temperaturaLlegada\": 22.5,\n  \"condicionesTransporte\": \"Transporte refrigerado\",\n  \"observaciones\": \"Mercadería en buen estado\",\n  \"estado\": \"PENDIENTE\",\n  \"creadoPor\": \"recepcion@pharmaflow.com\",\n  \"detalles\": [\n    {\n      \"productoId\": \"{{productoId}}\",\n      \"lote\": \"L2024001\",\n      \"fechaVencimiento\": \"2025-12-15\",\n      \"cantidadDeclarada\": 100,\n      \"cantidadRecibida\": 100,\n      \"precioUnitario\": 12.50,\n      \"observaciones\": \"Conforme\",\n      \"conforme\": true\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/actas-recepcion",
+              "host": ["{{baseUrl}}"],
+              "path": ["actas-recepcion"]
+            }
+          }
+        },
+        {
+          "name": "Obtener Todas las Actas",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/actas-recepcion?page=0&size=10&sortBy=fechaRecepcion&sortDir=desc",
+              "host": ["{{baseUrl}}"],
+              "path": ["actas-recepcion"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "fechaRecepcion"
+                },
+                {
+                  "key": "sortDir",
+                  "value": "desc"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Obtener Acta por ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/actas-recepcion/{{actaId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["actas-recepcion", "{{actaId}}"]
+            }
+          }
+        },
+        {
+          "name": "Obtener Acta por Número",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/actas-recepcion/numero/ACT-2024-001",
+              "host": ["{{baseUrl}}"],
+              "path": ["actas-recepcion", "numero", "ACT-2024-001"]
+            }
+          }
+        },
+        {
+          "name": "Buscar Actas con Filtros",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/actas-recepcion/buscar?clienteId={{clienteId}}&estado=PENDIENTE&responsable=Juan&page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["actas-recepcion", "buscar"],
+              "query": [
+                {
+                  "key": "clienteId",
+                  "value": "{{clienteId}}"
+                },
+                {
+                  "key": "estado",
+                  "value": "PENDIENTE"
+                },
+                {
+                  "key": "responsable",
+                  "value": "Juan"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Obtener Actas por Cliente",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/actas-recepcion/cliente/{{clienteId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["actas-recepcion", "cliente", "{{clienteId}}"]
+            }
+          }
+        },
+        {
+          "name": "Obtener Actas por Estado",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/actas-recepcion/estado/PENDIENTE",
+              "host": ["{{baseUrl}}"],
+              "path": ["actas-recepcion", "estado", "PENDIENTE"]
+            }
+          }
+        },
+        {
+          "name": "Obtener Actas Pendientes de Aprobación",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/actas-recepcion/pendientes-aprobacion",
+              "host": ["{{baseUrl}}"],
+              "path": ["actas-recepcion", "pendientes-aprobacion"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar Acta de Recepción",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"numeroActa\": \"ACT-2024-001-UPD\",\n  \"fechaRecepcion\": \"2024-10-15T10:30:00\",\n  \"clienteId\": \"{{clienteId}}\",\n  \"responsableRecepcion\": \"Juan Pérez\",\n  \"lugarRecepcion\": \"Almacén Principal\",\n  \"temperaturaLlegada\": 23.0,\n  \"condicionesTransporte\": \"Transporte refrigerado\",\n  \"observaciones\": \"Mercadería en buen estado - Actualizada\",\n  \"estado\": \"PROCESADO\",\n  \"actualizadoPor\": \"supervisor@pharmaflow.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/actas-recepcion/{{actaId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["actas-recepcion", "{{actaId}}"]
+            }
+          }
+        },
+        {
+          "name": "Cambiar Estado del Acta",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"PROCESADO\",\n  \"actualizadoPor\": \"supervisor@pharmaflow.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/actas-recepcion/{{actaId}}/estado",
+              "host": ["{{baseUrl}}"],
+              "path": ["actas-recepcion", "{{actaId}}", "estado"]
+            }
+          }
+        },
+        {
+          "name": "Aprobar Acta",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"aprobadoPor\": \"supervisor@pharmaflow.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/actas-recepcion/{{actaId}}/aprobar",
+              "host": ["{{baseUrl}}"],
+              "path": ["actas-recepcion", "{{actaId}}", "aprobar"]
+            }
+          }
+        },
+        {
+          "name": "Rechazar Acta",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rechazadoPor\": \"supervisor@pharmaflow.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/actas-recepcion/{{actaId}}/rechazar",
+              "host": ["{{baseUrl}}"],
+              "path": ["actas-recepcion", "{{actaId}}", "rechazar"]
+            }
+          }
+        },
+        {
+          "name": "Estadísticas por Estado",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/actas-recepcion/estadisticas/estado",
+              "host": ["{{baseUrl}}"],
+              "path": ["actas-recepcion", "estadisticas", "estado"]
+            }
+          }
+        },
+        {
+          "name": "Estadísticas por Cliente",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/actas-recepcion/estadisticas/cliente",
+              "host": ["{{baseUrl}}"],
+              "path": ["actas-recepcion", "estadisticas", "cliente"]
+            }
+          }
+        },
+        {
+          "name": "Obtener Estados Disponibles",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/actas-recepcion/estados",
+              "host": ["{{baseUrl}}"],
+              "path": ["actas-recepcion", "estados"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Datos de Apoyo",
+      "item": [
+        {
+          "name": "Obtener Clientes Activos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/clientes/activos",
+              "host": ["{{baseUrl}}"],
+              "path": ["clientes", "activos"]
+            }
+          }
+        },
+        {
+          "name": "Obtener Productos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/productos?size=100",
+              "host": ["{{baseUrl}}"],
+              "path": ["productos"],
+              "query": [
+                {
+                  "key": "size",
+                  "value": "100"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
