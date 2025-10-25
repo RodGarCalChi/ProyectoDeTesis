@@ -1,647 +1,1468 @@
 {
-  "info": {
-    "name": "PharmaFlow - API Completa",
-    "description": "Colección completa de APIs para PharmaFlow - Sistema de Gestión Logística Farmacéutica",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-  },
-  "variable": [
-    {
-      "key": "baseUrl",
-      "value": "http://localhost:8080/api",
-      "type": "string"
+    "info": {
+        "name": "PharmaFlow - API Completa",
+        "description": "Colección completa de APIs para PharmaFlow - Sistema de Gestión Logística Farmacéutica",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
-    {
-      "key": "clienteId",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "productoId",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "proveedorId",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "recepcionId",
-      "value": "",
-      "type": "string"
-    }
-  ],
-  "item": [
-    {
-      "name": "🔐 Autenticación",
-      "item": [
+    "variable": [
         {
-          "name": "Login",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"recepcion@pharmaflow.com\",\n  \"password\": \"password\",\n  \"rol\": \"Recepcion\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "login"]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "👥 Clientes",
-      "item": [
-        {
-          "name": "Obtener Clientes Activos",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/clientes/activos",
-              "host": ["{{baseUrl}}"],
-              "path": ["clientes", "activos"]
-            }
-          }
+            "key": "baseUrl",
+            "value": "http://localhost:8080/api",
+            "type": "string"
         },
         {
-          "name": "Obtener Todos los Clientes",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/clientes?page=0&size=10",
-              "host": ["{{baseUrl}}"],
-              "path": ["clientes"],
-              "query": [
+            "key": "clienteId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "productoId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "proveedorId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "recepcionId",
+            "value": "",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "🔐 Autenticación",
+            "item": [
                 {
-                  "key": "page",
-                  "value": "0"
+                    "name": "Login",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"recepcion@pharmaflow.com\",\n  \"password\": \"password\",\n  \"rol\": \"Recepcion\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/login",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "login"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "👥 Clientes",
+            "item": [
+                {
+                    "name": "Obtener Clientes Activos",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/clientes/activos",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "clientes",
+                                "activos"
+                            ]
+                        }
+                    }
                 },
                 {
-                  "key": "size",
-                  "value": "10"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Crear Cliente",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"razonSocial\": \"Farmacia Test S.A.C.\",\n  \"rucDni\": \"20987654321\",\n  \"direccionEntrega\": \"Av. Test 123, Lima\",\n  \"distrito\": \"Lima\",\n  \"telefono\": \"01-234-5678\",\n  \"email\": \"contacto@farmaciatest.com\",\n  \"tipoCliente\": \"FARMACIA\",\n  \"formaPago\": \"CREDITO\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/clientes",
-              "host": ["{{baseUrl}}"],
-              "path": ["clientes"]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "📦 Productos",
-      "item": [
-        {
-          "name": "Obtener Todos los Productos",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/productos?size=100",
-              "host": ["{{baseUrl}}"],
-              "path": ["productos"],
-              "query": [
-                {
-                  "key": "size",
-                  "value": "100"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Crear Producto",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"codigoSKU\": \"PAR500MG\",\n  \"nombre\": \"Paracetamol 500mg\",\n  \"tipo\": \"MEDICAMENTO\",\n  \"condicionAlmacen\": \"AMBIENTE\",\n  \"requiereCadenaFrio\": false,\n  \"registroSanitario\": \"RS-12345\",\n  \"unidadMedida\": \"TABLETA\",\n  \"vidaUtilMeses\": 36,\n  \"tempMin\": 15.0,\n  \"tempMax\": 30.0\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/productos",
-              "host": ["{{baseUrl}}"],
-              "path": ["productos"]
-            }
-          }
-        },
-        {
-          "name": "Test Endpoint",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/productos/test",
-              "host": ["{{baseUrl}}"],
-              "path": ["productos", "test"]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "🏭 Proveedores",
-      "item": [
-        {
-          "name": "Test Conectividad",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/proveedores/test",
-              "host": ["{{baseUrl}}"],
-              "path": ["proveedores", "test"]
-            }
-          }
-        },
-        {
-          "name": "Crear Proveedor de Prueba",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 200) {",
-                  "    var jsonData = pm.response.json();",
-                  "    if (jsonData.data && jsonData.data.id) {",
-                  "        pm.collectionVariables.set(\"proveedorId\", jsonData.data.id);",
-                  "        console.log(\"Proveedor ID guardado: \" + jsonData.data.id);",
-                  "    }",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "url": {
-              "raw": "{{baseUrl}}/proveedores/crear-prueba",
-              "host": ["{{baseUrl}}"],
-              "path": ["proveedores", "crear-prueba"]
-            }
-          }
-        },
-        {
-          "name": "Obtener Proveedores Activos",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/proveedores/activos",
-              "host": ["{{baseUrl}}"],
-              "path": ["proveedores", "activos"]
-            }
-          }
-        },
-        {
-          "name": "Obtener Todos los Proveedores",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/proveedores",
-              "host": ["{{baseUrl}}"],
-              "path": ["proveedores"]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "📥 Recepciones de Mercadería",
-      "item": [
-        {
-          "name": "Crear Recepción",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 201) {",
-                  "    var jsonData = pm.response.json();",
-                  "    if (jsonData.data && jsonData.data.id) {",
-                  "        pm.collectionVariables.set(\"recepcionId\", jsonData.data.id);",
-                  "        console.log(\"Recepción ID guardado: \" + jsonData.data.id);",
-                  "    }",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"numeroOrdenCompra\": \"OC-2024-001\",\n  \"numeroGuiaRemision\": \"GR-2024-001\",\n  \"proveedorId\": \"{{proveedorId}}\",\n  \"fechaRecepcion\": \"2024-10-21T10:30:00\",\n  \"responsableRecepcion\": \"Juan Pérez\",\n  \"estado\": \"PENDIENTE\",\n  \"temperaturaLlegada\": 22.5,\n  \"observaciones\": \"Mercadería en buen estado\",\n  \"verificacionDocumentos\": false,\n  \"verificacionFisica\": false,\n  \"verificacionTemperatura\": false,\n  \"aprobadoPorCalidad\": false,\n  \"detalles\": [\n    {\n      \"productoId\": \"{{productoId}}\",\n      \"cantidadEsperada\": 100,\n      \"cantidadRecibida\": 100,\n      \"conforme\": true,\n      \"observaciones\": \"Producto conforme\"\n    }\n  ]\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/recepciones",
-              "host": ["{{baseUrl}}"],
-              "path": ["recepciones"]
-            }
-          }
-        },
-        {
-          "name": "Obtener Todas las Recepciones",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/recepciones?page=0&size=10",
-              "host": ["{{baseUrl}}"],
-              "path": ["recepciones"],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "0"
+                    "name": "Obtener Todos los Clientes",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/clientes?page=0&size=10",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "clientes"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "10"
+                                }
+                            ]
+                        }
+                    }
                 },
                 {
-                  "key": "size",
-                  "value": "10"
+                    "name": "Crear Cliente",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"razonSocial\": \"Farmacia Test S.A.C.\",\n  \"rucDni\": \"20987654321\",\n  \"direccionEntrega\": \"Av. Test 123, Lima\",\n  \"distrito\": \"Lima\",\n  \"telefono\": \"01-234-5678\",\n  \"email\": \"contacto@farmaciatest.com\",\n  \"tipoCliente\": \"FARMACIA\",\n  \"formaPago\": \"CREDITO\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/clientes",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "clientes"
+                            ]
+                        }
+                    }
                 }
-              ]
-            }
-          }
+            ]
         },
         {
-          "name": "Obtener Recepción por ID",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/recepciones/{{recepcionId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["recepciones", "{{recepcionId}}"]
-            }
-          }
-        },
-        {
-          "name": "Obtener Recepciones Pendientes",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/recepciones/pendientes",
-              "host": ["{{baseUrl}}"],
-              "path": ["recepciones", "pendientes"]
-            }
-          }
-        },
-        {
-          "name": "Obtener Recepciones en Cuarentena",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/recepciones/cuarentena",
-              "host": ["{{baseUrl}}"],
-              "path": ["recepciones", "cuarentena"]
-            }
-          }
-        },
-        {
-          "name": "Buscar Recepciones con Filtros",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/recepciones/buscar?estado=PENDIENTE&page=0&size=10",
-              "host": ["{{baseUrl}}"],
-              "path": ["recepciones", "buscar"],
-              "query": [
+            "name": "📦 Productos",
+            "item": [
                 {
-                  "key": "estado",
-                  "value": "PENDIENTE"
+                    "name": "Obtener Todos los Productos",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/productos?size=100",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "productos"
+                            ],
+                            "query": [
+                                {
+                                    "key": "size",
+                                    "value": "100"
+                                }
+                            ]
+                        }
+                    }
                 },
                 {
-                  "key": "page",
-                  "value": "0"
+                    "name": "Crear Producto",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"codigoSKU\": \"PAR500MG\",\n  \"nombre\": \"Paracetamol 500mg\",\n  \"tipo\": \"MEDICAMENTO\",\n  \"condicionAlmacen\": \"AMBIENTE\",\n  \"requiereCadenaFrio\": false,\n  \"registroSanitario\": \"RS-12345\",\n  \"unidadMedida\": \"TABLETA\",\n  \"vidaUtilMeses\": 36,\n  \"tempMin\": 15.0,\n  \"tempMax\": 30.0\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/productos",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "productos"
+                            ]
+                        }
+                    }
                 },
                 {
-                  "key": "size",
-                  "value": "10"
+                    "name": "Test Endpoint",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/productos/test",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "productos",
+                                "test"
+                            ]
+                        }
+                    }
                 }
-              ]
-            }
-          }
+            ]
         },
         {
-          "name": "Iniciar Verificación",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"inspector\": \"María García\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/recepciones/{{recepcionId}}/iniciar-verificacion",
-              "host": ["{{baseUrl}}"],
-              "path": ["recepciones", "{{recepcionId}}", "iniciar-verificacion"]
-            }
-          }
-        },
-        {
-          "name": "Aprobar por Calidad",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"inspector\": \"María García\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/recepciones/{{recepcionId}}/aprobar-calidad",
-              "host": ["{{baseUrl}}"],
-              "path": ["recepciones", "{{recepcionId}}", "aprobar-calidad"]
-            }
-          }
-        },
-        {
-          "name": "Obtener Estados Disponibles",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/recepciones/estados",
-              "host": ["{{baseUrl}}"],
-              "path": ["recepciones", "estados"]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "📋 Actas de Recepción",
-      "item": [
-        {
-          "name": "Crear Acta de Recepción",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"numeroActa\": \"ACT-2024-001\",\n  \"fechaRecepcion\": \"2024-10-21T10:30:00\",\n  \"clienteId\": \"{{clienteId}}\",\n  \"responsableRecepcion\": \"Juan Pérez\",\n  \"lugarRecepcion\": \"Almacén Principal\",\n  \"temperaturaLlegada\": 22.5,\n  \"condicionesTransporte\": \"Transporte refrigerado\",\n  \"observaciones\": \"Mercadería en buen estado\",\n  \"estado\": \"PENDIENTE\",\n  \"creadoPor\": \"recepcion@pharmaflow.com\",\n  \"detalles\": [\n    {\n      \"productoId\": \"{{productoId}}\",\n      \"lote\": \"L2024001\",\n      \"fechaVencimiento\": \"2025-12-15\",\n      \"cantidadDeclarada\": 100,\n      \"cantidadRecibida\": 100,\n      \"precioUnitario\": 12.50,\n      \"observaciones\": \"Conforme\",\n      \"conforme\": true\n    }\n  ]\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/actas-recepcion",
-              "host": ["{{baseUrl}}"],
-              "path": ["actas-recepcion"]
-            }
-          }
-        },
-        {
-          "name": "Obtener Todas las Actas",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/actas-recepcion?page=0&size=10",
-              "host": ["{{baseUrl}}"],
-              "path": ["actas-recepcion"],
-              "query": [
+            "name": "🏭 Proveedores",
+            "item": [
                 {
-                  "key": "page",
-                  "value": "0"
+                    "name": "Test Conectividad",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/proveedores/test",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "proveedores",
+                                "test"
+                            ]
+                        }
+                    }
                 },
                 {
-                  "key": "size",
-                  "value": "10"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Obtener Estados Disponibles",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/actas-recepcion/estados",
-              "host": ["{{baseUrl}}"],
-              "path": ["actas-recepcion", "estados"]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "🔗 Cliente-Productos (Relaciones)",
-      "item": [
-        {
-          "name": "Asignar Producto a Cliente",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"clienteId\": \"{{clienteId}}\",\n  \"productoId\": \"{{productoId}}\",\n  \"observaciones\": \"Producto asignado para distribución\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/cliente-productos",
-              "host": ["{{baseUrl}}"],
-              "path": ["cliente-productos"]
-            }
-          }
-        },
-        {
-          "name": "Obtener Productos de un Cliente",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/cliente-productos/cliente/{{clienteId}}/productos",
-              "host": ["{{baseUrl}}"],
-              "path": ["cliente-productos", "cliente", "{{clienteId}}", "productos"]
-            }
-          }
-        },
-        {
-          "name": "Obtener Relaciones de un Cliente",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/cliente-productos/cliente/{{clienteId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["cliente-productos", "cliente", "{{clienteId}}"]
-            }
-          }
-        },
-        {
-          "name": "Obtener Clientes de un Producto",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/cliente-productos/producto/{{productoId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["cliente-productos", "producto", "{{productoId}}"]
-            }
-          }
-        },
-        {
-          "name": "Contar Productos de un Cliente",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/cliente-productos/cliente/{{clienteId}}/count",
-              "host": ["{{baseUrl}}"],
-              "path": ["cliente-productos", "cliente", "{{clienteId}}", "count"]
-            }
-          }
-        },
-        {
-          "name": "Desactivar Relación",
-          "request": {
-            "method": "DELETE",
-            "url": {
-              "raw": "{{baseUrl}}/cliente-productos/cliente/{{clienteId}}/producto/{{productoId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["cliente-productos", "cliente", "{{clienteId}}", "producto", "{{productoId}}"]
-            }
-          }
-        },
-        {
-          "name": "Activar Relación",
-          "request": {
-            "method": "PATCH",
-            "url": {
-              "raw": "{{baseUrl}}/cliente-productos/cliente/{{clienteId}}/producto/{{productoId}}/activar",
-              "host": ["{{baseUrl}}"],
-              "path": ["cliente-productos", "cliente", "{{clienteId}}", "producto", "{{productoId}}", "activar"]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "🧪 Flujo Completo de Prueba",
-      "item": [
-        {
-          "name": "1. Crear Proveedor",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 200) {",
-                  "    var jsonData = pm.response.json();",
-                  "    if (jsonData.data && jsonData.data.id) {",
-                  "        pm.collectionVariables.set(\"proveedorId\", jsonData.data.id);",
-                  "        console.log(\"✅ Proveedor ID: \" + jsonData.data.id);",
-                  "    }",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "url": {
-              "raw": "{{baseUrl}}/proveedores/crear-prueba",
-              "host": ["{{baseUrl}}"],
-              "path": ["proveedores", "crear-prueba"]
-            }
-          }
-        },
-        {
-          "name": "2. Listar Proveedores",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/proveedores/activos",
-              "host": ["{{baseUrl}}"],
-              "path": ["proveedores", "activos"]
-            }
-          }
-        },
-        {
-          "name": "3. Listar Productos",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/productos?size=10",
-              "host": ["{{baseUrl}}"],
-              "path": ["productos"],
-              "query": [
+                    "name": "Crear Proveedor de Prueba",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    if (jsonData.data && jsonData.data.id) {",
+                                    "        pm.collectionVariables.set(\"proveedorId\", jsonData.data.id);",
+                                    "        console.log(\"Proveedor ID guardado: \" + jsonData.data.id);",
+                                    "    }",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{baseUrl}}/proveedores/crear-prueba",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "proveedores",
+                                "crear-prueba"
+                            ]
+                        }
+                    }
+                },
                 {
-                  "key": "size",
-                  "value": "10"
+                    "name": "Obtener Proveedores Activos",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/proveedores/activos",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "proveedores",
+                                "activos"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Obtener Todos los Proveedores",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/proveedores",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "proveedores"
+                            ]
+                        }
+                    }
                 }
-              ]
-            }
-          }
+            ]
         },
         {
-          "name": "4. Crear Recepción",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"numeroOrdenCompra\": \"OC-TEST-001\",\n  \"numeroGuiaRemision\": \"GR-TEST-001\",\n  \"proveedorId\": \"{{proveedorId}}\",\n  \"fechaRecepcion\": \"2024-10-21T10:30:00\",\n  \"responsableRecepcion\": \"Juan Pérez\",\n  \"estado\": \"PENDIENTE\",\n  \"observaciones\": \"Prueba de recepción\",\n  \"verificacionDocumentos\": false,\n  \"verificacionFisica\": false,\n  \"verificacionTemperatura\": false,\n  \"aprobadoPorCalidad\": false,\n  \"detalles\": []\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/recepciones",
-              "host": ["{{baseUrl}}"],
-              "path": ["recepciones"]
-            }
-          }
+            "name": "📥 Recepciones de Mercadería",
+            "item": [
+                {
+                    "name": "Crear Recepción",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    if (jsonData.data && jsonData.data.id) {",
+                                    "        pm.collectionVariables.set(\"recepcionId\", jsonData.data.id);",
+                                    "        console.log(\"Recepción ID guardado: \" + jsonData.data.id);",
+                                    "    }",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"numeroOrdenCompra\": \"OC-2024-001\",\n  \"numeroGuiaRemision\": \"GR-2024-001\",\n  \"proveedorId\": \"{{proveedorId}}\",\n  \"fechaRecepcion\": \"2024-10-21T10:30:00\",\n  \"responsableRecepcion\": \"Juan Pérez\",\n  \"estado\": \"PENDIENTE\",\n  \"temperaturaLlegada\": 22.5,\n  \"observaciones\": \"Mercadería en buen estado\",\n  \"verificacionDocumentos\": false,\n  \"verificacionFisica\": false,\n  \"verificacionTemperatura\": false,\n  \"aprobadoPorCalidad\": false,\n  \"detalles\": [\n    {\n      \"productoId\": \"{{productoId}}\",\n      \"cantidadEsperada\": 100,\n      \"cantidadRecibida\": 100,\n      \"conforme\": true,\n      \"observaciones\": \"Producto conforme\"\n    }\n  ]\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/recepciones",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "recepciones"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Obtener Todas las Recepciones",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/recepciones?page=0&size=10",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "recepciones"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "10"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Obtener Recepción por ID",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/recepciones/{{recepcionId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "recepciones",
+                                "{{recepcionId}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Obtener Recepciones Pendientes",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/recepciones/pendientes",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "recepciones",
+                                "pendientes"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Obtener Recepciones en Cuarentena",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/recepciones/cuarentena",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "recepciones",
+                                "cuarentena"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Buscar Recepciones con Filtros",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/recepciones/buscar?estado=PENDIENTE&page=0&size=10",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "recepciones",
+                                "buscar"
+                            ],
+                            "query": [
+                                {
+                                    "key": "estado",
+                                    "value": "PENDIENTE"
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "10"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Iniciar Verificación",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"inspector\": \"María García\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/recepciones/{{recepcionId}}/iniciar-verificacion",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "recepciones",
+                                "{{recepcionId}}",
+                                "iniciar-verificacion"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Aprobar por Calidad",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"inspector\": \"María García\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/recepciones/{{recepcionId}}/aprobar-calidad",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "recepciones",
+                                "{{recepcionId}}",
+                                "aprobar-calidad"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Obtener Estados Disponibles",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/recepciones/estados",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "recepciones",
+                                "estados"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "📋 Actas de Recepción",
+            "item": [
+                {
+                    "name": "Crear Acta de Recepción",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"numeroActa\": \"ACT-2024-001\",\n  \"fechaRecepcion\": \"2024-10-21T10:30:00\",\n  \"clienteId\": \"{{clienteId}}\",\n  \"responsableRecepcion\": \"Juan Pérez\",\n  \"lugarRecepcion\": \"Almacén Principal\",\n  \"temperaturaLlegada\": 22.5,\n  \"condicionesTransporte\": \"Transporte refrigerado\",\n  \"observaciones\": \"Mercadería en buen estado\",\n  \"estado\": \"PENDIENTE\",\n  \"creadoPor\": \"recepcion@pharmaflow.com\",\n  \"detalles\": [\n    {\n      \"productoId\": \"{{productoId}}\",\n      \"lote\": \"L2024001\",\n      \"fechaVencimiento\": \"2025-12-15\",\n      \"cantidadDeclarada\": 100,\n      \"cantidadRecibida\": 100,\n      \"precioUnitario\": 12.50,\n      \"observaciones\": \"Conforme\",\n      \"conforme\": true\n    }\n  ]\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/actas-recepcion",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "actas-recepcion"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Obtener Todas las Actas",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/actas-recepcion?page=0&size=10",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "actas-recepcion"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "10"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Obtener Estados Disponibles",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/actas-recepcion/estados",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "actas-recepcion",
+                                "estados"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "🔗 Cliente-Productos (Relaciones)",
+            "item": [
+                {
+                    "name": "Asignar Producto a Cliente",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"clienteId\": \"{{clienteId}}\",\n  \"productoId\": \"{{productoId}}\",\n  \"observaciones\": \"Producto asignado para distribución\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/cliente-productos",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cliente-productos"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "🆕 Asignar Varios Productos a Cliente",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"clienteId\": \"{{clienteId}}\",\n  \"productosIds\": [\n    \"producto-id-1\",\n    \"producto-id-2\",\n    \"producto-id-3\"\n  ],\n  \"observaciones\": \"Asignación masiva de productos\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/cliente-productos/asignar-varios",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cliente-productos",
+                                "asignar-varios"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "🆕 Crear Cliente con Productos Existentes",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    if (jsonData.data && jsonData.data.cliente && jsonData.data.cliente.id) {",
+                                    "        pm.collectionVariables.set(\"clienteId\", jsonData.data.cliente.id);",
+                                    "        console.log(\"✅ Cliente creado con ID: \" + jsonData.data.cliente.id);",
+                                    "        console.log(\"✅ Productos asignados: \" + jsonData.data.totalAsignaciones);",
+                                    "    }",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"cliente\": {\n    \"razonSocial\": \"Farmacia Nueva S.A.C.\",\n    \"rucDni\": \"20123456789\",\n    \"direccionEntrega\": \"Av. Principal 456, Lima\",\n    \"distrito\": \"Miraflores\",\n    \"telefono\": \"01-555-1234\",\n    \"email\": \"contacto@farmanueva.com\",\n    \"tipoCliente\": \"FARMACIA\",\n    \"formaPago\": \"CREDITO\"\n  },\n  \"productosExistentesIds\": [\n    \"producto-id-1\",\n    \"producto-id-2\"\n  ],\n  \"productosNuevos\": [],\n  \"observaciones\": \"Cliente nuevo con productos del catálogo\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/cliente-productos/crear-cliente-con-productos",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cliente-productos",
+                                "crear-cliente-con-productos"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "🆕 Crear Cliente con Productos Nuevos",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    if (jsonData.data && jsonData.data.cliente && jsonData.data.cliente.id) {",
+                                    "        pm.collectionVariables.set(\"clienteId\", jsonData.data.cliente.id);",
+                                    "        console.log(\"✅ Cliente creado con ID: \" + jsonData.data.cliente.id);",
+                                    "        console.log(\"✅ Productos creados y asignados: \" + jsonData.data.totalAsignaciones);",
+                                    "    }",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"cliente\": {\n    \"razonSocial\": \"Botica Express S.A.C.\",\n    \"rucDni\": \"20987654321\",\n    \"direccionEntrega\": \"Jr. Comercio 789, Lima\",\n    \"distrito\": \"San Isidro\",\n    \"telefono\": \"01-777-8888\",\n    \"email\": \"ventas@boticaexpress.com\",\n    \"tipoCliente\": \"BOTICA\",\n    \"formaPago\": \"CONTADO\"\n  },\n  \"productosExistentesIds\": [],\n  \"productosNuevos\": [\n    {\n      \"codigoSKU\": \"AMX500MG\",\n      \"nombre\": \"Amoxicilina 500mg\",\n      \"tipo\": \"MEDICAMENTO\",\n      \"condicionAlmacen\": \"AMBIENTE\",\n      \"requiereCadenaFrio\": false,\n      \"registroSanitario\": \"RS-AMX-500\",\n      \"unidadMedida\": \"CAPSULA\",\n      \"vidaUtilMeses\": 24,\n      \"tempMin\": 15.0,\n      \"tempMax\": 30.0\n    },\n    {\n      \"codigoSKU\": \"LORAT10MG\",\n      \"nombre\": \"Loratadina 10mg\",\n      \"tipo\": \"MEDICAMENTO\",\n      \"condicionAlmacen\": \"AMBIENTE\",\n      \"requiereCadenaFrio\": false,\n      \"registroSanitario\": \"RS-LOR-10\",\n      \"unidadMedida\": \"TABLETA\",\n      \"vidaUtilMeses\": 36,\n      \"tempMin\": 15.0,\n      \"tempMax\": 30.0\n    }\n  ],\n  \"observaciones\": \"Cliente nuevo con productos exclusivos\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/cliente-productos/crear-cliente-con-productos",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cliente-productos",
+                                "crear-cliente-con-productos"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "🆕 Crear Cliente con Productos Mixtos",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    if (jsonData.data && jsonData.data.cliente && jsonData.data.cliente.id) {",
+                                    "        pm.collectionVariables.set(\"clienteId\", jsonData.data.cliente.id);",
+                                    "        console.log(\"✅ Cliente creado con ID: \" + jsonData.data.cliente.id);",
+                                    "        console.log(\"✅ Total productos asignados: \" + jsonData.data.totalAsignaciones);",
+                                    "    }",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"cliente\": {\n    \"razonSocial\": \"Farmacia Integral S.A.C.\",\n    \"rucDni\": \"20555666777\",\n    \"direccionEntrega\": \"Av. Salud 321, Lima\",\n    \"distrito\": \"Surco\",\n    \"telefono\": \"01-999-0000\",\n    \"email\": \"info@farmaintegral.com\",\n    \"tipoCliente\": \"FARMACIA\",\n    \"formaPago\": \"CREDITO\"\n  },\n  \"productosExistentesIds\": [\n    \"{{productoId}}\"\n  ],\n  \"productosNuevos\": [\n    {\n      \"codigoSKU\": \"DICLOF50MG\",\n      \"nombre\": \"Diclofenaco 50mg\",\n      \"tipo\": \"MEDICAMENTO\",\n      \"condicionAlmacen\": \"AMBIENTE\",\n      \"requiereCadenaFrio\": false,\n      \"registroSanitario\": \"RS-DIC-50\",\n      \"unidadMedida\": \"TABLETA\",\n      \"vidaUtilMeses\": 24,\n      \"tempMin\": 15.0,\n      \"tempMax\": 30.0\n    }\n  ],\n  \"observaciones\": \"Cliente con productos del catálogo y exclusivos\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/cliente-productos/crear-cliente-con-productos",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cliente-productos",
+                                "crear-cliente-con-productos"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "🆕 Asociar Producto Existente con Cliente Existente",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"clienteId\": \"{{clienteId}}\",\n  \"productoId\": \"{{productoId}}\",\n  \"observaciones\": \"Asociación de producto existente\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/cliente-productos/crear-o-asociar",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cliente-productos",
+                                "crear-o-asociar"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "🆕 Crear Producto y Asociar a Cliente Existente",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"clienteId\": \"{{clienteId}}\",\n  \"productoNuevo\": {\n    \"codigoSKU\": \"OMEP20MG\",\n    \"nombre\": \"Omeprazol 20mg\",\n    \"tipo\": \"MEDICAMENTO\",\n    \"condicionAlmacen\": \"AMBIENTE\",\n    \"requiereCadenaFrio\": false,\n    \"registroSanitario\": \"RS-OME-20\",\n    \"unidadMedida\": \"CAPSULA\",\n    \"vidaUtilMeses\": 36,\n    \"tempMin\": 15.0,\n    \"tempMax\": 30.0\n  },\n  \"observaciones\": \"Producto nuevo para cliente existente\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/cliente-productos/crear-o-asociar",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cliente-productos",
+                                "crear-o-asociar"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "🆕 Crear Cliente y Asociar Producto Existente",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"clienteNuevo\": {\n    \"razonSocial\": \"Farmacia Rápida S.A.C.\",\n    \"rucDni\": \"20111222333\",\n    \"direccionEntrega\": \"Av. Rápida 111, Lima\",\n    \"distrito\": \"La Molina\",\n    \"telefono\": \"01-444-5555\",\n    \"email\": \"contacto@farmarapida.com\",\n    \"tipoCliente\": \"FARMACIA\",\n    \"formaPago\": \"CONTADO\"\n  },\n  \"productoId\": \"{{productoId}}\",\n  \"observaciones\": \"Cliente nuevo con producto del catálogo\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/cliente-productos/crear-o-asociar",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cliente-productos",
+                                "crear-o-asociar"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "🆕 Crear Cliente y Producto Nuevos",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"clienteNuevo\": {\n    \"razonSocial\": \"Botica Salud Total S.A.C.\",\n    \"rucDni\": \"20888999000\",\n    \"direccionEntrega\": \"Jr. Salud 999, Lima\",\n    \"distrito\": \"San Borja\",\n    \"telefono\": \"01-666-7777\",\n    \"email\": \"ventas@saludtotal.com\",\n    \"tipoCliente\": \"BOTICA\",\n    \"formaPago\": \"CREDITO\"\n  },\n  \"productoNuevo\": {\n    \"codigoSKU\": \"METF850MG\",\n    \"nombre\": \"Metformina 850mg\",\n    \"tipo\": \"MEDICAMENTO\",\n    \"condicionAlmacen\": \"AMBIENTE\",\n    \"requiereCadenaFrio\": false,\n    \"registroSanitario\": \"RS-MET-850\",\n    \"unidadMedida\": \"TABLETA\",\n    \"vidaUtilMeses\": 24,\n    \"tempMin\": 15.0,\n    \"tempMax\": 30.0\n  },\n  \"observaciones\": \"Cliente y producto completamente nuevos\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/cliente-productos/crear-o-asociar",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cliente-productos",
+                                "crear-o-asociar"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Obtener Productos de un Cliente",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/cliente-productos/cliente/{{clienteId}}/productos",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cliente-productos",
+                                "cliente",
+                                "{{clienteId}}",
+                                "productos"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Obtener Relaciones de un Cliente",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/cliente-productos/cliente/{{clienteId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cliente-productos",
+                                "cliente",
+                                "{{clienteId}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Obtener Clientes de un Producto",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/cliente-productos/producto/{{productoId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cliente-productos",
+                                "producto",
+                                "{{productoId}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Contar Productos de un Cliente",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/cliente-productos/cliente/{{clienteId}}/count",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cliente-productos",
+                                "cliente",
+                                "{{clienteId}}",
+                                "count"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Desactivar Relación",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{baseUrl}}/cliente-productos/cliente/{{clienteId}}/producto/{{productoId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cliente-productos",
+                                "cliente",
+                                "{{clienteId}}",
+                                "producto",
+                                "{{productoId}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Activar Relación",
+                    "request": {
+                        "method": "PATCH",
+                        "url": {
+                            "raw": "{{baseUrl}}/cliente-productos/cliente/{{clienteId}}/producto/{{productoId}}/activar",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cliente-productos",
+                                "cliente",
+                                "{{clienteId}}",
+                                "producto",
+                                "{{productoId}}",
+                                "activar"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "🚀 Flujos Avanzados Cliente-Productos",
+            "item": [
+                {
+                    "name": "Flujo 1: Asignación Masiva",
+                    "item": [
+                        {
+                            "name": "1. Crear Cliente",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "if (pm.response.code === 201) {",
+                                            "    var jsonData = pm.response.json();",
+                                            "    pm.collectionVariables.set(\"clienteId\", jsonData.data.id);",
+                                            "    console.log(\"✅ Cliente creado: \" + jsonData.data.id);",
+                                            "}"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"razonSocial\": \"Farmacia Masiva S.A.C.\",\n  \"rucDni\": \"20111111111\",\n  \"direccionEntrega\": \"Av. Test 100\",\n  \"distrito\": \"Lima\",\n  \"telefono\": \"01-111-1111\",\n  \"email\": \"masiva@test.com\",\n  \"tipoCliente\": \"FARMACIA\",\n  \"formaPago\": \"CREDITO\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{baseUrl}}/clientes",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "clientes"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "2. Listar Productos Disponibles",
+                            "request": {
+                                "method": "GET",
+                                "url": {
+                                    "raw": "{{baseUrl}}/productos?size=10",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "productos"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "size",
+                                            "value": "10"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "3. Asignar Varios Productos",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"clienteId\": \"{{clienteId}}\",\n  \"productosIds\": [\n    \"producto-id-1\",\n    \"producto-id-2\",\n    \"producto-id-3\"\n  ],\n  \"observaciones\": \"Asignación masiva inicial\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{baseUrl}}/cliente-productos/asignar-varios",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "cliente-productos",
+                                        "asignar-varios"
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Flujo 2: Cliente Nuevo con Productos Existentes",
+                    "item": [
+                        {
+                            "name": "1. Ver Catálogo de Productos",
+                            "request": {
+                                "method": "GET",
+                                "url": {
+                                    "raw": "{{baseUrl}}/productos?size=20",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "productos"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "size",
+                                            "value": "20"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "2. Crear Cliente con Productos del Catálogo",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "if (pm.response.code === 201) {",
+                                            "    var jsonData = pm.response.json();",
+                                            "    pm.collectionVariables.set(\"clienteId\", jsonData.data.cliente.id);",
+                                            "    console.log(\"✅ Cliente: \" + jsonData.data.cliente.razonSocial);",
+                                            "    console.log(\"✅ Productos asignados: \" + jsonData.data.totalAsignaciones);",
+                                            "}"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"cliente\": {\n    \"razonSocial\": \"Farmacia Catálogo S.A.C.\",\n    \"rucDni\": \"20222222222\",\n    \"direccionEntrega\": \"Av. Catálogo 200\",\n    \"distrito\": \"Miraflores\",\n    \"telefono\": \"01-222-2222\",\n    \"email\": \"catalogo@test.com\",\n    \"tipoCliente\": \"FARMACIA\",\n    \"formaPago\": \"CREDITO\"\n  },\n  \"productosExistentesIds\": [\n    \"producto-id-1\",\n    \"producto-id-2\"\n  ],\n  \"productosNuevos\": [],\n  \"observaciones\": \"Cliente con productos del catálogo\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{baseUrl}}/cliente-productos/crear-cliente-con-productos",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "cliente-productos",
+                                        "crear-cliente-con-productos"
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Flujo 3: Cliente Nuevo con Productos Personalizados",
+                    "item": [
+                        {
+                            "name": "Crear Cliente con Productos Nuevos",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "if (pm.response.code === 201) {",
+                                            "    var jsonData = pm.response.json();",
+                                            "    pm.collectionVariables.set(\"clienteId\", jsonData.data.cliente.id);",
+                                            "    console.log(\"✅ Cliente: \" + jsonData.data.cliente.razonSocial);",
+                                            "    console.log(\"✅ Productos creados: \" + jsonData.data.totalAsignaciones);",
+                                            "}"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"cliente\": {\n    \"razonSocial\": \"Botica Personalizada S.A.C.\",\n    \"rucDni\": \"20333333333\",\n    \"direccionEntrega\": \"Jr. Personal 300\",\n    \"distrito\": \"San Isidro\",\n    \"telefono\": \"01-333-3333\",\n    \"email\": \"personal@test.com\",\n    \"tipoCliente\": \"BOTICA\",\n    \"formaPago\": \"CONTADO\"\n  },\n  \"productosExistentesIds\": [],\n  \"productosNuevos\": [\n    {\n      \"codigoSKU\": \"CUSTOM001\",\n      \"nombre\": \"Producto Personalizado 1\",\n      \"tipo\": \"MEDICAMENTO\",\n      \"condicionAlmacen\": \"AMBIENTE\",\n      \"requiereCadenaFrio\": false,\n      \"registroSanitario\": \"RS-CUSTOM-001\",\n      \"unidadMedida\": \"TABLETA\",\n      \"vidaUtilMeses\": 24,\n      \"tempMin\": 15.0,\n      \"tempMax\": 30.0\n    },\n    {\n      \"codigoSKU\": \"CUSTOM002\",\n      \"nombre\": \"Producto Personalizado 2\",\n      \"tipo\": \"MEDICAMENTO\",\n      \"condicionAlmacen\": \"REFRIGERADO\",\n      \"requiereCadenaFrio\": true,\n      \"registroSanitario\": \"RS-CUSTOM-002\",\n      \"unidadMedida\": \"AMPOLLA\",\n      \"vidaUtilMeses\": 12,\n      \"tempMin\": 2.0,\n      \"tempMax\": 8.0\n    }\n  ],\n  \"observaciones\": \"Cliente con productos exclusivos\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{baseUrl}}/cliente-productos/crear-cliente-con-productos",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "cliente-productos",
+                                        "crear-cliente-con-productos"
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Flujo 4: Todo Nuevo (Cliente + Producto)",
+                    "item": [
+                        {
+                            "name": "Crear Cliente y Producto Nuevos",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "if (pm.response.code === 201) {",
+                                            "    var jsonData = pm.response.json();",
+                                            "    pm.collectionVariables.set(\"clienteId\", jsonData.data.cliente.id);",
+                                            "    console.log(\"✅ Cliente nuevo: \" + jsonData.data.cliente.razonSocial);",
+                                            "    console.log(\"✅ Producto nuevo: \" + jsonData.data.productos[0].nombre);",
+                                            "}"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"clienteNuevo\": {\n    \"razonSocial\": \"Farmacia Completa S.A.C.\",\n    \"rucDni\": \"20444444444\",\n    \"direccionEntrega\": \"Av. Nueva 400\",\n    \"distrito\": \"Surco\",\n    \"telefono\": \"01-444-4444\",\n    \"email\": \"completa@test.com\",\n    \"tipoCliente\": \"FARMACIA\",\n    \"formaPago\": \"CREDITO\"\n  },\n  \"productoNuevo\": {\n    \"codigoSKU\": \"NUEVO001\",\n    \"nombre\": \"Producto Completamente Nuevo\",\n    \"tipo\": \"MEDICAMENTO\",\n    \"condicionAlmacen\": \"AMBIENTE\",\n    \"requiereCadenaFrio\": false,\n    \"registroSanitario\": \"RS-NUEVO-001\",\n    \"unidadMedida\": \"CAPSULA\",\n    \"vidaUtilMeses\": 36,\n    \"tempMin\": 15.0,\n    \"tempMax\": 30.0\n  },\n  \"observaciones\": \"Inicio de relación comercial\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{baseUrl}}/cliente-productos/crear-o-asociar",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "cliente-productos",
+                                        "crear-o-asociar"
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "🧪 Flujo Completo de Prueba",
+            "item": [
+                {
+                    "name": "1. Crear Proveedor",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    if (jsonData.data && jsonData.data.id) {",
+                                    "        pm.collectionVariables.set(\"proveedorId\", jsonData.data.id);",
+                                    "        console.log(\"✅ Proveedor ID: \" + jsonData.data.id);",
+                                    "    }",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{baseUrl}}/proveedores/crear-prueba",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "proveedores",
+                                "crear-prueba"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "2. Listar Proveedores",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/proveedores/activos",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "proveedores",
+                                "activos"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "3. Listar Productos",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/productos?size=10",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "productos"
+                            ],
+                            "query": [
+                                {
+                                    "key": "size",
+                                    "value": "10"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "4. Crear Cliente",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    if (jsonData.data && jsonData.data.id) {",
+                                    "        pm.collectionVariables.set(\"clienteId\", jsonData.data.id);",
+                                    "        console.log(\"✅ Cliente ID: \" + jsonData.data.id);",
+                                    "    }",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"razonSocial\": \"Farmacia Test S.A.C.\",\n  \"rucDni\": \"20987654321\",\n  \"direccionEntrega\": \"Av. Test 123, Lima\",\n  \"distrito\": \"Lima\",\n  \"telefono\": \"01-234-5678\",\n  \"email\": \"contacto@farmaciatest.com\",\n  \"tipoCliente\": \"FARMACIA\",\n  \"formaPago\": \"CREDITO\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/clientes",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "clientes"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "5. Crear Producto",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    if (jsonData.data && jsonData.data.id) {",
+                                    "        pm.collectionVariables.set(\"productoId\", jsonData.data.id);",
+                                    "        console.log(\"✅ Producto ID: \" + jsonData.data.id);",
+                                    "    }",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"codigoSKU\": \"PAR500MG\",\n  \"nombre\": \"Paracetamol 500mg\",\n  \"tipo\": \"MEDICAMENTO\",\n  \"condicionAlmacen\": \"AMBIENTE\",\n  \"requiereCadenaFrio\": false,\n  \"registroSanitario\": \"RS-12345\",\n  \"unidadMedida\": \"TABLETA\",\n  \"vidaUtilMeses\": 36,\n  \"tempMin\": 15.0,\n  \"tempMax\": 30.0\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/productos",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "productos"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "6. Asignar Producto a Cliente",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"clienteId\": \"{{clienteId}}\",\n  \"productoId\": \"{{productoId}}\",\n  \"observaciones\": \"Producto principal del cliente\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/cliente-productos",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cliente-productos"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "7. Listar Productos del Cliente",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/cliente-productos/cliente/{{clienteId}}/productos",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cliente-productos",
+                                "cliente",
+                                "{{clienteId}}",
+                                "productos"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "8. Crear Recepción",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"numeroOrdenCompra\": \"OC-TEST-001\",\n  \"numeroGuiaRemision\": \"GR-TEST-001\",\n  \"proveedorId\": \"{{proveedorId}}\",\n  \"fechaRecepcion\": \"2024-10-21T10:30:00\",\n  \"responsableRecepcion\": \"Juan Pérez\",\n  \"estado\": \"PENDIENTE\",\n  \"observaciones\": \"Prueba de recepción\",\n  \"verificacionDocumentos\": false,\n  \"verificacionFisica\": false,\n  \"verificacionTemperatura\": false,\n  \"aprobadoPorCalidad\": false,\n  \"detalles\": []\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/recepciones",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "recepciones"
+                            ]
+                        }
+                    }
+                }
+            ]
         }
-      ]
-    }
-  ]
+    ]
 }

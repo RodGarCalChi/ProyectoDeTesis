@@ -1,8 +1,7 @@
 package org.example.backend.controller;
 
 import jakarta.validation.Valid;
-import org.example.backend.dto.ClienteProductoDTO;
-import org.example.backend.dto.ProductoDTO;
+import org.example.backend.dto.*;
 import org.example.backend.service.ClienteProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -141,6 +140,62 @@ public class ClienteProductoController {
                     "count", count
             ));
         } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", e.getMessage()
+            ));
+        }
+    }
+    
+    // ========== NUEVOS ENDPOINTS AVANZADOS ==========
+    
+    // Asignar múltiples productos a un cliente existente
+    @PostMapping("/asignar-varios")
+    public ResponseEntity<?> asignarVariosProductos(@Valid @RequestBody AsignarProductosDTO dto) {
+        try {
+            ResultadoAsignacionDTO resultado = clienteProductoService.asignarVariosProductos(dto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
+                    "success", true,
+                    "message", resultado.getMensaje(),
+                    "data", resultado
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", e.getMessage()
+            ));
+        }
+    }
+    
+    // Crear cliente con productos (existentes y/o nuevos)
+    @PostMapping("/crear-cliente-con-productos")
+    public ResponseEntity<?> crearClienteConProductos(@Valid @RequestBody ClienteConProductosDTO dto) {
+        try {
+            ResultadoAsignacionDTO resultado = clienteProductoService.crearClienteConProductos(dto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
+                    "success", true,
+                    "message", resultado.getMensaje(),
+                    "data", resultado
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", e.getMessage()
+            ));
+        }
+    }
+    
+    // Crear/asociar producto con cliente (maneja todos los casos)
+    @PostMapping("/crear-o-asociar")
+    public ResponseEntity<?> crearOAsociarProductoConCliente(@Valid @RequestBody ProductoConClienteDTO dto) {
+        try {
+            ResultadoAsignacionDTO resultado = clienteProductoService.crearOAsociarProductoConCliente(dto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
+                    "success", true,
+                    "message", resultado.getMensaje(),
+                    "data", resultado
+            ));
+        } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of(
                     "success", false,
                     "message", e.getMessage()
