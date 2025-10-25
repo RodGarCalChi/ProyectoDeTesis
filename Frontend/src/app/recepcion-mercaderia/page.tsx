@@ -5,14 +5,17 @@ import { useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigation } from '@/components/Navigation';
-import { clientesApi, productosApi, recepcionesApi } from '@/lib/api';
+import { proveedoresApi, productosApi, recepcionesApi } from '@/lib/api';
 
-interface Cliente {
+interface Proveedor {
   id: string;
   razonSocial: string;
-  rucDni: string;
-  tipoCliente: string;
-  activo: boolean;
+  ruc: string;
+  contacto: string;
+  telefono: string;
+  email: string;
+  direccion: string;
+  habilitado: boolean;
 }
 
 interface Producto {
@@ -25,8 +28,8 @@ interface Producto {
 
 interface RecepcionFormData {
   numeroDocumentoRecepcion: string;
-  clienteId: string;
-  clienteNombre: string;
+  proveedorId: string;
+  proveedorNombre: string;
   fechaLlegada: string;
   horaLlegada: string;
   responsableRecepcion: string;
@@ -47,15 +50,15 @@ function RecepcionMercaderiaContent() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('nueva-recepcion');
   const [loading, setLoading] = useState(false);
-  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [proveedores, setProveedores] = useState<Proveedor[]>([]);
   const [productos, setProductos] = useState<Producto[]>([]);
   const [recepciones, setRecepciones] = useState([]);
   
   // Estado del formulario simplificado
   const [formData, setFormData] = useState<RecepcionFormData>({
     numeroDocumentoRecepcion: '',
-    clienteId: '',
-    clienteNombre: '',
+    proveedorId: '',
+    proveedorNombre: '',
     fechaLlegada: new Date().toISOString().slice(0, 10),
     horaLlegada: new Date().toTimeString().slice(0, 5),
     responsableRecepcion: user?.username || '',
@@ -73,18 +76,39 @@ function RecepcionMercaderiaContent() {
 
   // Cargar datos iniciales
   useEffect(() => {
-    cargarClientes();
+    cargarProveedores();
     cargarProductos();
   }, []);
 
-  const cargarClientes = async () => {
+  const cargarProveedores = async () => {
     try {
-      const data = await clientesApi.obtenerActivos();
+      console.log('🔄 Iniciando carga de proveedores...');
+      
+      // Primero probar conectividad
+      console.log('🌐 Probando conectividad...');
+      const testResult = await proveedoresApi.test();
+      console.log('✅ Test de conectividad:', testResult);
+      
+      // Intentar crear un proveedor de prueba
+      console.log('📝 Creando proveedor de prueba...');
+      const resultadoCreacion = await proveedoresApi.crearPrueba();
+      console.log('✅ Resultado creación proveedor:', resultadoCreacion);
+      
+      // Luego cargar los proveedores
+      console.log('📋 Obteniendo proveedores activos...');
+      const data = await proveedoresApi.obtenerActivos();
+      console.log('📊 Datos recibidos:', data);
+      
       if (data.success) {
-        setClientes(data.data);
+        console.log('✅ Proveedores cargados:', data.data);
+        console.log('📈 Cantidad de proveedores:', data.data.length);
+        setProveedores(data.data);
+      } else {
+        console.error('❌ Error en respuesta:', data);
       }
     } catch (error) {
-      console.error('Error al cargar clientes:', error);
+      console.error('💥 Error al cargar proveedores:', error);
+      console.error('📋 Detalles del error:', error instanceof Error ? error.message : String(error));
     }
   };
 
@@ -107,13 +131,13 @@ function RecepcionMercaderiaContent() {
     }));
   };
 
-  const handleClienteSelect = (clienteId: string) => {
-    const cliente = clientes.find(c => c.id === clienteId);
-    if (cliente) {
+  const handleProveedorSelect = (proveedorId: string) => {
+    const proveedor = proveedores.find(p => p.id === proveedorId);
+    if (proveedor) {
       setFormData(prev => ({
         ...prev,
-        clienteId: cliente.id,
-        clienteNombre: cliente.razonSocial
+        proveedorId: proveedor.id,
+        proveedorNombre: proveedor.razonSocial
       }));
     }
   };
@@ -172,7 +196,7 @@ function RecepcionMercaderiaContent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.clienteId || !formData.numeroDocumentoRecepcion) {
+    if (!formData.proveedorId || !formData.numeroDocumentoRecepcion) {
       alert('Por favor complete los campos obligatorios');
       return;
     }
@@ -189,7 +213,7 @@ function RecepcionMercaderiaContent() {
       const recepcionData = {
         numeroOrdenCompra: formData.numeroDocumentoRecepcion,
         numeroGuiaRemision: formData.numeroDocumentoRecepcion,
-        proveedorId: formData.clienteId, // Usando cliente como proveedor por simplicidad
+        proveedorId: formData.proveedorId,
         fechaRecepcion: `${formData.fechaLlegada}T${formData.horaLlegada}:00`,
         responsableRecepcion: formData.responsableRecepcion,
         estado: 'PENDIENTE',
@@ -215,8 +239,8 @@ function RecepcionMercaderiaContent() {
         // Limpiar formulario
         setFormData({
           numeroDocumentoRecepcion: '',
-          clienteId: '',
-          clienteNombre: '',
+          proveedorId: '',
+          proveedorNombre: '',
           fechaLlegada: new Date().toISOString().slice(0, 10),
           horaLlegada: new Date().toTimeString().slice(0, 5),
           responsableRecepcion: user?.username || '',
@@ -310,22 +334,22 @@ function RecepcionMercaderiaContent() {
                   </div>
 
                   <div>
-                    <label htmlFor="clienteId" className="block text-sm font-medium text-gray-700 mb-2">
-                      Cliente *
+                    <label htmlFor="proveedorId" className="block text-sm font-medium text-gray-700 mb-2">
+                      Proveedor *
                     </label>
                     <div className="relative">
                       <select
-                        id="clienteId"
-                        name="clienteId"
-                        value={formData.clienteId}
-                        onChange={(e) => handleClienteSelect(e.target.value)}
+                        id="proveedorId"
+                        name="proveedorId"
+                        value={formData.proveedorId}
+                        onChange={(e) => handleProveedorSelect(e.target.value)}
                         required
                         className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors appearance-none cursor-pointer"
                       >
-                        <option value="">Seleccione un cliente</option>
-                        {clientes.map(cliente => (
-                          <option key={cliente.id} value={cliente.id}>
-                            {cliente.razonSocial} - {cliente.rucDni}
+                        <option value="">Seleccione un proveedor</option>
+                        {proveedores.map(proveedor => (
+                          <option key={proveedor.id} value={proveedor.id}>
+                            {proveedor.razonSocial} - {proveedor.ruc}
                           </option>
                         ))}
                       </select>
@@ -533,8 +557,8 @@ function RecepcionMercaderiaContent() {
                   onClick={() => {
                     setFormData({
                       numeroDocumentoRecepcion: '',
-                      clienteId: '',
-                      clienteNombre: '',
+                      proveedorId: '',
+                      proveedorNombre: '',
                       fechaLlegada: new Date().toISOString().slice(0, 10),
                       horaLlegada: new Date().toTimeString().slice(0, 5),
                       responsableRecepcion: user?.username || '',

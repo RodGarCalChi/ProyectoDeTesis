@@ -150,16 +150,25 @@ export const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
+  console.log(`🌐 Haciendo petición a: ${API_BASE_URL}${url}`);
+  console.log('🔑 Token presente:', !!token);
+
   const response = await fetch(`${API_BASE_URL}${url}`, {
     ...options,
     headers,
   });
 
+  console.log(`📡 Respuesta HTTP: ${response.status} ${response.statusText}`);
+
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const errorText = await response.text();
+    console.error(`❌ Error HTTP ${response.status}:`, errorText);
+    throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
   }
 
-  return response.json();
+  const result = await response.json();
+  console.log('📦 Datos recibidos:', result);
+  return result;
 };
 
 // API específica para clientes
@@ -177,6 +186,15 @@ export const productosApi = {
     const queryString = params ? `?${new URLSearchParams(params)}` : '';
     return fetchWithAuth(`/productos${queryString}`);
   }
+};
+
+// API específica para proveedores
+export const proveedoresApi = {
+  test: () => fetchWithAuth('/proveedores/test'),
+  obtenerActivos: () => fetchWithAuth('/proveedores/activos'),
+  crearPrueba: () => fetchWithAuth('/proveedores/crear-prueba', {
+    method: 'POST'
+  })
 };
 
 // API específica para recepciones
