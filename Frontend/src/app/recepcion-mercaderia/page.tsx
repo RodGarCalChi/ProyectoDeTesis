@@ -5,44 +5,27 @@ import { useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigation } from '@/components/Navigation';
-import { proveedoresApi, productosApi, recepcionesApi } from '@/lib/api';
+import { clientesApi, recepcionesApi } from '@/lib/api';
 
-interface Proveedor {
+interface Cliente {
   id: string;
   razonSocial: string;
-  ruc: string;
-  contacto: string;
+  rucDni: string;
+  direccionEntrega: string;
+  distrito: string;
   telefono: string;
   email: string;
-  direccion: string;
-  habilitado: boolean;
-}
-
-interface Producto {
-  id: string;
-  nombre: string;
-  codigoSKU: string;
-  tipo: string;
-  requiereCadenaFrio: boolean;
+  activo: boolean;
 }
 
 interface RecepcionFormData {
   numeroDocumentoRecepcion: string;
-  proveedorId: string;
-  proveedorNombre: string;
+  clienteId: string;
+  clienteNombre: string;
   fechaLlegada: string;
   horaLlegada: string;
   responsableRecepcion: string;
-  productos: ProductoRecepcion[];
   observaciones: string;
-}
-
-interface ProductoRecepcion {
-  id?: string;
-  productoId: string;
-  productoNombre: string;
-  cantidad: number;
-  observaciones?: string;
 }
 
 function RecepcionMercaderiaContent() {
@@ -50,76 +33,49 @@ function RecepcionMercaderiaContent() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('nueva-recepcion');
   const [loading, setLoading] = useState(false);
-  const [proveedores, setProveedores] = useState<Proveedor[]>([]);
-  const [productos, setProductos] = useState<Producto[]>([]);
-  const [recepciones, setRecepciones] = useState([]);
-  
-  // Estado del formulario simplificado
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  // Estado del formulario simplificado (SIN productos)
   const [formData, setFormData] = useState<RecepcionFormData>({
     numeroDocumentoRecepcion: '',
-    proveedorId: '',
-    proveedorNombre: '',
+    clienteId: '',
+    clienteNombre: '',
     fechaLlegada: new Date().toISOString().slice(0, 10),
     horaLlegada: new Date().toTimeString().slice(0, 5),
     responsableRecepcion: user?.username || '',
-    productos: [],
-    observaciones: ''
-  });
-
-  // Estado para nuevo producto
-  const [nuevoProducto, setNuevoProducto] = useState<ProductoRecepcion>({
-    productoId: '',
-    productoNombre: '',
-    cantidad: 0,
     observaciones: ''
   });
 
   // Cargar datos iniciales
   useEffect(() => {
-    cargarProveedores();
-    cargarProductos();
+    cargarClientes();
   }, []);
 
-  const cargarProveedores = async () => {
+  const cargarClientes = async () => {
     try {
-      console.log('🔄 Iniciando carga de proveedores...');
-      
-      // Primero probar conectividad
-      console.log('🌐 Probando conectividad...');
-      const testResult = await proveedoresApi.test();
-      console.log('✅ Test de conectividad:', testResult);
-      
-      // Intentar crear un proveedor de prueba
-      console.log('📝 Creando proveedor de prueba...');
-      const resultadoCreacion = await proveedoresApi.crearPrueba();
-      console.log('✅ Resultado creación proveedor:', resultadoCreacion);
-      
-      // Luego cargar los proveedores
-      console.log('📋 Obteniendo proveedores activos...');
-      const data = await proveedoresApi.obtenerActivos();
+      console.log('🔄 Iniciando carga de clientes...');
+
+      const data = await clientesApi.obtenerActivos();
       console.log('📊 Datos recibidos:', data);
-      
+
       if (data.success) {
-        console.log('✅ Proveedores cargados:', data.data);
-        console.log('📈 Cantidad de proveedores:', data.data.length);
-        setProveedores(data.data);
+        console.log('✅ Clientes cargados:', data.data);
+        console.log('📈 Cantidad de clientes:', data.data.length);
+        setClientes(data.data);
+
+        if (data.data.length === 0) {
+          setErrorMessage('⚠️ No hay clientes activos en el sistema. Por favor, cree clientes primero.');
+        }
       } else {
         console.error('❌ Error en respuesta:', data);
+        setErrorMessage('❌ Error al cargar clientes: ' + (data.message || 'Error desconocido'));
       }
     } catch (error) {
-      console.error('💥 Error al cargar proveedores:', error);
+      console.error('💥 Error al cargar clientes:', error);
       console.error('📋 Detalles del error:', error instanceof Error ? error.message : String(error));
-    }
-  };
-
-  const cargarProductos = async () => {
-    try {
-      const data = await productosApi.obtenerTodos({ size: 100 });
-      if (data.success) {
-        setProductos(data.data);
-      }
-    } catch (error) {
-      console.error('Error al cargar productos:', error);
+      setErrorMessage('❌ Error al conectar con el servidor. Verifique que el backend esté corriendo.');
     }
   };
 
@@ -131,89 +87,35 @@ function RecepcionMercaderiaContent() {
     }));
   };
 
-  const handleProveedorSelect = (proveedorId: string) => {
-    const proveedor = proveedores.find(p => p.id === proveedorId);
-    if (proveedor) {
+  const handleClienteSelect = (clienteId: string) => {
+    const cliente = clientes.find(c => c.id === clienteId);
+    if (cliente) {
       setFormData(prev => ({
         ...prev,
-        proveedorId: proveedor.id,
-        proveedorNombre: proveedor.razonSocial
+        clienteId: cliente.id,
+        clienteNombre: cliente.razonSocial
       }));
     }
-  };
-
-  const handleProductoChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target;
-    setNuevoProducto(prev => ({
-      ...prev,
-      [name]: type === 'number' ? parseFloat(value) || 0 : value
-    }));
-  };
-
-  const handleProductoSelect = (productoId: string) => {
-    const producto = productos.find(p => p.id === productoId);
-    if (producto) {
-      setNuevoProducto(prev => ({
-        ...prev,
-        productoId: producto.id,
-        productoNombre: producto.nombre
-      }));
-    }
-  };
-
-  const agregarProducto = () => {
-    if (!nuevoProducto.productoId || nuevoProducto.cantidad <= 0) {
-      alert('Por favor seleccione un producto y especifique la cantidad');
-      return;
-    }
-
-    const producto: ProductoRecepcion = {
-      ...nuevoProducto,
-      id: Date.now().toString()
-    };
-
-    setFormData(prev => ({
-      ...prev,
-      productos: [...prev.productos, producto]
-    }));
-
-    // Limpiar formulario de producto
-    setNuevoProducto({
-      productoId: '',
-      productoNombre: '',
-      cantidad: 0,
-      observaciones: ''
-    });
-  };
-
-  const eliminarProducto = (productoId: string) => {
-    setFormData(prev => ({
-      ...prev,
-      productos: prev.productos.filter(p => p.id !== productoId)
-    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.proveedorId || !formData.numeroDocumentoRecepcion) {
+
+    if (!formData.clienteId || !formData.numeroDocumentoRecepcion) {
       alert('Por favor complete los campos obligatorios');
       return;
     }
 
-    if (formData.productos.length === 0) {
-      alert('Debe agregar al menos un producto a la recepción');
-      return;
-    }
-
     setLoading(true);
-    
+
     try {
-      // Preparar datos para la API
+      console.log('📤 Enviando datos de recepción...');
+
+      // Preparar datos para la API (SIN productos)
       const recepcionData = {
         numeroOrdenCompra: formData.numeroDocumentoRecepcion,
         numeroGuiaRemision: formData.numeroDocumentoRecepcion,
-        proveedorId: formData.proveedorId,
+        clienteId: formData.clienteId, // Ahora el backend acepta clienteId
         fechaRecepcion: `${formData.fechaLlegada}T${formData.horaLlegada}:00`,
         responsableRecepcion: formData.responsableRecepcion,
         estado: 'PENDIENTE',
@@ -222,103 +124,132 @@ function RecepcionMercaderiaContent() {
         verificacionFisica: false,
         verificacionTemperatura: false,
         aprobadoPorCalidad: false,
-        detalles: formData.productos.map(producto => ({
-          productoId: producto.productoId,
-          cantidadEsperada: producto.cantidad,
-          cantidadRecibida: producto.cantidad,
-          conforme: true,
-          observaciones: producto.observaciones
-        }))
+        detalles: [] // Sin productos
       };
+
+      console.log('📦 Datos a enviar:', recepcionData);
 
       const result = await recepcionesApi.crear(recepcionData);
 
+      console.log('📥 Respuesta del servidor:', result);
+
       if (result.success) {
-        alert('Recepción de mercadería registrada exitosamente');
-        
+        setSuccessMessage('✅ Recepción de mercadería registrada exitosamente. Ahora puede agregar productos en el Acta de Recepción.');
+        setErrorMessage('');
+
         // Limpiar formulario
         setFormData({
           numeroDocumentoRecepcion: '',
-          proveedorId: '',
-          proveedorNombre: '',
+          clienteId: '',
+          clienteNombre: '',
           fechaLlegada: new Date().toISOString().slice(0, 10),
           horaLlegada: new Date().toTimeString().slice(0, 5),
           responsableRecepcion: user?.username || '',
-          productos: [],
           observaciones: ''
         });
+
+        // Limpiar mensaje después de 5 segundos
+        setTimeout(() => setSuccessMessage(''), 5000);
+
+        // Scroll al inicio
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
-        alert(`Error: ${result.message}`);
+        console.error('❌ Error en respuesta:', result);
+        setErrorMessage(`❌ Error: ${result.message || 'Error desconocido'}`);
+        setSuccessMessage('');
       }
-      
-    } catch (error) {
-      console.error('Error al registrar recepción:', error);
-      alert('Error al conectar con el servidor');
+
+    } catch (error: any) {
+      console.error('💥 Error al registrar recepción:', error);
+      console.error('�n Detalles:', error.message);
+      setErrorMessage(`❌ Error al conectar con el servidor: ${error.message || 'Error desconocido'}`);
+      setSuccessMessage('');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="bg-gray-50 min-h-screen">
       <Navigation />
-      
+
       <div className="p-6">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">🏥 PharmaFlow</h1>
-          <h2 className="text-xl font-semibold text-gray-800">Recepción de Mercadería</h2>
+          <h1 className="mb-2 font-bold text-gray-900 text-2xl">🏥 PharmaFlow</h1>
+          <h2 className="font-semibold text-gray-800 text-xl">Recepción de Mercadería</h2>
         </div>
 
         {/* Tabs */}
         <div className="mb-6">
-          <div className="flex border-b border-gray-200">
+          <div className="flex border-gray-200 border-b">
             <button
               onClick={() => setActiveTab('nueva-recepcion')}
-              className={`py-2 px-4 text-sm font-medium border-b-2 ${
-                activeTab === 'nueva-recepcion'
+              className={`py-2 px-4 text-sm font-medium border-b-2 ${activeTab === 'nueva-recepcion'
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
+                }`}
             >
               📦 Nueva Recepción
             </button>
             <button
               onClick={() => setActiveTab('historial')}
-              className={`py-2 px-4 text-sm font-medium border-b-2 ${
-                activeTab === 'historial'
+              className={`py-2 px-4 text-sm font-medium border-b-2 ${activeTab === 'historial'
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
+                }`}
             >
               📋 Historial
             </button>
           </div>
         </div>
 
+        {/* Mensajes de éxito/error */}
+        {successMessage && (
+          <div className="bg-green-50 mb-6 p-4 border border-green-200 rounded-lg">
+            <div className="flex items-center">
+              <svg className="mr-3 w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="font-medium text-green-800">{successMessage}</p>
+            </div>
+          </div>
+        )}
+
+        {errorMessage && (
+          <div className="bg-red-50 mb-6 p-4 border border-red-200 rounded-lg">
+            <div className="flex items-center">
+              <svg className="mr-3 w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="font-medium text-red-800">{errorMessage}</p>
+            </div>
+          </div>
+        )}
+
         {/* Nueva Recepción */}
         {activeTab === 'nueva-recepcion' && (
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-            <div className="p-6 border-b border-gray-200">
+          <div className="bg-white shadow-sm border border-gray-200 rounded-lg">
+            <div className="p-6 border-gray-200 border-b">
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                <div className="flex justify-center items-center bg-blue-100 rounded-full w-8 h-8">
                   <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-blue-700">Registrar Nueva Recepción de Mercadería</h3>
+                <h3 className="font-semibold text-blue-700 text-lg">Registrar Nueva Recepción de Mercadería</h3>
               </div>
-              <p className="text-sm text-gray-600">
-                Complete la información de la mercadería recibida del cliente
+              <p className="text-gray-600 text-sm">
+                Complete la información de la mercadería recibida del cliente (los productos se agregarán después en el Acta de Recepción)
               </p>
             </div>
 
             <form onSubmit={handleSubmit} className="p-6">
               {/* Información de Recepción */}
               <div className="mb-8">
-                <h4 className="text-md font-semibold text-gray-800 mb-4">📋 Información de Recepción</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <h4 className="mb-4 font-semibold text-gray-800 text-md">📋 Información de Recepción</h4>
+                <div className="gap-6 grid grid-cols-1 md:grid-cols-2">
                   <div>
-                    <label htmlFor="numeroDocumentoRecepcion" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="numeroDocumentoRecepcion" className="block mb-2 font-medium text-gray-700 text-sm">
                       Número de Documento de Recepción *
                     </label>
                     <input
@@ -329,38 +260,44 @@ function RecepcionMercaderiaContent() {
                       onChange={handleInputChange}
                       placeholder="Ej: REC-2024-001"
                       required
-                      className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
+                      className="bg-gray-50 focus:bg-white px-3 py-2 border border-gray-300 focus:border-blue-500 rounded-lg focus:outline-none w-full text-gray-700 transition-colors placeholder-gray-500"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="proveedorId" className="block text-sm font-medium text-gray-700 mb-2">
-                      Proveedor *
+                    <label htmlFor="clienteId" className="block mb-2 font-medium text-gray-700 text-sm">
+                      Cliente (Dueño de la Mercadería) *
                     </label>
                     <div className="relative">
                       <select
-                        id="proveedorId"
-                        name="proveedorId"
-                        value={formData.proveedorId}
-                        onChange={(e) => handleProveedorSelect(e.target.value)}
+                        id="clienteId"
+                        name="clienteId"
+                        value={formData.clienteId}
+                        onChange={(e) => handleClienteSelect(e.target.value)}
                         required
-                        className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors appearance-none cursor-pointer"
+                        className="bg-gray-50 focus:bg-white px-3 py-2 border border-gray-300 focus:border-blue-500 rounded-lg focus:outline-none w-full text-gray-700 transition-colors appearance-none cursor-pointer"
                       >
-                        <option value="">Seleccione un proveedor</option>
-                        {proveedores.map(proveedor => (
-                          <option key={proveedor.id} value={proveedor.id}>
-                            {proveedor.razonSocial} - {proveedor.ruc}
+                        <option value="">Seleccione un cliente</option>
+                        {clientes.map((cliente) => (
+                          <option key={cliente.id} value={cliente.id}>
+                            {cliente.razonSocial} - {cliente.rucDni}
                           </option>
                         ))}
                       </select>
-                      <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="top-1/2 right-3 absolute w-4 h-4 text-gray-500 -translate-y-1/2 pointer-events-none transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
                     </div>
+                    {clientes.length > 0 && (
+                      <p className="mt-1 text-green-600 text-xs">✅ {clientes.length} cliente(s) disponible(s)</p>
+                    )}
+                    {clientes.length === 0 && (
+                      <p className="mt-1 text-red-600 text-xs">⚠️ No hay clientes disponibles</p>
+                    )}
                   </div>
 
                   <div>
-                    <label htmlFor="fechaLlegada" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="fechaLlegada" className="block mb-2 font-medium text-gray-700 text-sm">
                       Fecha de Llegada *
                     </label>
                     <input
@@ -370,12 +307,12 @@ function RecepcionMercaderiaContent() {
                       value={formData.fechaLlegada}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
+                      className="bg-gray-50 focus:bg-white px-3 py-2 border border-gray-300 focus:border-blue-500 rounded-lg focus:outline-none w-full text-gray-700 transition-colors"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="horaLlegada" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="horaLlegada" className="block mb-2 font-medium text-gray-700 text-sm">
                       Hora de Llegada *
                     </label>
                     <input
@@ -385,12 +322,12 @@ function RecepcionMercaderiaContent() {
                       value={formData.horaLlegada}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
+                      className="bg-gray-50 focus:bg-white px-3 py-2 border border-gray-300 focus:border-blue-500 rounded-lg focus:outline-none w-full text-gray-700 transition-colors"
                     />
                   </div>
 
                   <div className="md:col-span-2">
-                    <label htmlFor="responsableRecepcion" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="responsableRecepcion" className="block mb-2 font-medium text-gray-700 text-sm">
                       Recepcionista que lo Registró *
                     </label>
                     <input
@@ -401,126 +338,15 @@ function RecepcionMercaderiaContent() {
                       onChange={handleInputChange}
                       placeholder="Nombre del recepcionista"
                       required
-                      className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
+                      className="bg-gray-50 focus:bg-white px-3 py-2 border border-gray-300 focus:border-blue-500 rounded-lg focus:outline-none w-full text-gray-700 transition-colors placeholder-gray-500"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Agregar Productos */}
-              <div className="mb-8">
-                <h4 className="text-md font-semibold text-gray-800 mb-4">📦 Agregar Productos</h4>
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Producto *
-                      </label>
-                      <div className="relative">
-                        <select
-                          value={nuevoProducto.productoId}
-                          onChange={(e) => handleProductoSelect(e.target.value)}
-                          className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:border-blue-500 appearance-none cursor-pointer"
-                        >
-                          <option value="">Seleccione un producto</option>
-                          {productos.map(producto => (
-                            <option key={producto.id} value={producto.id}>
-                              {producto.codigoSKU} - {producto.nombre}
-                            </option>
-                          ))}
-                        </select>
-                        <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Cantidad *
-                      </label>
-                      <input
-                        type="number"
-                        name="cantidad"
-                        value={nuevoProducto.cantidad}
-                        onChange={handleProductoChange}
-                        placeholder="0"
-                        min="1"
-                        className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 placeholder-gray-500 focus:outline-none focus:border-blue-500"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Observaciones
-                      </label>
-                      <input
-                        type="text"
-                        name="observaciones"
-                        value={nuevoProducto.observaciones}
-                        onChange={handleProductoChange}
-                        placeholder="Observaciones del producto"
-                        className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 placeholder-gray-500 focus:outline-none focus:border-blue-500"
-                      />
-                    </div>
-
-                    <div className="flex items-end">
-                      <button
-                        type="button"
-                        onClick={agregarProducto}
-                        className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-                      >
-                        ➕ Agregar
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Lista de Productos Agregados */}
-              {formData.productos.length > 0 && (
-                <div className="mb-8">
-                  <h4 className="text-md font-semibold text-gray-800 mb-4">📋 Productos en esta Recepción</h4>
-                  <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                    <div className="overflow-x-auto">
-                      <table className="w-full">
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Producto</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cantidad</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Observaciones</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200">
-                          {formData.productos.map((producto) => (
-                            <tr key={producto.id} className="hover:bg-gray-50">
-                              <td className="px-4 py-3 text-sm">
-                                <div className="font-medium text-gray-900">{producto.productoNombre}</div>
-                              </td>
-                              <td className="px-4 py-3 text-sm text-gray-900">{producto.cantidad}</td>
-                              <td className="px-4 py-3 text-sm text-gray-900">{producto.observaciones || '-'}</td>
-                              <td className="px-4 py-3 text-sm">
-                                <button
-                                  type="button"
-                                  onClick={() => eliminarProducto(producto.id!)}
-                                  className="text-red-600 hover:text-red-900 font-medium"
-                                >
-                                  Eliminar
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {/* Observaciones Generales */}
               <div className="mb-8">
-                <label htmlFor="observaciones" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="observaciones" className="block mb-2 font-medium text-gray-700 text-sm">
                   Observaciones Generales
                 </label>
                 <textarea
@@ -530,20 +356,36 @@ function RecepcionMercaderiaContent() {
                   onChange={handleInputChange}
                   placeholder="Observaciones sobre la recepción de mercadería..."
                   rows={3}
-                  className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors resize-vertical"
+                  className="bg-gray-50 focus:bg-white px-3 py-2 border border-gray-300 focus:border-blue-500 rounded-lg focus:outline-none w-full text-gray-700 transition-colors resize-vertical placeholder-gray-500"
                 />
+              </div>
+
+              {/* Nota informativa */}
+              <div className="bg-blue-50 mb-8 p-4 border border-blue-200 rounded-lg">
+                <div className="flex items-start">
+                  <svg className="mt-0.5 mr-3 w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div>
+                    <p className="font-medium text-blue-900 text-sm">ℹ️ Nota Importante</p>
+                    <p className="mt-1 text-blue-800 text-sm">
+                      Los productos se agregarán posteriormente en el <strong>Acta de Recepción</strong>.
+                      Este registro solo guarda la información general de la recepción.
+                    </p>
+                  </div>
+                </div>
               </div>
 
               {/* Botones de acción */}
               <div className="flex gap-4">
                 <button
                   type="submit"
-                  disabled={loading || formData.productos.length === 0}
-                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center gap-2"
+                  disabled={loading}
+                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 px-6 py-3 rounded-lg font-medium text-white transition-colors"
                 >
                   {loading ? (
                     <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      <div className="border-white border-b-2 rounded-full w-4 h-4 animate-spin"></div>
                       Registrando...
                     </>
                   ) : (
@@ -557,16 +399,15 @@ function RecepcionMercaderiaContent() {
                   onClick={() => {
                     setFormData({
                       numeroDocumentoRecepcion: '',
-                      proveedorId: '',
-                      proveedorNombre: '',
+                      clienteId: '',
+                      clienteNombre: '',
                       fechaLlegada: new Date().toISOString().slice(0, 10),
                       horaLlegada: new Date().toTimeString().slice(0, 5),
                       responsableRecepcion: user?.username || '',
-                      productos: [],
                       observaciones: ''
                     });
                   }}
-                  className="bg-gray-500 hover:bg-gray-600 text-white font-medium py-3 px-6 rounded-lg transition-colors"
+                  className="bg-gray-500 hover:bg-gray-600 px-6 py-3 rounded-lg font-medium text-white transition-colors"
                 >
                   🔄 Limpiar Formulario
                 </button>
@@ -577,16 +418,16 @@ function RecepcionMercaderiaContent() {
 
         {/* Historial */}
         {activeTab === 'historial' && (
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-            <div className="p-6 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-800">📋 Historial de Recepciones</h3>
-              <p className="text-sm text-gray-600 mt-1">
+          <div className="bg-white shadow-sm border border-gray-200 rounded-lg">
+            <div className="p-6 border-gray-200 border-b">
+              <h3 className="font-semibold text-gray-800 text-lg">📋 Historial de Recepciones</h3>
+              <p className="mt-1 text-gray-600 text-sm">
                 Próximamente: Lista de todas las recepciones registradas
               </p>
             </div>
             <div className="p-6">
-              <div className="text-center py-8">
-                <div className="text-4xl mb-4">📋</div>
+              <div className="py-8 text-center">
+                <div className="mb-4 text-4xl">📋</div>
                 <p className="text-gray-500">Funcionalidad en desarrollo</p>
               </div>
             </div>
