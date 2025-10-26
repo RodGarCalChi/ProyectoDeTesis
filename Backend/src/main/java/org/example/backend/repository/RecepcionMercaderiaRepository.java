@@ -29,9 +29,9 @@ public interface RecepcionMercaderiaRepository extends JpaRepository<RecepcionMe
     // Buscar por estado
     List<RecepcionMercaderia> findByEstado(EstadoRecepcion estado);
     
-    // Buscar por proveedor
-    @Query("SELECT r FROM RecepcionMercaderia r WHERE r.proveedor.id = :proveedorId")
-    List<RecepcionMercaderia> findByProveedorId(@Param("proveedorId") UUID proveedorId);
+    // Buscar por cliente
+    @Query("SELECT r FROM RecepcionMercaderia r WHERE r.cliente.id = :clienteId")
+    List<RecepcionMercaderia> findByClienteId(@Param("clienteId") UUID clienteId);
     
     // Buscar por responsable de recepción
     List<RecepcionMercaderia> findByResponsableRecepcionContainingIgnoreCase(String responsable);
@@ -48,13 +48,13 @@ public interface RecepcionMercaderiaRepository extends JpaRepository<RecepcionMe
            "(:numeroOrden IS NULL OR LOWER(r.numeroOrdenCompra) LIKE LOWER(CONCAT('%', :numeroOrden, '%'))) AND " +
            "(:numeroGuia IS NULL OR LOWER(r.numeroGuiaRemision) LIKE LOWER(CONCAT('%', :numeroGuia, '%'))) AND " +
            "(:estado IS NULL OR r.estado = :estado) AND " +
-           "(:proveedorId IS NULL OR r.proveedor.id = :proveedorId) AND " +
+           "(:clienteId IS NULL OR r.cliente.id = :clienteId) AND " +
            "(:responsable IS NULL OR LOWER(r.responsableRecepcion) LIKE LOWER(CONCAT('%', :responsable, '%')))")
     Page<RecepcionMercaderia> findRecepcionesWithFilters(
             @Param("numeroOrden") String numeroOrden,
             @Param("numeroGuia") String numeroGuia,
             @Param("estado") EstadoRecepcion estado,
-            @Param("proveedorId") UUID proveedorId,
+            @Param("clienteId") UUID clienteId,
             @Param("responsable") String responsable,
             Pageable pageable
     );

@@ -88,7 +88,7 @@ public class RecepcionMercaderiaController {
             @RequestParam(required = false) String numeroOrden,
             @RequestParam(required = false) String numeroGuia,
             @RequestParam(required = false) EstadoRecepcion estado,
-            @RequestParam(required = false) UUID proveedorId,
+            @RequestParam(required = false) UUID clienteId,
             @RequestParam(required = false) String responsable,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -100,7 +100,7 @@ public class RecepcionMercaderiaController {
         
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<RecepcionMercaderiaDTO> recepciones = recepcionService.buscarRecepcionesConFiltros(
-                numeroOrden, numeroGuia, estado, proveedorId, responsable, pageable);
+                numeroOrden, numeroGuia, estado, clienteId, responsable, pageable);
         
         return ResponseEntity.ok(Map.of(
                 "success", true,

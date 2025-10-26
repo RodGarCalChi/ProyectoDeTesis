@@ -1,7 +1,6 @@
 package org.example.backend.service;
 
-import org.example.backend.dto.ActaRecepcionDTO;
-import org.example.backend.dto.DetalleActaRecepcionDTO;
+import org.example.backend.dto.*;
 import org.example.backend.entity.ActaRecepcion;
 import org.example.backend.entity.Cliente;
 import org.example.backend.entity.DetalleActaRecepcion;
@@ -35,7 +34,149 @@ public class ActaRecepcionService {
     @Autowired
     private ProductoRepository productoRepository;
     
-    // Crear nueva acta de recepción
+    // ========== FLUJO EN DOS PASOS ==========
+    
+    // PASO 1: Crear acta de recepción sin productos
+    public ActaRecepcionDTO crearActaSinProductos(ActaRecepcionCreateDTO createDTO) {
+        // Validar que no exista el número de acta
+        if (actaRecepcionRepository.existsByNumeroActa(createDTO.getNumeroActa())) {
+            throw new RuntimeException("Ya existe un acta con el número: " + createDTO.getNumeroActa());
+        }
+        
+        // Buscar cliente
+        Cliente cliente = clienteRepository.findById(createDTO.getClienteId())
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: " + createDTO.getClienteId()));
+        
+        // Crear entidad sin productos
+        ActaRecepcion acta = new ActaRecepcion(
+                createDTO.getNumeroActa(),
+                createDTO.getFechaRecepcion(),
+                cliente,
+                createDTO.getResponsableRecepcion(),
+                createDTO.getLugarRecepcion(),
+                createDTO.getTemperaturaLlegada(),
+                createDTO.getCondicionesTransporte(),
+                createDTO.getObservaciones(),
+                createDTO.getEstado() != null ? createDTO.getEstado() : EstadoDocumento.BORRADOR,
+                createDTO.getCreadoPor()
+        );
+        
+        // Guardar acta
+        ActaRecepcion actaGuardada = actaRecepcionRepository.save(acta);
+        
+        return convertirADTO(actaGuardada);
+    }
+    
+    // PASO 2: Agregar producto al acta existente
+    public ActaRecepcionDTO agregarProductoAlActa(UUID actaId, AgregarDetalleActaDTO detalleDTO) {
+        // Buscar acta
+        ActaRecepcion acta = actaRecepcionRepository.findById(actaId)
+                .orElseThrow(() -> new RuntimeException("Acta no encontrada con ID: " + actaId));
+        
+        // Validar que el acta esté en estado BORRADOR
+        if (acta.getEstado() != EstadoDocumento.BORRADOR) {
+            throw new RuntimeException("Solo se pueden agregar productos a actas en estado BORRADOR");
+        }
+        
+        // Buscar producto
+        Producto producto = productoRepository.findById(detalleDTO.getProductoId())
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + detalleDTO.getProductoId()));
+        
+        // Crear detalle (convertir Integer a BigDecimal)
+        DetalleActaRecepcion detalle = new DetalleActaRecepcion(
+                acta,
+                producto,
+                detalleDTO.getLote(),
+                detalleDTO.getFechaVencimiento(),
+                new java.math.BigDecimal(detalleDTO.getCantidadDeclarada()),
+                new java.math.BigDecimal(detalleDTO.getCantidadRecibida()),
+                detalleDTO.getPrecioUnitario(),
+                detalleDTO.getObservaciones(),
+                detalleDTO.getConforme()
+        );
+        
+        // Agregar detalle al acta
+        if (acta.getDetalles() == null) {
+            acta.setDetalles(new java.util.ArrayList<>());
+        }
+        acta.getDetalles().add(detalle);
+        
+        // Guardar
+        ActaRecepcion actaActualizada = actaRecepcionRepository.save(acta);
+        
+        return convertirADTO(actaActualizada);
+    }
+    
+    // Actualizar solo datos generales del acta (sin tocar productos)
+    public ActaRecepcionDTO actualizarDatosGenerales(UUID actaId, ActaRecepcionUpdateDTO updateDTO) {
+        ActaRecepcion acta = actaRecepcionRepository.findById(actaId)
+                .orElseThrow(() -> new RuntimeException("Acta no encontrada con ID: " + actaId));
+        
+        // Validar que el acta esté en estado BORRADOR
+        if (acta.getEstado() != EstadoDocumento.BORRADOR) {
+            throw new RuntimeException("Solo se pueden modificar actas en estado BORRADOR");
+        }
+        
+        // Validar que no se cambie a un número que ya existe
+        if (!acta.getNumeroActa().equals(updateDTO.getNumeroActa()) &&
+            actaRecepcionRepository.existsByNumeroActa(updateDTO.getNumeroActa())) {
+            throw new RuntimeException("Ya existe un acta con el número: " + updateDTO.getNumeroActa());
+        }
+        
+        // Actualizar campos generales (sin tocar detalles)
+        acta.setNumeroActa(updateDTO.getNumeroActa());
+        acta.setFechaRecepcion(updateDTO.getFechaRecepcion());
+        acta.setResponsableRecepcion(updateDTO.getResponsableRecepcion());
+        acta.setLugarRecepcion(updateDTO.getLugarRecepcion());
+        acta.setTemperaturaLlegada(updateDTO.getTemperaturaLlegada());
+        acta.setCondicionesTransporte(updateDTO.getCondicionesTransporte());
+        acta.setObservaciones(updateDTO.getObservaciones());
+        
+        if (updateDTO.getEstado() != null) {
+            acta.setEstado(updateDTO.getEstado());
+        }
+        
+        if (updateDTO.getActualizadoPor() != null) {
+            acta.setActualizadoPor(updateDTO.getActualizadoPor());
+        }
+        
+        // Actualizar cliente si cambió
+        if (!acta.getCliente().getId().equals(updateDTO.getClienteId())) {
+            Cliente cliente = clienteRepository.findById(updateDTO.getClienteId())
+                    .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: " + updateDTO.getClienteId()));
+            acta.setCliente(cliente);
+        }
+        
+        acta = actaRecepcionRepository.save(acta);
+        return convertirADTO(acta);
+    }
+    
+    // Eliminar un producto del acta
+    public ActaRecepcionDTO eliminarProductoDelActa(UUID actaId, UUID detalleId) {
+        ActaRecepcion acta = actaRecepcionRepository.findById(actaId)
+                .orElseThrow(() -> new RuntimeException("Acta no encontrada con ID: " + actaId));
+        
+        // Validar que el acta esté en estado BORRADOR
+        if (acta.getEstado() != EstadoDocumento.BORRADOR) {
+            throw new RuntimeException("Solo se pueden eliminar productos de actas en estado BORRADOR");
+        }
+        
+        // Buscar y eliminar el detalle
+        boolean removed = acta.getDetalles().removeIf(detalle -> detalle.getId().equals(detalleId));
+        
+        if (!removed) {
+            throw new RuntimeException("Detalle no encontrado con ID: " + detalleId);
+        }
+        
+        // Guardar
+        ActaRecepcion actaActualizada = actaRecepcionRepository.save(acta);
+        
+        return convertirADTO(actaActualizada);
+    }
+    
+    // ========== MÉTODOS ORIGINALES (Compatibilidad) ==========
+    
+    // Crear nueva acta de recepción (con productos - método original)
     public ActaRecepcionDTO crearActaRecepcion(ActaRecepcionDTO actaDTO) {
         // Validar que no exista el número de acta
         if (actaRecepcionRepository.existsByNumeroActa(actaDTO.getNumeroActa())) {

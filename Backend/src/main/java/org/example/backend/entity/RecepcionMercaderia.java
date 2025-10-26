@@ -34,10 +34,10 @@ public class RecepcionMercaderia {
     @Column(name = "numero_guia_remision", nullable = false, length = 50)
     private String numeroGuiaRemision;
     
-    @NotNull(message = "El proveedor es obligatorio")
+    @NotNull(message = "El cliente es obligatorio")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "proveedor_id", nullable = false)
-    private Proveedor proveedor;
+    @JoinColumn(name = "cliente_id", nullable = false)
+    private Cliente cliente;
     
     @NotNull(message = "La fecha de recepción es obligatoria")
     @Column(name = "fecha_recepcion", nullable = false)
@@ -94,11 +94,11 @@ public class RecepcionMercaderia {
     public RecepcionMercaderia() {}
     
     public RecepcionMercaderia(String numeroOrdenCompra, String numeroGuiaRemision, 
-                              Proveedor proveedor, LocalDateTime fechaRecepcion, 
+                              Cliente cliente, LocalDateTime fechaRecepcion, 
                               String responsableRecepcion, EstadoRecepcion estado) {
         this.numeroOrdenCompra = numeroOrdenCompra;
         this.numeroGuiaRemision = numeroGuiaRemision;
-        this.proveedor = proveedor;
+        this.cliente = cliente;
         this.fechaRecepcion = fechaRecepcion;
         this.responsableRecepcion = responsableRecepcion;
         this.estado = estado;
@@ -129,12 +129,12 @@ public class RecepcionMercaderia {
         this.numeroGuiaRemision = numeroGuiaRemision;
     }
     
-    public Proveedor getProveedor() {
-        return proveedor;
+    public Cliente getCliente() {
+        return cliente;
     }
     
-    public void setProveedor(Proveedor proveedor) {
-        this.proveedor = proveedor;
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
     }
     
     public LocalDateTime getFechaRecepcion() {

@@ -22,10 +22,10 @@ public class RecepcionMercaderiaDTO {
     @Size(max = 50, message = "El número de guía no puede exceder 50 caracteres")
     private String numeroGuiaRemision;
     
-    @NotNull(message = "El ID del proveedor es obligatorio")
-    private UUID proveedorId;
+    @NotNull(message = "El ID del cliente es obligatorio")
+    private UUID clienteId;
     
-    private String proveedorNombre;
+    private String clienteNombre;
     
     @NotNull(message = "La fecha de recepción es obligatoria")
     private LocalDateTime fechaRecepcion;
@@ -60,7 +60,7 @@ public class RecepcionMercaderiaDTO {
     public RecepcionMercaderiaDTO() {}
     
     public RecepcionMercaderiaDTO(UUID id, String numeroOrdenCompra, String numeroGuiaRemision,
-                                 UUID proveedorId, String proveedorNombre, LocalDateTime fechaRecepcion,
+                                 UUID clienteId, String clienteNombre, LocalDateTime fechaRecepcion,
                                  String responsableRecepcion, EstadoRecepcion estado,
                                  BigDecimal temperaturaLlegada, String observaciones,
                                  Boolean verificacionDocumentos, Boolean verificacionFisica,
@@ -70,8 +70,8 @@ public class RecepcionMercaderiaDTO {
         this.id = id;
         this.numeroOrdenCompra = numeroOrdenCompra;
         this.numeroGuiaRemision = numeroGuiaRemision;
-        this.proveedorId = proveedorId;
-        this.proveedorNombre = proveedorNombre;
+        this.clienteId = clienteId;
+        this.clienteNombre = clienteNombre;
         this.fechaRecepcion = fechaRecepcion;
         this.responsableRecepcion = responsableRecepcion;
         this.estado = estado;
@@ -112,20 +112,20 @@ public class RecepcionMercaderiaDTO {
         this.numeroGuiaRemision = numeroGuiaRemision;
     }
     
-    public UUID getProveedorId() {
-        return proveedorId;
+    public UUID getClienteId() {
+        return clienteId;
     }
     
-    public void setProveedorId(UUID proveedorId) {
-        this.proveedorId = proveedorId;
+    public void setClienteId(UUID clienteId) {
+        this.clienteId = clienteId;
     }
     
-    public String getProveedorNombre() {
-        return proveedorNombre;
+    public String getClienteNombre() {
+        return clienteNombre;
     }
     
-    public void setProveedorNombre(String proveedorNombre) {
-        this.proveedorNombre = proveedorNombre;
+    public void setClienteNombre(String clienteNombre) {
+        this.clienteNombre = clienteNombre;
     }
     
     public LocalDateTime getFechaRecepcion() {

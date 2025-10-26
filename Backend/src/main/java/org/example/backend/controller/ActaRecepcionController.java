@@ -1,7 +1,7 @@
 package org.example.backend.controller;
 
 import jakarta.validation.Valid;
-import org.example.backend.dto.ActaRecepcionDTO;
+import org.example.backend.dto.*;
 import org.example.backend.enumeraciones.EstadoDocumento;
 import org.example.backend.service.ActaRecepcionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,81 @@ public class ActaRecepcionController {
     @Autowired
     private ActaRecepcionService actaRecepcionService;
 
-    // Crear nueva acta de recepción
+    // ========== FLUJO EN DOS PASOS ==========
+    
+    // PASO 1: Crear acta de recepción sin productos
+    @PostMapping("/crear-sin-productos")
+    public ResponseEntity<?> crearActaSinProductos(@Valid @RequestBody ActaRecepcionCreateDTO createDTO) {
+        try {
+            ActaRecepcionDTO acta = actaRecepcionService.crearActaSinProductos(createDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
+                    "success", true,
+                    "message", "Acta de recepción creada exitosamente (sin productos)",
+                    "data", acta));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", e.getMessage()));
+        }
+    }
+    
+    // PASO 2: Agregar producto al acta existente
+    @PostMapping("/{actaId}/agregar-producto")
+    public ResponseEntity<?> agregarProductoAlActa(
+            @PathVariable UUID actaId,
+            @Valid @RequestBody AgregarDetalleActaDTO detalleDTO) {
+        try {
+            ActaRecepcionDTO acta = actaRecepcionService.agregarProductoAlActa(actaId, detalleDTO);
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "Producto agregado al acta exitosamente",
+                    "data", acta));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", e.getMessage()));
+        }
+    }
+    
+    // Actualizar solo datos generales del acta (sin tocar productos)
+    @PutMapping("/{actaId}/datos-generales")
+    public ResponseEntity<?> actualizarDatosGenerales(
+            @PathVariable UUID actaId,
+            @Valid @RequestBody ActaRecepcionUpdateDTO updateDTO) {
+        try {
+            ActaRecepcionDTO acta = actaRecepcionService.actualizarDatosGenerales(actaId, updateDTO);
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "Datos generales del acta actualizados exitosamente",
+                    "data", acta));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", e.getMessage()));
+        }
+    }
+    
+    // Eliminar un producto del acta
+    @DeleteMapping("/{actaId}/producto/{detalleId}")
+    public ResponseEntity<?> eliminarProductoDelActa(
+            @PathVariable UUID actaId,
+            @PathVariable UUID detalleId) {
+        try {
+            ActaRecepcionDTO acta = actaRecepcionService.eliminarProductoDelActa(actaId, detalleId);
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "Producto eliminado del acta exitosamente",
+                    "data", acta));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", e.getMessage()));
+        }
+    }
+    
+    // ========== MÉTODOS ORIGINALES (Compatibilidad) ==========
+    
+    // Crear nueva acta de recepción (con productos - método original)
     @PostMapping
     public ResponseEntity<?> crearActaRecepcion(@Valid @RequestBody ActaRecepcionDTO actaDTO) {
         try {
