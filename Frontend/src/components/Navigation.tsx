@@ -32,6 +32,7 @@ export const Navigation: React.FC = () => {
     // Recepción de Mercadería - para Recepción
     if (['Recepcion', 'DirectorTecnico'].includes(role || '')) {
       pages.push({ key: 'recepcion-mercaderia', label: 'Recepción', path: '/recepcion-mercaderia' });
+      pages.push({ key: 'historial-recepciones', label: 'Historial', path: '/historial-recepciones' });
     }
 
     // Almacenamiento - para Operaciones
@@ -77,14 +78,15 @@ export const Navigation: React.FC = () => {
   return (
     <>
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
+      <header className="bg-white px-6 py-4 border-gray-200 border-b">
+        <div className="flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <h1 className="text-xl font-bold text-gray-900">PharmaFlow</h1>
-            <span className="text-sm text-gray-600">
+            <h1 className="font-bold text-gray-900 text-xl">PharmaFlow</h1>
+            <span className="text-gray-600 text-sm">
               {pathname === '/dashboard' && 'Dashboard - Inventario'}
               {pathname === '/cliente-portal' && 'Portal del Cliente'}
               {pathname === '/recepcion-mercaderia' && 'Recepción de Mercadería'}
+              {pathname === '/historial-recepciones' && 'Historial de Recepciones'}
               {pathname === '/almacenamiento' && 'Gestión de Almacenamiento'}
               {pathname === '/movimientos-stock' && 'Movimientos de Stock'}
               {pathname === '/despacho' && 'Centro de Despacho'}
@@ -95,7 +97,7 @@ export const Navigation: React.FC = () => {
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600">
+            <span className="text-gray-600 text-sm">
               {user?.role === 'Cliente' && 'Cliente'}
               {user?.role === 'Recepcion' && 'Recepción'}
               {user?.role === 'Operaciones' && 'Operaciones'}
@@ -120,7 +122,7 @@ export const Navigation: React.FC = () => {
 
       {/* Navigation */}
       {availablePages.length > 1 && (
-        <nav className="bg-white border-b border-gray-200 px-6 py-2">
+        <nav className="bg-white px-6 py-2 border-gray-200 border-b">
           <div className="flex gap-6">
             {availablePages.map((page) => (
               <button

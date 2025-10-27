@@ -28,6 +28,43 @@ interface RecepcionFormData {
   observaciones: string;
 }
 
+interface Recepcion {
+  id: string;
+  numeroOrdenCompra: string;
+  numeroGuiaRemision: string;
+  clienteId: string;
+  clienteNombre: string;
+  fechaRecepcion: string;
+  responsableRecepcion: string;
+  estado: string;
+  observaciones?: string;
+  fechaCreacion: string;
+}
+
+const ESTADOS = [
+  { value: '', label: 'Todos los estados' },
+  { value: 'PENDIENTE', label: 'Pendiente' },
+  { value: 'EN_VERIFICACION', label: 'En Verificación' },
+  { value: 'EN_CUARENTENA', label: 'En Cuarentena' },
+  { value: 'APROBADO', label: 'Aprobado' },
+  { value: 'RECHAZADO', label: 'Rechazado' },
+  { value: 'ALMACENADO', label: 'Almacenado' },
+  { value: 'DEVUELTO', label: 'Devuelto' }
+];
+
+const getEstadoColor = (estado: string) => {
+  const colores: Record<string, string> = {
+    'PENDIENTE': 'bg-yellow-100 text-yellow-800',
+    'EN_VERIFICACION': 'bg-blue-100 text-blue-800',
+    'EN_CUARENTENA': 'bg-orange-100 text-orange-800',
+    'APROBADO': 'bg-green-100 text-green-800',
+    'RECHAZADO': 'bg-red-100 text-red-800',
+    'ALMACENADO': 'bg-purple-100 text-purple-800',
+    'DEVUELTO': 'bg-gray-100 text-gray-800'
+  };
+  return colores[estado] || 'bg-gray-100 text-gray-800';
+};
+
 function RecepcionMercaderiaContent() {
   const router = useRouter();
   const { user } = useAuth();
@@ -36,6 +73,15 @@ function RecepcionMercaderiaContent() {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+
+  // Estado para historial
+  const [recepciones, setRecepciones] = useState<Recepcion[]>([]);
+  const [loadingHistorial, setLoadingHistorial] = useState(false);
+  const [fechaInicio, setFechaInicio] = useState(new Date().toISOString().slice(0, 10));
+  const [fechaFin, setFechaFin] = useState(new Date().toISOString().slice(0, 10));
+  const [estadoFiltro, setEstadoFiltro] = useState('');
+  const [clienteFiltro, setClienteFiltro] = useState('');
+  const [numeroOrdenFiltro, setNumeroOrdenFiltro] = useState('');
 
   // Estado del formulario simplificado (SIN productos)
   const [formData, setFormData] = useState<RecepcionFormData>({
@@ -52,6 +98,13 @@ function RecepcionMercaderiaContent() {
   useEffect(() => {
     cargarClientes();
   }, []);
+
+  // Cargar recepciones cuando se cambia a la pestaña historial
+  useEffect(() => {
+    if (activeTab === 'historial') {
+      cargarRecepciones();
+    }
+  }, [activeTab]);
 
   const cargarClientes = async () => {
     try {
@@ -96,6 +149,117 @@ function RecepcionMercaderiaContent() {
         clienteNombre: cliente.razonSocial
       }));
     }
+  };
+
+  const cargarRecepciones = async () => {
+    setLoadingHistorial(true);
+
+    try {
+      const params: any = {
+        page: 0,
+        size: 100,
+        sortBy: 'fechaRecepcion',
+        sortDir: 'desc'
+      };
+
+      console.log('🔄 Cargando recepciones...');
+      const data = await recepcionesApi.obtenerTodas(params);
+      console.log('📦 Datos recibidos del backend:', data);
+
+      if (data.success) {
+        console.log('✅ Total de recepciones:', data.data.length);
+        console.log('📋 Recepciones:', data.data);
+        
+        const recepcionesFiltradas = filtrarRecepciones(data.data);
+        console.log('🔍 Recepciones después de filtrar:', recepcionesFiltradas.length);
+        console.log('📊 Filtros aplicados:', {
+          fechaInicio,
+          fechaFin,
+          estadoFiltro,
+          clienteFiltro,
+          numeroOrdenFiltro
+        });
+        
+        setRecepciones(recepcionesFiltradas);
+      }
+    } catch (error) {
+      console.error('❌ Error al cargar recepciones:', error);
+    } finally {
+      setLoadingHistorial(false);
+    }
+  };
+
+  const filtrarRecepciones = (data: Recepcion[]) => {
+    return data.filter(recepcion => {
+      // Extraer solo la fecha (YYYY-MM-DD) de la fecha de recepción
+      const fechaRecepcion = new Date(recepcion.fechaRecepcion).toISOString().slice(0, 10);
+      
+      console.log(`Evaluando recepción ${recepcion.numeroOrdenCompra}:`, {
+        fechaRecepcion,
+        fechaInicio,
+        fechaFin,
+        estado: recepcion.estado,
+        estadoFiltro,
+        clienteId: recepcion.clienteId,
+        clienteFiltro
+      });
+
+      // Filtro por fecha inicio
+      if (fechaInicio && fechaRecepcion < fechaInicio) {
+        console.log(`❌ Rechazada por fecha inicio: ${fechaRecepcion} < ${fechaInicio}`);
+        return false;
+      }
+      
+      // Filtro por fecha fin
+      if (fechaFin && fechaRecepcion > fechaFin) {
+        console.log(`❌ Rechazada por fecha fin: ${fechaRecepcion} > ${fechaFin}`);
+        return false;
+      }
+      
+      // Filtro por estado
+      if (estadoFiltro && recepcion.estado !== estadoFiltro) {
+        console.log(`❌ Rechazada por estado: ${recepcion.estado} !== ${estadoFiltro}`);
+        return false;
+      }
+      
+      // Filtro por cliente
+      if (clienteFiltro && recepcion.clienteId !== clienteFiltro) {
+        console.log(`❌ Rechazada por cliente: ${recepcion.clienteId} !== ${clienteFiltro}`);
+        return false;
+      }
+      
+      // Filtro por número de orden
+      if (numeroOrdenFiltro && !recepcion.numeroOrdenCompra.toLowerCase().includes(numeroOrdenFiltro.toLowerCase())) {
+        console.log(`❌ Rechazada por número de orden`);
+        return false;
+      }
+
+      console.log(`✅ Recepción ${recepcion.numeroOrdenCompra} aprobada`);
+      return true;
+    });
+  };
+
+  const handleBuscar = () => {
+    cargarRecepciones();
+  };
+
+  const handleLimpiarFiltros = () => {
+    setFechaInicio(new Date().toISOString().slice(0, 10));
+    setFechaFin(new Date().toISOString().slice(0, 10));
+    setEstadoFiltro('');
+    setClienteFiltro('');
+    setNumeroOrdenFiltro('');
+    cargarRecepciones();
+  };
+
+  const formatearFecha = (fecha: string) => {
+    return new Date(fecha).toLocaleString('es-PE', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -185,8 +349,8 @@ function RecepcionMercaderiaContent() {
             <button
               onClick={() => setActiveTab('nueva-recepcion')}
               className={`py-2 px-4 text-sm font-medium border-b-2 ${activeTab === 'nueva-recepcion'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700'
                 }`}
             >
               📦 Nueva Recepción
@@ -194,8 +358,8 @@ function RecepcionMercaderiaContent() {
             <button
               onClick={() => setActiveTab('historial')}
               className={`py-2 px-4 text-sm font-medium border-b-2 ${activeTab === 'historial'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700'
                 }`}
             >
               📋 Historial
@@ -418,18 +582,186 @@ function RecepcionMercaderiaContent() {
 
         {/* Historial */}
         {activeTab === 'historial' && (
-          <div className="bg-white shadow-sm border border-gray-200 rounded-lg">
-            <div className="p-6 border-gray-200 border-b">
-              <h3 className="font-semibold text-gray-800 text-lg">📋 Historial de Recepciones</h3>
-              <p className="mt-1 text-gray-600 text-sm">
-                Próximamente: Lista de todas las recepciones registradas
-              </p>
-            </div>
-            <div className="p-6">
-              <div className="py-8 text-center">
-                <div className="mb-4 text-4xl">📋</div>
-                <p className="text-gray-500">Funcionalidad en desarrollo</p>
+          <div className="space-y-6">
+            {/* Filtros */}
+            <div className="bg-white shadow-sm p-6 border border-gray-200 rounded-lg">
+              <h3 className="mb-4 font-semibold text-gray-800 text-lg">🔍 Filtros de Búsqueda</h3>
+
+              <div className="gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                {/* Fecha Inicio */}
+                <div>
+                  <label className="block mb-2 font-medium text-gray-700 text-sm">
+                    Fecha Inicio
+                  </label>
+                  <input
+                    type="date"
+                    value={fechaInicio}
+                    onChange={(e) => setFechaInicio(e.target.value)}
+                    className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                  />
+                </div>
+
+                {/* Fecha Fin */}
+                <div>
+                  <label className="block mb-2 font-medium text-gray-700 text-sm">
+                    Fecha Fin
+                  </label>
+                  <input
+                    type="date"
+                    value={fechaFin}
+                    onChange={(e) => setFechaFin(e.target.value)}
+                    className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                  />
+                </div>
+
+                {/* Estado */}
+                <div>
+                  <label className="block mb-2 font-medium text-gray-700 text-sm">
+                    Estado
+                  </label>
+                  <select
+                    value={estadoFiltro}
+                    onChange={(e) => setEstadoFiltro(e.target.value)}
+                    className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                  >
+                    {ESTADOS.map(estado => (
+                      <option key={estado.value} value={estado.value}>
+                        {estado.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Cliente */}
+                <div>
+                  <label className="block mb-2 font-medium text-gray-700 text-sm">
+                    Cliente
+                  </label>
+                  <select
+                    value={clienteFiltro}
+                    onChange={(e) => setClienteFiltro(e.target.value)}
+                    className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                  >
+                    <option value="">Todos los clientes</option>
+                    {clientes.map(cliente => (
+                      <option key={cliente.id} value={cliente.id}>
+                        {cliente.razonSocial}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Número de Orden */}
+                <div>
+                  <label className="block mb-2 font-medium text-gray-700 text-sm">
+                    Número de Orden
+                  </label>
+                  <input
+                    type="text"
+                    value={numeroOrdenFiltro}
+                    onChange={(e) => setNumeroOrdenFiltro(e.target.value)}
+                    placeholder="Buscar por número..."
+                    className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                  />
+                </div>
               </div>
+
+              {/* Botones */}
+              <div className="flex gap-3 mt-4">
+                <button
+                  onClick={handleBuscar}
+                  className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-md text-white transition-colors"
+                >
+                  Buscar
+                </button>
+                <button
+                  onClick={handleLimpiarFiltros}
+                  className="bg-gray-200 hover:bg-gray-300 px-6 py-2 rounded-md text-gray-700 transition-colors"
+                >
+                  Limpiar Filtros
+                </button>
+              </div>
+            </div>
+
+            {/* Tabla de Recepciones */}
+            <div className="bg-white shadow-sm border border-gray-200 rounded-lg overflow-hidden">
+              {loadingHistorial ? (
+                <div className="p-8 text-center">
+                  <div className="inline-block border-blue-600 border-b-2 rounded-full w-8 h-8 animate-spin"></div>
+                  <p className="mt-2 text-gray-600">Cargando recepciones...</p>
+                </div>
+              ) : recepciones.length === 0 ? (
+                <div className="p-8 text-gray-500 text-center">
+                  No se encontraron recepciones para los filtros seleccionados
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="divide-y divide-gray-200 min-w-full">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">
+                          Nº Orden
+                        </th>
+                        <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">
+                          Cliente
+                        </th>
+                        <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">
+                          Fecha Recepción
+                        </th>
+                        <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">
+                          Responsable
+                        </th>
+                        <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">
+                          Estado
+                        </th>
+                        <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">
+                          Acciones
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {recepciones.map((recepcion) => (
+                        <tr key={recepcion.id} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 font-medium text-gray-900 text-sm whitespace-nowrap">
+                            {recepcion.numeroOrdenCompra}
+                          </td>
+                          <td className="px-6 py-4 text-gray-900 text-sm whitespace-nowrap">
+                            {recepcion.clienteNombre}
+                          </td>
+                          <td className="px-6 py-4 text-gray-500 text-sm whitespace-nowrap">
+                            {formatearFecha(recepcion.fechaRecepcion)}
+                          </td>
+                          <td className="px-6 py-4 text-gray-500 text-sm whitespace-nowrap">
+                            {recepcion.responsableRecepcion}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getEstadoColor(recepcion.estado)}`}>
+                              {recepcion.estado.replace('_', ' ')}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 font-medium text-sm whitespace-nowrap">
+                            <button
+                              onClick={() => router.push(`/acta-recepcion?id=${recepcion.id}`)}
+                              className="text-blue-600 hover:text-blue-900"
+                            >
+                              Ver Detalles
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {/* Resumen */}
+              {!loadingHistorial && recepciones.length > 0 && (
+                <div className="bg-gray-50 px-6 py-4 border-gray-200 border-t">
+                  <p className="text-gray-700 text-sm">
+                    Mostrando <span className="font-medium">{recepciones.length}</span> recepciones
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         )}

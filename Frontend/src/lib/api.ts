@@ -206,5 +206,10 @@ export const recepcionesApi = {
   obtenerTodas: (params?: any) => {
     const queryString = params ? `?${new URLSearchParams(params)}` : '';
     return fetchWithAuth(`/recepciones${queryString}`);
-  }
+  },
+  buscar: (params?: any) => {
+    const queryString = params ? `?${new URLSearchParams(params)}` : '';
+    return fetchWithAuth(`/recepciones/buscar${queryString}`);
+  },
+  obtenerPorId: (id: string) => fetchWithAuth(`/recepciones/${id}`)
 };
