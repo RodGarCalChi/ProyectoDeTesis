@@ -1,0 +1,400 @@
+{
+	"info": {
+		"_postman_id": "flujo-recepcion-inventario",
+		"name": "Flujo Completo: Recepción → Inventario → Almacenamiento",
+		"description": "Colección completa para probar el flujo de recepción, registro en inventario y asignación de ubicaciones",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "FASE 1: RECEPCIÓN",
+			"item": [
+				{
+					"name": "1.1 Crear Recepción",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"numeroOrdenCompra\": \"ORD-2024-001\",\n  \"numeroGuiaRemision\": \"GR-2024-001\",\n  \"clienteId\": \"{{clienteId}}\",\n  \"fechaRecepcion\": \"2024-10-27T10:30:00\",\n  \"responsableRecepcion\": \"Juan Pérez\",\n  \"estado\": \"PENDIENTE\",\n  \"temperaturaLlegada\": 5.5,\n  \"observaciones\": \"Mercadería llegó en buen estado\",\n  \"verificacionDocumentos\": false,\n  \"verificacionFisica\": false,\n  \"verificacionTemperatura\": false,\n  \"aprobadoPorCalidad\": false,\n  \"detalles\": []\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/recepciones",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "recepciones"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.2 Agregar Producto al Acta (Conforme)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productoId\": \"{{productoId}}\",\n  \"loteId\": \"{{loteId}}\",\n  \"cantidadEsperada\": 100,\n  \"cantidadRecibida\": 100,\n  \"cantidadAceptada\": 100,\n  \"cantidadRechazada\": 0,\n  \"fechaVencimiento\": \"2025-12-31\",\n  \"precioUnitario\": 15.50,\n  \"temperaturaRecepcion\": 5.0,\n  \"observaciones\": \"Producto en perfecto estado\",\n  \"conforme\": true,\n  \"motivoRechazo\": null\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/recepciones/{{recepcionId}}/detalles",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "recepciones", "{{recepcionId}}", "detalles"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.3 Agregar Producto No Conforme",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productoId\": \"{{productoId2}}\",\n  \"loteId\": \"{{loteId2}}\",\n  \"cantidadEsperada\": 50,\n  \"cantidadRecibida\": 50,\n  \"cantidadAceptada\": 0,\n  \"cantidadRechazada\": 50,\n  \"fechaVencimiento\": \"2025-06-30\",\n  \"precioUnitario\": 25.00,\n  \"temperaturaRecepcion\": 12.0,\n  \"observaciones\": \"Temperatura fuera de rango\",\n  \"conforme\": false,\n  \"motivoRechazo\": \"Temperatura de transporte inadecuada, producto comprometido\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/recepciones/{{recepcionId}}/detalles",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "recepciones", "{{recepcionId}}", "detalles"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.4 Completar Acta (Cambiar a EN_CUARENTENA)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"estado\": \"EN_CUARENTENA\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/recepciones/{{recepcionId}}/estado",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "recepciones", "{{recepcionId}}", "estado"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.5 Obtener Recepción por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/recepciones/{{recepcionId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "recepciones", "{{recepcionId}}"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "FASE 2: VALIDACIÓN ADMINISTRATIVA",
+			"item": [
+				{
+					"name": "2.1 Listar Actas Pendientes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/recepciones?estado=EN_CUARENTENA",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "recepciones"],
+							"query": [
+								{
+									"key": "estado",
+									"value": "EN_CUARENTENA"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.2 Aprobar Acta y Registrar en Inventario",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Guardar IDs de inventario creados",
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.success && jsonData.data.length > 0) {",
+									"        pm.environment.set('inventarioId', jsonData.data[0].id);",
+									"        console.log('Inventario ID guardado:', jsonData.data[0].id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"usuarioNombre\": \"admin@example.com\",\n  \"observaciones\": \"Acta revisada y aprobada. Productos conformes registrados en inventario.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/inventario/aprobar-acta/{{recepcionId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "inventario", "aprobar-acta", "{{recepcionId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.3 Rechazar Acta",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"usuarioNombre\": \"admin@example.com\",\n  \"observaciones\": \"Acta rechazada por documentación incompleta\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/recepciones/{{recepcionId}}/rechazar",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "recepciones", "{{recepcionId}}", "rechazar"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "FASE 3: ASIGNACIÓN DE UBICACIONES",
+			"item": [
+				{
+					"name": "3.1 Listar Productos Pendientes de Ubicación",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/inventario/pendientes-ubicacion",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "inventario", "pendientes-ubicacion"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.2 Asignar Ubicación a Producto",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"ubicacionId\": \"{{ubicacionId}}\",\n  \"codigoBarras\": \"7501234567890\",\n  \"usuarioNombre\": \"operador1@example.com\",\n  \"observaciones\": \"Producto almacenado en zona refrigerada\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/inventario/{{inventarioId}}/asignar-ubicacion",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "inventario", "{{inventarioId}}", "asignar-ubicacion"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.3 Obtener Inventario por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/inventario/{{inventarioId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "inventario", "{{inventarioId}}"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "CONSULTAS",
+			"item": [
+				{
+					"name": "Inventario por Cliente",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/inventario/cliente/{{clienteId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "inventario", "cliente", "{{clienteId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Todas las Recepciones",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/recepciones?page=0&size=10&sortBy=fechaRecepcion&sortDir=desc",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "recepciones"],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								},
+								{
+									"key": "sortBy",
+									"value": "fechaRecepcion"
+								},
+								{
+									"key": "sortDir",
+									"value": "desc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Clientes Activos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/clientes/activos",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "clientes", "activos"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Productos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/productos",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "productos"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ubicaciones",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/ubicaciones",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "ubicaciones"]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "clienteId",
+			"value": "REEMPLAZAR_CON_ID_CLIENTE",
+			"type": "string"
+		},
+		{
+			"key": "productoId",
+			"value": "REEMPLAZAR_CON_ID_PRODUCTO",
+			"type": "string"
+		},
+		{
+			"key": "loteId",
+			"value": "REEMPLAZAR_CON_ID_LOTE",
+			"type": "string"
+		},
+		{
+			"key": "recepcionId",
+			"value": "REEMPLAZAR_CON_ID_RECEPCION",
+			"type": "string"
+		},
+		{
+			"key": "inventarioId",
+			"value": "REEMPLAZAR_CON_ID_INVENTARIO",
+			"type": "string"
+		},
+		{
+			"key": "ubicacionId",
+			"value": "REEMPLAZAR_CON_ID_UBICACION",
+			"type": "string"
+		}
+	]
+}
