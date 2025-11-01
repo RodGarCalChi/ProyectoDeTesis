@@ -38,51 +38,17 @@ function RegistroInventarioContent() {
   };
 
   // Datos de ejemplo para la tabla
-  const productos = [
-    {
-      id: 1,
-      codigo: 'MED001',
-      nombre: 'Paracetamol 500mg',
-      categoria: 'Analgésicos',
-      stock: 150,
-      stockMinimo: 20,
-      precio: 12.50,
-      ubicacion: 'A1-E2',
-      estado: 'Disponible'
-    },
-    {
-      id: 2,
-      codigo: 'MED002',
-      nombre: 'Ibuprofeno 400mg',
-      categoria: 'Antiinflamatorios',
-      stock: 25,
-      stockMinimo: 30,
-      precio: 18.75,
-      ubicacion: 'A2-E1',
-      estado: 'Stock Bajo'
-    },
-    {
-      id: 3,
-      codigo: 'MED003',
-      nombre: 'Amoxicilina 250mg',
-      categoria: 'Antibióticos',
-      stock: 80,
-      stockMinimo: 15,
-      precio: 25.00,
-      ubicacion: 'B1-E3',
-      estado: 'Disponible'
-    }
-  ];
+ 
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="bg-gray-50 min-h-screen">
       <Navigation />
       
       {/* Main Content */}
       <div className="p-6">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">PharmaFlow</h1>
-          <h2 className="text-xl font-semibold text-gray-800">Registro de Inventario</h2>
+          <h1 className="mb-2 font-bold text-gray-900 text-2xl">PharmaFlow</h1>
+          <h2 className="font-semibold text-gray-800 text-xl">Registro de Inventario</h2>
         </div>
 
         {/* Tabs */}
@@ -119,24 +85,24 @@ function RegistroInventarioContent() {
 
         {/* Catálogo de Productos */}
         {activeTab === 'productos' && (
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex items-center justify-between mb-4">
+          <div className="bg-white shadow-sm border border-gray-200 rounded-lg">
+            <div className="p-6 border-gray-200 border-b">
+              <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                  <div className="flex justify-center items-center bg-blue-100 rounded-full w-8 h-8">
                     <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-semibold text-blue-700">Catálogo de Productos Farmacéuticos</h3>
+                  <h3 className="font-semibold text-blue-700 text-lg">Catálogo de Productos Farmacéuticos</h3>
                 </div>
                 <div className="flex gap-2">
                   <input
                     type="text"
                     placeholder="Buscar producto..."
-                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-500"
+                    className="px-3 py-2 border border-gray-300 focus:border-blue-500 rounded-lg focus:outline-none text-sm"
                   />
-                  <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                  <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-white text-sm transition-colors">
                     Buscar
                   </button>
                 </div>
@@ -147,62 +113,17 @@ function RegistroInventarioContent() {
               <table className="w-full">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Código</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoría</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ubicación</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                    <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">Código</th>
+                    <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">Producto</th>
+                    <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">Categoría</th>
+                    <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">Stock</th>
+                    <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">Precio</th>
+                    <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">Ubicación</th>
+                    <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">Estado</th>
+                    <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">Acciones</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {productos.map((producto) => (
-                    <tr key={producto.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {producto.codigo}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {producto.nombre}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {producto.categoria}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        <div className="flex items-center gap-2">
-                          <span>{producto.stock}</span>
-                          {producto.stock <= producto.stockMinimo && (
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                              ⚠️ Bajo
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        S/ {producto.precio.toFixed(2)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {producto.ubicacion}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                          producto.estado === 'Disponible' 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-yellow-100 text-yellow-800'
-                        }`}>
-                          {producto.estado}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex gap-2">
-                          <button className="text-blue-600 hover:text-blue-900">Editar</button>
-                          <button className="text-green-600 hover:text-green-900">Ver</button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
+               
               </table>
             </div>
           </div>
@@ -210,26 +131,26 @@ function RegistroInventarioContent() {
 
         {/* Registro de Producto */}
         {activeTab === 'registro' && (
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-            <div className="p-6 border-b border-gray-200">
+          <div className="bg-white shadow-sm border border-gray-200 rounded-lg">
+            <div className="p-6 border-gray-200 border-b">
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                <div className="flex justify-center items-center bg-green-100 rounded-full w-8 h-8">
                   <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-green-700">Registrar Nuevo Producto</h3>
+                <h3 className="font-semibold text-green-700 text-lg">Registrar Nuevo Producto</h3>
               </div>
-              <p className="text-sm text-gray-600">
+              <p className="text-gray-600 text-sm">
                 Registre un nuevo producto farmacéutico en el sistema de inventario
               </p>
             </div>
 
             <form onSubmit={handleSubmit} className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div className="gap-6 grid grid-cols-1 md:grid-cols-2 mb-6">
                 {/* Código del Producto */}
                 <div>
-                  <label htmlFor="codigo" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="codigo" className="block mb-2 font-medium text-gray-700 text-sm">
                     Código del Producto *
                   </label>
                   <input
@@ -240,13 +161,13 @@ function RegistroInventarioContent() {
                     onChange={handleInputChange}
                     placeholder="Ej: MED001, ANT002"
                     required
-                    className="w-full px-3 py-2 bg-gray-200 border-2 border-gray-400 rounded text-gray-700 placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
+                    className="bg-gray-200 focus:bg-white px-3 py-2 border-2 border-gray-400 focus:border-blue-500 rounded focus:outline-none w-full text-gray-700 transition-colors placeholder-gray-500"
                   />
                 </div>
 
                 {/* Nombre del Producto */}
                 <div>
-                  <label htmlFor="nombre" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="nombre" className="block mb-2 font-medium text-gray-700 text-sm">
                     Nombre del Producto *
                   </label>
                   <input
@@ -257,13 +178,13 @@ function RegistroInventarioContent() {
                     onChange={handleInputChange}
                     placeholder="Ej: Paracetamol 500mg"
                     required
-                    className="w-full px-3 py-2 bg-gray-200 border-2 border-gray-400 rounded text-gray-700 placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
+                    className="bg-gray-200 focus:bg-white px-3 py-2 border-2 border-gray-400 focus:border-blue-500 rounded focus:outline-none w-full text-gray-700 transition-colors placeholder-gray-500"
                   />
                 </div>
 
                 {/* Categoría */}
                 <div>
-                  <label htmlFor="categoria" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="categoria" className="block mb-2 font-medium text-gray-700 text-sm">
                     Categoría *
                   </label>
                   <div className="relative">
@@ -273,7 +194,7 @@ function RegistroInventarioContent() {
                       value={formData.categoria}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-3 py-2 bg-gray-200 border-2 border-gray-400 rounded text-gray-700 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors appearance-none cursor-pointer"
+                      className="bg-gray-200 focus:bg-white px-3 py-2 border-2 border-gray-400 focus:border-blue-500 rounded focus:outline-none w-full text-gray-700 transition-colors appearance-none cursor-pointer"
                     >
                       <option value="">Seleccione una categoría</option>
                       <option value="analgesicos">Analgésicos</option>
@@ -284,7 +205,7 @@ function RegistroInventarioContent() {
                       <option value="respiratorios">Sistema Respiratorio</option>
                       <option value="digestivos">Sistema Digestivo</option>
                     </select>
-                    <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="top-1/2 right-3 absolute w-4 h-4 text-gray-500 -translate-y-1/2 pointer-events-none transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </div>
@@ -292,7 +213,7 @@ function RegistroInventarioContent() {
 
                 {/* Proveedor */}
                 <div>
-                  <label htmlFor="proveedor" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="proveedor" className="block mb-2 font-medium text-gray-700 text-sm">
                     Proveedor *
                   </label>
                   <div className="relative">
@@ -302,7 +223,7 @@ function RegistroInventarioContent() {
                       value={formData.proveedor}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-3 py-2 bg-gray-200 border-2 border-gray-400 rounded text-gray-700 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors appearance-none cursor-pointer"
+                      className="bg-gray-200 focus:bg-white px-3 py-2 border-2 border-gray-400 focus:border-blue-500 rounded focus:outline-none w-full text-gray-700 transition-colors appearance-none cursor-pointer"
                     >
                       <option value="">Seleccione un proveedor</option>
                       <option value="proveedor1">Laboratorio Farmacéutico ABC</option>
@@ -310,7 +231,7 @@ function RegistroInventarioContent() {
                       <option value="proveedor3">Suministros Hospitalarios DEF</option>
                       <option value="proveedor4">Farmacéutica Nacional GHI</option>
                     </select>
-                    <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="top-1/2 right-3 absolute w-4 h-4 text-gray-500 -translate-y-1/2 pointer-events-none transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </div>
@@ -318,7 +239,7 @@ function RegistroInventarioContent() {
 
                 {/* Precio */}
                 <div>
-                  <label htmlFor="precio" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="precio" className="block mb-2 font-medium text-gray-700 text-sm">
                     Precio Unitario (S/) *
                   </label>
                   <input
@@ -331,13 +252,13 @@ function RegistroInventarioContent() {
                     min="0"
                     step="0.01"
                     required
-                    className="w-full px-3 py-2 bg-gray-200 border-2 border-gray-400 rounded text-gray-700 placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
+                    className="bg-gray-200 focus:bg-white px-3 py-2 border-2 border-gray-400 focus:border-blue-500 rounded focus:outline-none w-full text-gray-700 transition-colors placeholder-gray-500"
                   />
                 </div>
 
                 {/* Stock Inicial */}
                 <div>
-                  <label htmlFor="stock" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="stock" className="block mb-2 font-medium text-gray-700 text-sm">
                     Stock Inicial *
                   </label>
                   <input
@@ -349,13 +270,13 @@ function RegistroInventarioContent() {
                     placeholder="0"
                     min="0"
                     required
-                    className="w-full px-3 py-2 bg-gray-200 border-2 border-gray-400 rounded text-gray-700 placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
+                    className="bg-gray-200 focus:bg-white px-3 py-2 border-2 border-gray-400 focus:border-blue-500 rounded focus:outline-none w-full text-gray-700 transition-colors placeholder-gray-500"
                   />
                 </div>
 
                 {/* Stock Mínimo */}
                 <div>
-                  <label htmlFor="stockMinimo" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="stockMinimo" className="block mb-2 font-medium text-gray-700 text-sm">
                     Stock Mínimo *
                   </label>
                   <input
@@ -367,13 +288,13 @@ function RegistroInventarioContent() {
                     placeholder="0"
                     min="0"
                     required
-                    className="w-full px-3 py-2 bg-gray-200 border-2 border-gray-400 rounded text-gray-700 placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
+                    className="bg-gray-200 focus:bg-white px-3 py-2 border-2 border-gray-400 focus:border-blue-500 rounded focus:outline-none w-full text-gray-700 transition-colors placeholder-gray-500"
                   />
                 </div>
 
                 {/* Ubicación */}
                 <div>
-                  <label htmlFor="ubicacion" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="ubicacion" className="block mb-2 font-medium text-gray-700 text-sm">
                     Ubicación en Almacén *
                   </label>
                   <div className="relative">
@@ -383,7 +304,7 @@ function RegistroInventarioContent() {
                       value={formData.ubicacion}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-3 py-2 bg-gray-200 border-2 border-gray-400 rounded text-gray-700 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors appearance-none cursor-pointer"
+                      className="bg-gray-200 focus:bg-white px-3 py-2 border-2 border-gray-400 focus:border-blue-500 rounded focus:outline-none w-full text-gray-700 transition-colors appearance-none cursor-pointer"
                     >
                       <option value="">Seleccione una ubicación</option>
                       <option value="A1-E1">Almacén Principal - A1-E1</option>
@@ -393,7 +314,7 @@ function RegistroInventarioContent() {
                       <option value="B1-E2">Almacén Secundario - B1-E2</option>
                       <option value="C1-E1">Área de Cuarentena - C1-E1</option>
                     </select>
-                    <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="top-1/2 right-3 absolute w-4 h-4 text-gray-500 -translate-y-1/2 pointer-events-none transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </div>
@@ -408,9 +329,9 @@ function RegistroInventarioContent() {
                     name="requiereReceta"
                     checked={formData.requiereReceta}
                     onChange={handleInputChange}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="border-gray-300 rounded focus:ring-blue-500 w-4 h-4 text-blue-600"
                   />
-                  <span className="ml-2 text-sm text-gray-700">
+                  <span className="ml-2 text-gray-700 text-sm">
                     Este producto requiere receta médica (Normativa DIGEMID)
                   </span>
                 </label>
@@ -418,7 +339,7 @@ function RegistroInventarioContent() {
 
               {/* Descripción */}
               <div className="mb-6">
-                <label htmlFor="descripcion" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="descripcion" className="block mb-2 font-medium text-gray-700 text-sm">
                   Descripción del Producto
                 </label>
                 <textarea
@@ -428,25 +349,25 @@ function RegistroInventarioContent() {
                   onChange={handleInputChange}
                   placeholder="Ingrese una descripción detallada del producto, indicaciones, contraindicaciones, etc."
                   rows={4}
-                  className="w-full px-3 py-2 bg-gray-200 border-2 border-gray-400 rounded text-gray-700 placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors resize-vertical"
+                  className="bg-gray-200 focus:bg-white px-3 py-2 border-2 border-gray-400 focus:border-blue-500 rounded focus:outline-none w-full text-gray-700 transition-colors resize-vertical placeholder-gray-500"
                 />
               </div>
 
               {/* Verificación BPAs */}
-              <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <h4 className="text-sm font-medium text-yellow-800 mb-3">Verificación BPAs - DIGEMID</h4>
+              <div className="bg-yellow-50 mb-6 p-4 border border-yellow-200 rounded-lg">
+                <h4 className="mb-3 font-medium text-yellow-800 text-sm">Verificación BPAs - DIGEMID</h4>
                 <div className="space-y-2">
                   <label className="flex items-center">
-                    <input type="checkbox" required className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
-                    <span className="ml-2 text-sm text-gray-700">Producto cumple con normativas DIGEMID</span>
+                    <input type="checkbox" required className="border-gray-300 rounded focus:ring-blue-500 w-4 h-4 text-blue-600" />
+                    <span className="ml-2 text-gray-700 text-sm">Producto cumple con normativas DIGEMID</span>
                   </label>
                   <label className="flex items-center">
-                    <input type="checkbox" required className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
-                    <span className="ml-2 text-sm text-gray-700">Documentación de registro sanitario completa</span>
+                    <input type="checkbox" required className="border-gray-300 rounded focus:ring-blue-500 w-4 h-4 text-blue-600" />
+                    <span className="ml-2 text-gray-700 text-sm">Documentación de registro sanitario completa</span>
                   </label>
                   <label className="flex items-center">
-                    <input type="checkbox" required className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
-                    <span className="ml-2 text-sm text-gray-700">Condiciones de almacenamiento verificadas</span>
+                    <input type="checkbox" required className="border-gray-300 rounded focus:ring-blue-500 w-4 h-4 text-blue-600" />
+                    <span className="ml-2 text-gray-700 text-sm">Condiciones de almacenamiento verificadas</span>
                   </label>
                 </div>
               </div>
@@ -455,7 +376,7 @@ function RegistroInventarioContent() {
               <div className="flex gap-4">
                 <button
                   type="submit"
-                  className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-6 rounded transition-colors"
+                  className="bg-green-600 hover:bg-green-700 px-6 py-2 rounded font-medium text-white transition-colors"
                 >
                   Registrar Producto
                 </button>
@@ -473,7 +394,7 @@ function RegistroInventarioContent() {
                     requiereReceta: false,
                     descripcion: ''
                   })}
-                  className="bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-2 px-6 rounded transition-colors"
+                  className="bg-gray-300 hover:bg-gray-400 px-6 py-2 rounded font-medium text-gray-700 transition-colors"
                 >
                   Limpiar
                 </button>

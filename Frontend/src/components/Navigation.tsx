@@ -35,6 +35,11 @@ export const Navigation: React.FC = () => {
       pages.push({ key: 'historial-recepciones', label: 'Historial', path: '/historial-recepciones' });
     }
 
+    // Asignación de Ubicaciones - para Operaciones
+    if (['Operaciones', 'DirectorTecnico'].includes(role || '')) {
+      pages.push({ key: 'asignacion-ubicaciones', label: 'Asignar Ubicaciones', path: '/asignacion-ubicaciones' });
+    }
+
     // Almacenamiento - para Operaciones
     if (['Operaciones', 'DirectorTecnico'].includes(role || '')) {
       pages.push({ key: 'almacenamiento', label: 'Almacenamiento', path: '/almacenamiento' });
@@ -53,6 +58,11 @@ export const Navigation: React.FC = () => {
     // Control de Calidad - para rol de Calidad
     if (['Calidad', 'DirectorTecnico'].includes(role || '')) {
       pages.push({ key: 'control', label: 'Control Calidad', path: '/control' });
+    }
+
+    // Validación de Actas - para Área Administrativa
+    if (['AreaAdministrativa', 'DirectorTecnico'].includes(role || '')) {
+      pages.push({ key: 'validacion-actas', label: 'Validación Actas', path: '/validacion-actas' });
     }
 
     // Órdenes - principalmente para Área Administrativa
@@ -87,6 +97,10 @@ export const Navigation: React.FC = () => {
               {pathname === '/cliente-portal' && 'Portal del Cliente'}
               {pathname === '/recepcion-mercaderia' && 'Recepción de Mercadería'}
               {pathname === '/historial-recepciones' && 'Historial de Recepciones'}
+              {pathname === '/validacion-actas' && 'Validación de Actas'}
+              {pathname.startsWith('/validacion-actas/detalle') && 'Detalle de Validación'}
+              {pathname === '/asignacion-ubicaciones' && 'Asignación de Ubicaciones'}
+              {pathname.startsWith('/asignacion-ubicaciones/asignar') && 'Asignar Ubicación'}
               {pathname === '/almacenamiento' && 'Gestión de Almacenamiento'}
               {pathname === '/movimientos-stock' && 'Movimientos de Stock'}
               {pathname === '/despacho' && 'Centro de Despacho'}
