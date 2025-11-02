@@ -1,5 +1,6 @@
 package org.example.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -13,6 +14,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "ubicaciones")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Ubicacion {
     
     @Id
@@ -38,6 +40,7 @@ public class Ubicacion {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "zona_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "almacen"})
     private Zona zona;
     
     @CreationTimestamp

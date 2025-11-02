@@ -1,6 +1,6 @@
 package org.example.backend.repository;
 
-import org.example.backend.entity.Ubicacion;
+import org.example.backend.entity.Zona;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,9 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface UbicacionRepository extends JpaRepository<Ubicacion, UUID> {
-    @Query("SELECT u FROM Ubicacion u WHERE u.zona.id = :zonaId")
-    List<Ubicacion> findByZonaId(@Param("zonaId") UUID zonaId);
-    
-    List<Ubicacion> findByDisponible(Boolean disponible);
+public interface ZonaRepository extends JpaRepository<Zona, UUID> {
+    @Query("SELECT z FROM Zona z WHERE z.almacen.id = :almacenId")
+    List<Zona> findByAlmacenId(@Param("almacenId") UUID almacenId);
 }
