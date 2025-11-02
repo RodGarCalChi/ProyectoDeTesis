@@ -211,50 +211,7 @@ function RegistroInventarioContent() {
                   </div>
                 </div>
 
-                {/* Proveedor */}
-                <div>
-                  <label htmlFor="proveedor" className="block mb-2 font-medium text-gray-700 text-sm">
-                    Proveedor *
-                  </label>
-                  <div className="relative">
-                    <select
-                      id="proveedor"
-                      name="proveedor"
-                      value={formData.proveedor}
-                      onChange={handleInputChange}
-                      required
-                      className="bg-gray-200 focus:bg-white px-3 py-2 border-2 border-gray-400 focus:border-blue-500 rounded focus:outline-none w-full text-gray-700 transition-colors appearance-none cursor-pointer"
-                    >
-                      <option value="">Seleccione un proveedor</option>
-                      <option value="proveedor1">Laboratorio Farmacéutico ABC</option>
-                      <option value="proveedor2">Distribuidora Médica XYZ</option>
-                      <option value="proveedor3">Suministros Hospitalarios DEF</option>
-                      <option value="proveedor4">Farmacéutica Nacional GHI</option>
-                    </select>
-                    <svg className="top-1/2 right-3 absolute w-4 h-4 text-gray-500 -translate-y-1/2 pointer-events-none transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
-                </div>
-
-                {/* Precio */}
-                <div>
-                  <label htmlFor="precio" className="block mb-2 font-medium text-gray-700 text-sm">
-                    Precio Unitario (S/) *
-                  </label>
-                  <input
-                    type="number"
-                    id="precio"
-                    name="precio"
-                    value={formData.precio}
-                    onChange={handleInputChange}
-                    placeholder="0.00"
-                    min="0"
-                    step="0.01"
-                    required
-                    className="bg-gray-200 focus:bg-white px-3 py-2 border-2 border-gray-400 focus:border-blue-500 rounded focus:outline-none w-full text-gray-700 transition-colors placeholder-gray-500"
-                  />
-                </div>
+             
 
                 {/* Stock Inicial */}
                 <div>

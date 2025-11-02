@@ -77,6 +77,37 @@ function ValidacionActasContent() {
     router.push(`/validacion-actas/detalle?id=${recepcionId}`);
   };
 
+  const handleCambiarEstado = async (recepcionId: string, nuevoEstado: string) => {
+    if (!confirm(`¿Está seguro de cambiar el estado a ${nuevoEstado.replace('_', ' ')}?`)) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:8080/api/recepciones/${recepcionId}/cambiar-estado`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          estado: nuevoEstado,
+          actualizadoPor: 'Usuario Admin' // Aquí deberías usar el usuario actual
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert('Estado actualizado exitosamente');
+        cargarRecepciones(); // Recargar la lista
+      } else {
+        alert('Error al actualizar estado: ' + data.message);
+      }
+    } catch (error) {
+      console.error('Error al cambiar estado:', error);
+      alert('Error al conectar con el servidor');
+    }
+  };
+
   const formatearFecha = (fecha: string) => {
     return new Date(fecha).toLocaleString('es-PE', {
       year: 'numeric',
@@ -224,6 +255,9 @@ function ValidacionActasContent() {
                     <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">
                       Estado
                     </th>
+                    <th className="px-6 py-3 font-medium text-gray-500 text-xs text-center uppercase tracking-wider">
+                      Cambiar Estado
+                    </th>
                     <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">
                       Acciones
                     </th>
@@ -248,6 +282,19 @@ function ValidacionActasContent() {
                         <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getEstadoColor(recepcion.estado)}`}>
                           {recepcion.estado.replace('_', ' ')}
                         </span>
+                      </td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap">
+                        <select
+                          value={recepcion.estado}
+                          onChange={(e) => handleCambiarEstado(recepcion.id, e.target.value)}
+                          className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                        >
+                          <option value="PENDIENTE">Pendiente</option>
+                          <option value="EN_VERIFICACION">En Verificación</option>
+                          <option value="EN_CUARENTENA">En Cuarentena</option>
+                          <option value="APROBADO">Aprobado</option>
+                          <option value="RECHAZADO">Rechazado</option>
+                        </select>
                       </td>
                       <td className="px-6 py-4 font-medium text-sm whitespace-nowrap">
                         <button
