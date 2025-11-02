@@ -338,4 +338,32 @@ public class RecepcionMercaderiaService {
 
         return dto;
     }
+
+    // Cambiar estado de la recepción directamente
+    public RecepcionMercaderiaDTO cambiarEstado(UUID recepcionId, EstadoRecepcion nuevoEstado, String actualizadoPor) {
+        RecepcionMercaderia recepcion = recepcionRepository.findById(recepcionId)
+                .orElseThrow(() -> new RuntimeException("Recepción no encontrada"));
+
+        // Validar transición de estado si es necesario
+        EstadoRecepcion estadoAnterior = recepcion.getEstado();
+        
+        // Actualizar estado
+        recepcion.setEstado(nuevoEstado);
+        
+        // Agregar observación sobre el cambio de estado
+        String observacionCambio = String.format(" | Estado cambiado de %s a %s por %s el %s", 
+            estadoAnterior, nuevoEstado, 
+            actualizadoPor != null ? actualizadoPor : "Sistema",
+            LocalDateTime.now());
+        
+        String observacionesActuales = recepcion.getObservaciones();
+        if (observacionesActuales == null || observacionesActuales.isEmpty()) {
+            recepcion.setObservaciones(observacionCambio);
+        } else {
+            recepcion.setObservaciones(observacionesActuales + observacionCambio);
+        }
+
+        RecepcionMercaderia updatedRecepcion = recepcionRepository.save(recepcion);
+        return convertToDTO(updatedRecepcion);
+    }
 }

@@ -367,4 +367,44 @@ public class RecepcionMercaderiaController {
                 "data", EstadoRecepcion.values()
         ));
     }
+    
+    // Cambiar estado de la recepción directamente
+    @PatchMapping("/{id}/cambiar-estado")
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "false")
+    public ResponseEntity<?> cambiarEstado(@PathVariable UUID id,
+                                          @RequestBody Map<String, String> request) {
+        try {
+            String estadoStr = request.get("estado");
+            String actualizadoPor = request.get("actualizadoPor");
+            
+            if (estadoStr == null || estadoStr.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "success", false,
+                        "message", "El estado es requerido"
+                ));
+            }
+            
+            EstadoRecepcion nuevoEstado;
+            try {
+                nuevoEstado = EstadoRecepcion.valueOf(estadoStr);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "success", false,
+                        "message", "Estado inválido: " + estadoStr
+                ));
+            }
+            
+            RecepcionMercaderiaDTO recepcion = recepcionService.cambiarEstado(id, nuevoEstado, actualizadoPor);
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "Estado actualizado exitosamente a " + nuevoEstado,
+                    "data", recepcion
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", e.getMessage()
+            ));
+        }
+    }
 }
