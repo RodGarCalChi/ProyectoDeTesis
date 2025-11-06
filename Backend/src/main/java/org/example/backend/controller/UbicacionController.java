@@ -1,5 +1,7 @@
 package org.example.backend.controller;
 
+import jakarta.validation.Valid;
+import org.example.backend.dto.UbicacionRequest;
 import org.example.backend.entity.Ubicacion;
 import org.example.backend.entity.Zona;
 import org.example.backend.repository.UbicacionRepository;
@@ -62,22 +64,19 @@ public class UbicacionController {
     }
     
     @PostMapping
-    public ResponseEntity<Map<String, Object>> crear(@RequestBody Map<String, Object> request) {
+    public ResponseEntity<Map<String, Object>> crear(@Valid @RequestBody UbicacionRequest request) {
         try {
-            String codigo = (String) request.get("codigo");
-            Integer capacidad = (Integer) request.get("capacidad");
-            Float tempMin = request.get("tempObjetivoMin") != null ? 
-                ((Number) request.get("tempObjetivoMin")).floatValue() : null;
-            Float tempMax = request.get("tempObjetivoMax") != null ? 
-                ((Number) request.get("tempObjetivoMax")).floatValue() : null;
-            Boolean disponible = (Boolean) request.getOrDefault("disponible", true);
-            String zonaIdStr = (String) request.get("zonaId");
-            
-            UUID zonaId = UUID.fromString(zonaIdStr);
-            Zona zona = zonaRepository.findById(zonaId)
+            // Buscar zona
+            Zona zona = zonaRepository.findById(request.getZonaId())
                 .orElseThrow(() -> new RuntimeException("Zona no encontrada"));
             
-            Ubicacion ubicacion = new Ubicacion(codigo, capacidad, tempMin, tempMax, disponible, zona);
+            // Crear ubicación
+            Ubicacion ubicacion = new Ubicacion();
+            ubicacion.setCodigo(request.getCodigo());
+            ubicacion.setCapacidad(request.getCapacidadMaxima());
+            ubicacion.setDisponible(request.getDisponible());
+            ubicacion.setZona(zona);
+            
             Ubicacion nuevaUbicacion = ubicacionRepository.save(ubicacion);
             
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
@@ -85,11 +84,73 @@ public class UbicacionController {
                 "message", "Ubicación creada exitosamente",
                 "data", nuevaUbicacion
             ));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of(
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
                 "success", false,
                 "message", e.getMessage()
             ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                "success", false,
+                "message", "Error al crear ubicación: " + e.getMessage()
+            ));
         }
+    }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<Map<String, Object>> actualizar(@PathVariable UUID id, @Valid @RequestBody UbicacionRequest request) {
+        try {
+            return ubicacionRepository.findById(id)
+                .map(ubicacionExistente -> {
+                    ubicacionExistente.setCodigo(request.getCodigo());
+                    ubicacionExistente.setCapacidad(request.getCapacidadMaxima());
+                    ubicacionExistente.setDisponible(request.getDisponible());
+                    
+                    // Actualizar zona si cambió
+                    if (request.getZonaId() != null) {
+                        Zona zona = zonaRepository.findById(request.getZonaId())
+                            .orElseThrow(() -> new RuntimeException("Zona no encontrada"));
+                        ubicacionExistente.setZona(zona);
+                    }
+                    
+                    Ubicacion actualizada = ubicacionRepository.save(ubicacionExistente);
+                    return ResponseEntity.ok(Map.of(
+                        "success", true,
+                        "message", "Ubicación actualizada exitosamente",
+                        "data", actualizada
+                    ));
+                })
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+                    "success", false,
+                    "message", "Ubicación no encontrada"
+                )));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                "success", false,
+                "message", e.getMessage()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                "success", false,
+                "message", "Error al actualizar ubicación: " + e.getMessage()
+            ));
+        }
+    }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, Object>> eliminar(@PathVariable UUID id) {
+        return ubicacionRepository.findById(id)
+            .map(ubicacion -> {
+                ubicacionRepository.delete(ubicacion);
+                Map<String, Object> response = Map.of(
+                    "success", true,
+                    "message", "Ubicación eliminada exitosamente"
+                );
+                return ResponseEntity.ok(response);
+            })
+            .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+                "success", false,
+                "message", "Ubicación no encontrada"
+            )));
     }
 }

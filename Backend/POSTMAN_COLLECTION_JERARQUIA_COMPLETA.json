@@ -1,0 +1,577 @@
+{
+	"info": {
+		"name": "Sistema Almacén Farmacéutico - Jerarquía Completa",
+		"description": "Colección completa con jerarquía: Operador Logístico → Almacén → Zona → Lote → Palet → Caja → Productos",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080/api",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "1. Operadores Logísticos",
+			"item": [
+				{
+					"name": "Crear Operador Logístico",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"DHL Supply Chain\",\n  \"ruc\": \"20123456789\",\n  \"direccion\": \"Av. Industrial 1234, Lima\",\n  \"telefono\": \"+51 1 234-5678\",\n  \"email\": \"contacto@dhl.com.pe\",\n  \"activo\": true\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/operadores-logisticos", "host": ["{{baseUrl}}"], "path": ["operadores-logisticos"]}
+					}
+				},
+				{
+					"name": "Listar Operadores Logísticos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/operadores-logisticos", "host": ["{{baseUrl}}"], "path": ["operadores-logisticos"]}
+					}
+				},
+				{
+					"name": "Obtener Operador por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/operadores-logisticos/:id", "host": ["{{baseUrl}}"], "path": ["operadores-logisticos", ":id"], "variable": [{"key": "id", "value": ""}]}
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Almacenes",
+			"item": [
+				{
+					"name": "Crear Almacén",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Almacén Central Lima\",\n  \"direccion\": \"Av. Los Frutales 456, Lima\",\n  \"operadorLogisticoId\": \"UUID_DEL_OPERADOR\",\n  \"clienteId\": \"UUID_DEL_CLIENTE\",\n  \"tieneAreaControlados\": false\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/almacenes", "host": ["{{baseUrl}}"], "path": ["almacenes"]}
+					}
+				},
+				{
+					"name": "Listar Almacenes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/almacenes", "host": ["{{baseUrl}}"], "path": ["almacenes"]}
+					}
+				},
+				{
+					"name": "Obtener Almacén por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/almacenes/:id", "host": ["{{baseUrl}}"], "path": ["almacenes", ":id"], "variable": [{"key": "id", "value": ""}]}
+					}
+				},
+				{
+					"name": "Listar Almacenes por Cliente",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/almacenes/cliente/:clienteId", "host": ["{{baseUrl}}"], "path": ["almacenes", "cliente", ":clienteId"], "variable": [{"key": "clienteId", "value": ""}]}
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Zonas",
+			"item": [
+				{
+					"name": "Crear Zona",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Zona Refrigerada A\",\n  \"tipo\": \"REFRIGERADO\",\n  \"almacenId\": \"UUID_DEL_ALMACEN\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/zonas", "host": ["{{baseUrl}}"], "path": ["zonas"]}
+					}
+				},
+				{
+					"name": "Listar Zonas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/zonas", "host": ["{{baseUrl}}"], "path": ["zonas"]}
+					}
+				},
+				{
+					"name": "Obtener Zona por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/zonas/:id", "host": ["{{baseUrl}}"], "path": ["zonas", ":id"], "variable": [{"key": "id", "value": ""}]}
+					}
+				},
+				{
+					"name": "Listar Zonas por Almacén",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/zonas/almacen/:almacenId", "host": ["{{baseUrl}}"], "path": ["zonas", "almacen", ":almacenId"], "variable": [{"key": "almacenId", "value": ""}]}
+					}
+				}
+			]
+		},
+		{
+			"name": "4. Ubicaciones",
+			"item": [
+				{
+					"name": "Crear Ubicación",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"codigo\": \"A-01-01\",\n  \"capacidadMaxima\": 50,\n  \"disponible\": true,\n  \"zonaId\": \"UUID_DE_LA_ZONA\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/ubicaciones", "host": ["{{baseUrl}}"], "path": ["ubicaciones"]}
+					}
+				},
+				{
+					"name": "Listar Ubicaciones",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/ubicaciones", "host": ["{{baseUrl}}"], "path": ["ubicaciones"]}
+					}
+				},
+				{
+					"name": "Obtener Ubicación por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/ubicaciones/:id", "host": ["{{baseUrl}}"], "path": ["ubicaciones", ":id"], "variable": [{"key": "id", "value": ""}]}
+					}
+				},
+				{
+					"name": "Listar Ubicaciones por Zona",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/ubicaciones/zona/:zonaId", "host": ["{{baseUrl}}"], "path": ["ubicaciones", "zona", ":zonaId"], "variable": [{"key": "zonaId", "value": ""}]}
+					}
+				},
+				{
+					"name": "Listar Ubicaciones Disponibles",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/ubicaciones/disponibles", "host": ["{{baseUrl}}"], "path": ["ubicaciones", "disponibles"]}
+					}
+				}
+			]
+		},
+		{
+			"name": "5. Lotes",
+			"item": [
+				{
+					"name": "Crear Lote",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"numeroLote\": \"LOTE-2025-001\",\n  \"fechaIngreso\": \"2025-02-01\",\n  \"clienteId\": \"UUID_DEL_CLIENTE\",\n  \"productoId\": \"UUID_DEL_PRODUCTO\",\n  \"cantidadTotal\": 1000,\n  \"condicionAlmacen\": \"REFRIGERADO\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/lotes", "host": ["{{baseUrl}}"], "path": ["lotes"]}
+					}
+				},
+				{
+					"name": "Listar Lotes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/lotes", "host": ["{{baseUrl}}"], "path": ["lotes"]}
+					}
+				},
+				{
+					"name": "Obtener Lote por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/lotes/:id", "host": ["{{baseUrl}}"], "path": ["lotes", ":id"], "variable": [{"key": "id", "value": ""}]}
+					}
+				}
+			]
+		},
+		{
+			"name": "6. Palets (NUEVO)",
+			"item": [
+				{
+					"name": "Crear Palet",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"codigo\": \"PAL-2025-001\",\n  \"loteId\": \"UUID_DEL_LOTE\",\n  \"ubicacionId\": \"UUID_DE_LA_UBICACION\",\n  \"capacidadMaxima\": 20,\n  \"cajasActuales\": 0,\n  \"pesoMaximoKg\": 500.0,\n  \"pesoActualKg\": 0.0,\n  \"disponible\": true,\n  \"observaciones\": \"Palet estándar para vacunas\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/palets", "host": ["{{baseUrl}}"], "path": ["palets"]}
+					}
+				},
+				{
+					"name": "Listar Palets",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/palets", "host": ["{{baseUrl}}"], "path": ["palets"]}
+					}
+				},
+				{
+					"name": "Obtener Palet por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/palets/:id", "host": ["{{baseUrl}}"], "path": ["palets", ":id"], "variable": [{"key": "id", "value": ""}]}
+					}
+				},
+				{
+					"name": "Listar Palets por Lote",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/palets/lote/:loteId", "host": ["{{baseUrl}}"], "path": ["palets", "lote", ":loteId"], "variable": [{"key": "loteId", "value": ""}]}
+					}
+				},
+				{
+					"name": "Listar Palets Disponibles",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/palets/disponibles", "host": ["{{baseUrl}}"], "path": ["palets", "disponibles"]}
+					}
+				},
+				{
+					"name": "Actualizar Palet",
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"cajasActuales\": 15,\n  \"pesoActualKg\": 375.5,\n  \"disponible\": true,\n  \"observaciones\": \"Palet con 15 cajas\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/palets/:id", "host": ["{{baseUrl}}"], "path": ["palets", ":id"], "variable": [{"key": "id", "value": ""}]}
+					}
+				}
+			]
+		},
+		{
+			"name": "7. Cajas (NUEVO)",
+			"item": [
+				{
+					"name": "Crear Caja",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"codigo\": \"CAJA-2025-001\",\n  \"paletId\": \"UUID_DEL_PALET\",\n  \"clienteId\": \"UUID_DEL_CLIENTE\",\n  \"productoId\": \"UUID_DEL_PRODUCTO\",\n  \"cantidad\": 100,\n  \"loteProducto\": \"LOTE-VAC-2025-A\",\n  \"fechaVencimiento\": \"2026-12-31\",\n  \"tamano\": \"MEDIANA\",\n  \"pesoKg\": 25.5,\n  \"largoCm\": 60.0,\n  \"anchoCm\": 40.0,\n  \"altoCm\": 30.0,\n  \"temperaturaRequeridaMin\": 2.0,\n  \"temperaturaRequeridaMax\": 8.0,\n  \"requiereCadenaFrio\": true,\n  \"sellada\": true,\n  \"observaciones\": \"Caja sellada con vacunas COVID-19\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/cajas", "host": ["{{baseUrl}}"], "path": ["cajas"]}
+					}
+				},
+				{
+					"name": "Listar Cajas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/cajas", "host": ["{{baseUrl}}"], "path": ["cajas"]}
+					}
+				},
+				{
+					"name": "Obtener Caja por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/cajas/:id", "host": ["{{baseUrl}}"], "path": ["cajas", ":id"], "variable": [{"key": "id", "value": ""}]}
+					}
+				},
+				{
+					"name": "Listar Cajas por Palet",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/cajas/palet/:paletId", "host": ["{{baseUrl}}"], "path": ["cajas", "palet", ":paletId"], "variable": [{"key": "paletId", "value": ""}]}
+					}
+				},
+				{
+					"name": "Listar Cajas por Cliente",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/cajas/cliente/:clienteId", "host": ["{{baseUrl}}"], "path": ["cajas", "cliente", ":clienteId"], "variable": [{"key": "clienteId", "value": ""}]}
+					}
+				},
+				{
+					"name": "Listar Cajas por Producto",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/cajas/producto/:productoId", "host": ["{{baseUrl}}"], "path": ["cajas", "producto", ":productoId"], "variable": [{"key": "productoId", "value": ""}]}
+					}
+				},
+				{
+					"name": "Listar Cajas Próximas a Vencer",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/cajas/proximas-vencer?dias=30", "host": ["{{baseUrl}}"], "path": ["cajas", "proximas-vencer"], "query": [{"key": "dias", "value": "30"}]}
+					}
+				},
+				{
+					"name": "Actualizar Caja",
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sellada\": false,\n  \"observaciones\": \"Caja abierta para inspección\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/cajas/:id", "host": ["{{baseUrl}}"], "path": ["cajas", ":id"], "variable": [{"key": "id", "value": ""}]}
+					}
+				}
+			]
+		},
+		{
+			"name": "8. Clientes",
+			"item": [
+				{
+					"name": "Crear Cliente",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Ministerio de Salud\",\n  \"ruc\": \"20987654321\",\n  \"direccion\": \"Av. Salaverry 801, Lima\",\n  \"telefono\": \"+51 1 315-6600\",\n  \"email\": \"contacto@minsa.gob.pe\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/clientes", "host": ["{{baseUrl}}"], "path": ["clientes"]}
+					}
+				},
+				{
+					"name": "Listar Clientes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/clientes", "host": ["{{baseUrl}}"], "path": ["clientes"]}
+					}
+				},
+				{
+					"name": "Obtener Cliente por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/clientes/:id", "host": ["{{baseUrl}}"], "path": ["clientes", ":id"], "variable": [{"key": "id", "value": ""}]}
+					}
+				}
+			]
+		},
+		{
+			"name": "9. Productos",
+			"item": [
+				{
+					"name": "Crear Producto",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Vacuna COVID-19 Pfizer\",\n  \"descripcion\": \"Vacuna ARNm contra COVID-19\",\n  \"codigoBarras\": \"7501234567890\",\n  \"unidadMedida\": \"DOSIS\",\n  \"requiereCadenaFrio\": true,\n  \"temperaturaMinima\": -80.0,\n  \"temperaturaMaxima\": -60.0\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/productos", "host": ["{{baseUrl}}"], "path": ["productos"]}
+					}
+				},
+				{
+					"name": "Listar Productos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/productos", "host": ["{{baseUrl}}"], "path": ["productos"]}
+					}
+				},
+				{
+					"name": "Obtener Producto por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/productos/:id", "host": ["{{baseUrl}}"], "path": ["productos", ":id"], "variable": [{"key": "id", "value": ""}]}
+					}
+				}
+			]
+		},
+		{
+			"name": "10. Recepciones de Mercadería",
+			"item": [
+				{
+					"name": "Crear Recepción",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"clienteId\": \"UUID_DEL_CLIENTE\",\n  \"productoId\": \"UUID_DEL_PRODUCTO\",\n  \"cantidadEsperada\": 1000,\n  \"fechaRecepcionEsperada\": \"2025-02-15\",\n  \"observaciones\": \"Recepción de vacunas COVID-19\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/recepciones", "host": ["{{baseUrl}}"], "path": ["recepciones"]}
+					}
+				},
+				{
+					"name": "Listar Recepciones",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/recepciones", "host": ["{{baseUrl}}"], "path": ["recepciones"]}
+					}
+				},
+				{
+					"name": "Obtener Recepción por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/recepciones/:id", "host": ["{{baseUrl}}"], "path": ["recepciones", ":id"], "variable": [{"key": "id", "value": ""}]}
+					}
+				},
+				{
+					"name": "Cambiar Estado Recepción",
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"estado\": \"RECIBIDO\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/recepciones/:id/estado", "host": ["{{baseUrl}}"], "path": ["recepciones", ":id", "estado"], "variable": [{"key": "id", "value": ""}]}
+					}
+				}
+			]
+		},
+		{
+			"name": "11. Actas de Recepción",
+			"item": [
+				{
+					"name": "Crear Acta",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"recepcionId\": \"UUID_DE_LA_RECEPCION\",\n  \"cantidadRecibida\": 1000,\n  \"observaciones\": \"Mercadería recibida en buen estado\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/actas", "host": ["{{baseUrl}}"], "path": ["actas"]}
+					}
+				},
+				{
+					"name": "Listar Actas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/actas", "host": ["{{baseUrl}}"], "path": ["actas"]}
+					}
+				},
+				{
+					"name": "Obtener Acta por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/actas/:id", "host": ["{{baseUrl}}"], "path": ["actas", ":id"], "variable": [{"key": "id", "value": ""}]}
+					}
+				},
+				{
+					"name": "Aprobar Acta",
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"aprobado\": true,\n  \"observaciones\": \"Acta aprobada sin observaciones\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/actas/:id/aprobar", "host": ["{{baseUrl}}"], "path": ["actas", ":id", "aprobar"], "variable": [{"key": "id", "value": ""}]}
+					}
+				}
+			]
+		},
+		{
+			"name": "12. Inventario Cliente",
+			"item": [
+				{
+					"name": "Crear Inventario",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"clienteId\": \"UUID_DEL_CLIENTE\",\n  \"productoId\": \"UUID_DEL_PRODUCTO\",\n  \"loteId\": \"UUID_DEL_LOTE\",\n  \"cantidad\": 1000,\n  \"fechaVencimiento\": \"2026-12-31\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/inventario-cliente", "host": ["{{baseUrl}}"], "path": ["inventario-cliente"]}
+					}
+				},
+				{
+					"name": "Listar Inventario",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/inventario-cliente", "host": ["{{baseUrl}}"], "path": ["inventario-cliente"]}
+					}
+				},
+				{
+					"name": "Obtener Inventario por Cliente",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/inventario-cliente/cliente/:clienteId", "host": ["{{baseUrl}}"], "path": ["inventario-cliente", "cliente", ":clienteId"], "variable": [{"key": "clienteId", "value": ""}]}
+					}
+				}
+			]
+		},
+		{
+			"name": "13. Usuarios",
+			"item": [
+				{
+					"name": "Crear Usuario",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"operador01\",\n  \"password\": \"password123\",\n  \"email\": \"operador01@almacen.com\",\n  \"nombre\": \"Juan Pérez\",\n  \"rol\": \"OPERADOR\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/usuarios", "host": ["{{baseUrl}}"], "path": ["usuarios"]}
+					}
+				},
+				{
+					"name": "Listar Usuarios",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {"raw": "{{baseUrl}}/usuarios", "host": ["{{baseUrl}}"], "path": ["usuarios"]}
+					}
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"operador01\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"]}
+					}
+				}
+			]
+		}
+	]
+}

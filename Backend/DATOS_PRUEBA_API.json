@@ -1,0 +1,238 @@
+{
+  "descripcion": "Datos de prueba para APIs - Ejecutar en orden",
+  "baseUrl": "http://localhost:8080/api",
+  
+  "paso1_operador_logistico": {
+    "endpoint": "POST /api/operadores-logisticos",
+    "descripcion": "Crear operador logístico",
+    "body": {
+      "nombre": "DHL Supply Chain Perú",
+      "ruc": "20123456789",
+      "direccion": "Av. Industrial 1234, Callao",
+      "telefono": "+51 1 234-5678",
+      "email": "contacto@dhl.com.pe",
+      "activo": true
+    },
+    "nota": "Guardar el 'id' de la respuesta como OPERADOR_ID"
+  },
+  
+  "paso2_cliente": {
+    "endpoint": "POST /api/clientes",
+    "descripcion": "Crear cliente",
+    "body": {
+      "razonSocial": "Ministerio de Salud del Perú",
+      "rucDni": "20987654321",
+      "direccionEntrega": "Av. Salaverry 801, Jesús María, Lima",
+      "distrito": "Jesús María",
+      "telefono": "+51 1 315-6600",
+      "email": "logistica@minsa.gob.pe",
+      "tipoCliente": "CORPORATIVO",
+      "formaPago": "CREDITO_30_DIAS",
+      "activo": true
+    },
+    "nota": "Guardar el 'id' de la respuesta como CLIENTE_ID"
+  },
+  
+  "paso3_producto": {
+    "endpoint": "POST /api/productos",
+    "descripcion": "Crear producto",
+    "body": {
+      "nombre": "Vacuna COVID-19 Pfizer-BioNTech",
+      "descripcion": "Vacuna de ARNm contra COVID-19, requiere almacenamiento ultra frío",
+      "codigoBarras": "7501234567890",
+      "unidadMedida": "DOSIS",
+      "requiereCadenaFrio": true,
+      "temperaturaMinima": -80.0,
+      "temperaturaMaxima": -60.0
+    },
+    "nota": "Guardar el 'id' de la respuesta como PRODUCTO_ID"
+  },
+  
+  "paso4_almacen": {
+    "endpoint": "POST /api/almacenes",
+    "descripcion": "Crear almacén",
+    "body": {
+      "nombre": "Almacén Central Lima - MINSA",
+      "direccion": "Av. Los Frutales 456, Ate, Lima",
+      "operadorLogisticoId": "REEMPLAZAR_CON_OPERADOR_ID",
+      "clienteId": "REEMPLAZAR_CON_CLIENTE_ID",
+      "tieneAreaControlados": true
+    },
+    "nota": "Reemplazar los IDs con los valores guardados. Guardar el 'id' como ALMACEN_ID"
+  },
+  
+  "paso5_zona": {
+    "endpoint": "POST /api/zonas",
+    "descripcion": "Crear zona de almacenamiento",
+    "body": {
+      "nombre": "Zona Ultra Congelada A",
+      "tipo": "ULT",
+      "almacenId": "REEMPLAZAR_CON_ALMACEN_ID"
+    },
+    "nota": "Guardar el 'id' como ZONA_ID"
+  },
+  
+  "paso6_ubicacion": {
+    "endpoint": "POST /api/ubicaciones",
+    "descripcion": "Crear ubicación dentro de la zona",
+    "body": {
+      "codigo": "ULT-A-01-01",
+      "capacidadMaxima": 50,
+      "disponible": true,
+      "zonaId": "REEMPLAZAR_CON_ZONA_ID"
+    },
+    "nota": "Guardar el 'id' como UBICACION_ID"
+  },
+  
+  "paso7_lote": {
+    "endpoint": "POST /api/lotes",
+    "descripcion": "Crear lote de productos",
+    "body": {
+      "numeroLote": "LOTE-COVID-2025-001",
+      "fechaIngreso": "2025-02-01",
+      "clienteId": "REEMPLAZAR_CON_CLIENTE_ID",
+      "productoId": "REEMPLAZAR_CON_PRODUCTO_ID",
+      "cantidadTotal": 10000,
+      "condicionAlmacen": "ULT"
+    },
+    "nota": "Guardar el 'id' como LOTE_ID"
+  },
+  
+  "paso8_palet": {
+    "endpoint": "POST /api/palets",
+    "descripcion": "Crear palet",
+    "body": {
+      "codigo": "PAL-2025-001",
+      "loteId": "REEMPLAZAR_CON_LOTE_ID",
+      "ubicacionId": "REEMPLAZAR_CON_UBICACION_ID",
+      "capacidadMaxima": 20,
+      "cajasActuales": 0,
+      "pesoMaximoKg": 500.0,
+      "pesoActualKg": 0.0,
+      "disponible": true,
+      "observaciones": "Palet para vacunas COVID-19"
+    },
+    "nota": "Guardar el 'id' como PALET_ID"
+  },
+  
+  "paso9_caja": {
+    "endpoint": "POST /api/cajas",
+    "descripcion": "Crear caja dentro del palet",
+    "body": {
+      "codigo": "CAJA-2025-001",
+      "paletId": "REEMPLAZAR_CON_PALET_ID",
+      "clienteId": "REEMPLAZAR_CON_CLIENTE_ID",
+      "productoId": "REEMPLAZAR_CON_PRODUCTO_ID",
+      "cantidad": 500,
+      "loteProducto": "PFIZER-2025-A",
+      "fechaVencimiento": "2026-12-31",
+      "tamano": "MEDIANA",
+      "pesoKg": 25.5,
+      "largoCm": 60.0,
+      "anchoCm": 40.0,
+      "altoCm": 30.0,
+      "temperaturaRequeridaMin": -80.0,
+      "temperaturaRequeridaMax": -60.0,
+      "requiereCadenaFrio": true,
+      "sellada": true,
+      "observaciones": "Caja sellada con 500 dosis de vacuna COVID-19"
+    },
+    "nota": "Guardar el 'id' como CAJA_ID"
+  },
+  
+  "consultas_adicionales": {
+    "listar_operadores": {
+      "endpoint": "GET /api/operadores-logisticos",
+      "descripcion": "Listar todos los operadores logísticos"
+    },
+    "listar_almacenes": {
+      "endpoint": "GET /api/almacenes",
+      "descripcion": "Listar todos los almacenes"
+    },
+    "listar_zonas_por_almacen": {
+      "endpoint": "GET /api/zonas/almacen/{almacenId}",
+      "descripcion": "Listar zonas de un almacén específico"
+    },
+    "listar_ubicaciones_disponibles": {
+      "endpoint": "GET /api/ubicaciones/disponibles",
+      "descripcion": "Listar ubicaciones disponibles"
+    },
+    "listar_palets_por_lote": {
+      "endpoint": "GET /api/palets/lote/{loteId}",
+      "descripcion": "Listar palets de un lote"
+    },
+    "listar_cajas_por_cliente": {
+      "endpoint": "GET /api/cajas/cliente/{clienteId}",
+      "descripcion": "Listar cajas de un cliente"
+    },
+    "listar_cajas_proximas_vencer": {
+      "endpoint": "GET /api/cajas/proximas-vencer?dias=30",
+      "descripcion": "Listar cajas que vencen en los próximos 30 días"
+    }
+  },
+  
+  "datos_adicionales": {
+    "otro_operador": {
+      "endpoint": "POST /api/operadores-logisticos",
+      "body": {
+        "nombre": "Ransa Comercial S.A.",
+        "ruc": "20100039207",
+        "direccion": "Av. Argentina 3093, Callao",
+        "telefono": "+51 1 517-3000",
+        "email": "contacto@ransa.com.pe",
+        "activo": true
+      }
+    },
+    "otro_cliente": {
+      "endpoint": "POST /api/clientes",
+      "body": {
+        "razonSocial": "EsSalud",
+        "rucDni": "20131257750",
+        "direccionEntrega": "Jirón Domingo Cueto 120, Lince, Lima",
+        "distrito": "Lince",
+        "telefono": "+51 1 265-6000",
+        "email": "logistica@essalud.gob.pe",
+        "tipoCliente": "CORPORATIVO",
+        "formaPago": "CREDITO_60_DIAS",
+        "activo": true
+      }
+    },
+    "otro_producto": {
+      "endpoint": "POST /api/productos",
+      "body": {
+        "nombre": "Insulina Humana NPH",
+        "descripcion": "Insulina de acción intermedia para diabetes",
+        "codigoBarras": "7502345678901",
+        "unidadMedida": "FRASCO",
+        "requiereCadenaFrio": true,
+        "temperaturaMinima": 2.0,
+        "temperaturaMaxima": 8.0
+      }
+    },
+    "zona_refrigerada": {
+      "endpoint": "POST /api/zonas",
+      "body": {
+        "nombre": "Zona Refrigerada B",
+        "tipo": "REFRIGERADO",
+        "almacenId": "REEMPLAZAR_CON_ALMACEN_ID"
+      }
+    },
+    "zona_seca": {
+      "endpoint": "POST /api/zonas",
+      "body": {
+        "nombre": "Zona Seca C",
+        "tipo": "SECO",
+        "almacenId": "REEMPLAZAR_CON_ALMACEN_ID"
+      }
+    }
+  },
+  
+  "notas_importantes": [
+    "1. Ejecutar los pasos en orden del 1 al 9",
+    "2. Guardar los IDs de cada respuesta para usarlos en los siguientes pasos",
+    "3. Reemplazar los placeholders 'REEMPLAZAR_CON_*' con los IDs reales",
+    "4. Los tipos de zona válidos son: ULT, CONGELADO, REFRIGERADO, SECO",
+    "5. Los tamaños de caja válidos son: PEQUENA, MEDIANA, GRANDE, EXTRA_GRANDE",
+    "6. Las condiciones de almacén válidas son: ULT, CONGELADO, REFRIGERADO, SECO"
+  ]
+}
