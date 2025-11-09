@@ -24,6 +24,9 @@ public class ProductoService {
     @Autowired
     private ProductoRepository productoRepository;
     
+    @Autowired
+    private org.example.backend.repository.ClienteProductoRepository clienteProductoRepository;
+    
     // Crear producto
     public ProductoDTO crearProducto(ProductoCreateDTO createDTO) {
         // Verificar que no exista el código SKU
@@ -175,6 +178,52 @@ public class ProductoService {
         return productoRepository.findProductosProximosAVencer(mesesLimite).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+    
+    // Obtener productos de un cliente específico con paginación
+    @Transactional(readOnly = true)
+    public Page<ProductoDTO> obtenerProductosPorCliente(UUID clienteId, Pageable pageable) {
+        List<Producto> productos = clienteProductoRepository.findProductosByClienteId(clienteId);
+        
+        // Convertir a Page manualmente
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), productos.size());
+        
+        List<ProductoDTO> productosDTO = productos.subList(start, end).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+        
+        return new org.springframework.data.domain.PageImpl<>(
+                productosDTO, pageable, productos.size());
+    }
+    
+    // Buscar productos de un cliente con filtros adicionales
+    @Transactional(readOnly = true)
+    public Page<ProductoDTO> buscarProductosPorClienteConFiltros(
+            UUID clienteId, String nombre, String codigoSKU, 
+            TipoProducto tipo, Boolean requiereCadenaFrio, Pageable pageable) {
+        
+        // Obtener productos del cliente
+        List<Producto> productosCliente = clienteProductoRepository.findProductosByClienteId(clienteId);
+        
+        // Aplicar filtros
+        List<Producto> productosFiltrados = productosCliente.stream()
+                .filter(p -> nombre == null || p.getNombre().toLowerCase().contains(nombre.toLowerCase()))
+                .filter(p -> codigoSKU == null || p.getCodigoSKU().toLowerCase().contains(codigoSKU.toLowerCase()))
+                .filter(p -> tipo == null || p.getTipo().equals(tipo))
+                .filter(p -> requiereCadenaFrio == null || p.getRequiereCadenaFrio().equals(requiereCadenaFrio))
+                .collect(Collectors.toList());
+        
+        // Aplicar paginación
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), productosFiltrados.size());
+        
+        List<ProductoDTO> productosDTO = productosFiltrados.subList(start, end).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+        
+        return new org.springframework.data.domain.PageImpl<>(
+                productosDTO, pageable, productosFiltrados.size());
     }
     
     // Método auxiliar para convertir Entity a DTO

@@ -93,13 +93,14 @@ public class ProductoController {
         }
     }
 
-    // Buscar productos con filtros
+    // Buscar productos con filtros (incluyendo cliente)
     @GetMapping("/buscar")
     public ResponseEntity<Map<String, Object>> buscarProductos(
             @RequestParam(required = false) String nombre,
             @RequestParam(required = false) String codigoSKU,
             @RequestParam(required = false) TipoProducto tipo,
             @RequestParam(required = false) Boolean requiereCadenaFrio,
+            @RequestParam(required = false) UUID clienteId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "nombre") String sortBy,
@@ -108,8 +109,47 @@ public class ProductoController {
         Sort sort = sortDir.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
 
         Pageable pageable = PageRequest.of(page, size, sort);
+        
+        // Si se especifica clienteId, filtrar por cliente
+        if (clienteId != null) {
+            Page<ProductoDTO> productos = productoService.buscarProductosPorClienteConFiltros(
+                    clienteId, nombre, codigoSKU, tipo, requiereCadenaFrio, pageable);
+            
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "data", productos.getContent(),
+                    "totalElements", productos.getTotalElements(),
+                    "totalPages", productos.getTotalPages(),
+                    "currentPage", productos.getNumber(),
+                    "size", productos.getSize()));
+        }
+        
+        // Búsqueda normal sin filtro de cliente
         Page<ProductoDTO> productos = productoService.buscarProductosConFiltros(
                 nombre, codigoSKU, tipo, requiereCadenaFrio, pageable);
+
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "data", productos.getContent(),
+                "totalElements", productos.getTotalElements(),
+                "totalPages", productos.getTotalPages(),
+                "currentPage", productos.getNumber(),
+                "size", productos.getSize()));
+    }
+    
+    // Obtener productos de un cliente específico
+    @GetMapping("/cliente/{clienteId}")
+    public ResponseEntity<Map<String, Object>> obtenerProductosPorCliente(
+            @PathVariable UUID clienteId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "nombre") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir) {
+
+        Sort sort = sortDir.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        
+        Page<ProductoDTO> productos = productoService.obtenerProductosPorCliente(clienteId, pageable);
 
         return ResponseEntity.ok(Map.of(
                 "success", true,
