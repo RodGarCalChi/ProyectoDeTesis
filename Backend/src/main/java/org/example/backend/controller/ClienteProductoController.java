@@ -146,20 +146,65 @@ public class ClienteProductoController {
             ));
         }
     }
-    
-    // ========== NUEVOS ENDPOINTS AVANZADOS ==========
-    
-    // Asignar múltiples productos a un cliente existente
-    @PostMapping("/asignar-varios")
-    public ResponseEntity<?> asignarVariosProductos(@Valid @RequestBody AsignarProductosDTO dto) {
+
+    // ========== ENDPOINT DE ASIGNACIÓN MASIVA ==========
+    // Asignación masiva de múltiples productos a múltiples clientes
+    @PostMapping("/asignar-masivo")
+    public ResponseEntity<?> asignarMasivo(@RequestBody List<ClienteProductoDTO> asignaciones) {
         try {
-            ResultadoAsignacionDTO resultado = clienteProductoService.asignarVariosProductos(dto);
+            // Validación básica
+            if (asignaciones == null || asignaciones.isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "success", false,
+                        "message", "La lista de asignaciones no puede estar vacía"
+                ));
+            }
+            
+            List<ClienteProductoDTO> resultados = clienteProductoService.asignarMasivo(asignaciones);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
                     "success", true,
-                    "message", resultado.getMensaje(),
-                    "data", resultado
+                    "message", "Se procesaron " + resultados.size() + " asignaciones exitosamente",
+                    "data", resultados,
+                    "total", resultados.size()
             ));
         } catch (RuntimeException e) {
+            e.printStackTrace(); // Esto imprimirá el error en los logs
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                    "success", false,
+                    "message", "Error: " + e.getMessage(),
+                    "error", e.getClass().getSimpleName()
+            ));
+        } catch (Exception e) {
+            e.printStackTrace(); // Esto imprimirá el error en los logs
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                    "success", false,
+                    "message", "Error inesperado: " + e.getMessage(),
+                    "error", e.getClass().getSimpleName()
+            ));
+        }
+    }
+    
+    // Endpoint de prueba simple
+    @GetMapping("/test")
+    public ResponseEntity<?> test() {
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "El endpoint funciona correctamente",
+                "timestamp", System.currentTimeMillis()
+        ));
+    }
+    
+    // Listar todas las relaciones cliente-producto
+    @GetMapping("/listar")
+    public ResponseEntity<Map<String, Object>> listarTodasLasRelaciones() {
+        try {
+            List<ClienteProductoDTO> relaciones = clienteProductoService.listarTodasLasRelaciones();
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "data", relaciones,
+                    "total", relaciones.size()
+            ));
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of(
                     "success", false,
                     "message", e.getMessage()
@@ -167,35 +212,17 @@ public class ClienteProductoController {
         }
     }
     
-    // Crear cliente con productos (existentes y/o nuevos)
-    @PostMapping("/crear-cliente-con-productos")
-    public ResponseEntity<?> crearClienteConProductos(@Valid @RequestBody ClienteConProductosDTO dto) {
+    // Listar solo relaciones activas
+    @GetMapping("/listar/activas")
+    public ResponseEntity<Map<String, Object>> listarRelacionesActivas() {
         try {
-            ResultadoAsignacionDTO resultado = clienteProductoService.crearClienteConProductos(dto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
+            List<ClienteProductoDTO> relaciones = clienteProductoService.listarRelacionesActivas();
+            return ResponseEntity.ok(Map.of(
                     "success", true,
-                    "message", resultado.getMensaje(),
-                    "data", resultado
+                    "data", relaciones,
+                    "total", relaciones.size()
             ));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of(
-                    "success", false,
-                    "message", e.getMessage()
-            ));
-        }
-    }
-    
-    // Crear/asociar producto con cliente (maneja todos los casos)
-    @PostMapping("/crear-o-asociar")
-    public ResponseEntity<?> crearOAsociarProductoConCliente(@Valid @RequestBody ProductoConClienteDTO dto) {
-        try {
-            ResultadoAsignacionDTO resultado = clienteProductoService.crearOAsociarProductoConCliente(dto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
-                    "success", true,
-                    "message", resultado.getMensaje(),
-                    "data", resultado
-            ));
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of(
                     "success", false,
                     "message", e.getMessage()

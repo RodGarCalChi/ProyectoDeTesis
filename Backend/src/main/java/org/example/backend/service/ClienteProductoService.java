@@ -105,133 +105,94 @@ public class ClienteProductoService {
         return clienteProductoRepository.countProductosByClienteId(clienteId);
     }
     
-    // Asignar múltiples productos a un cliente existente
-    public ResultadoAsignacionDTO asignarVariosProductos(AsignarProductosDTO dto) {
-        Cliente cliente = clienteRepository.findById(UUID.fromString(dto.getClienteId()))
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+
+    
+    // Listar todas las relaciones cliente-producto
+    @Transactional(readOnly = true)
+    public List<ClienteProductoDTO> listarTodasLasRelaciones() {
+        return clienteProductoRepository.findAll().stream()
+                .map(this::convertirADTO)
+                .collect(Collectors.toList());
+    }
+    
+    // Listar solo relaciones activas
+    @Transactional(readOnly = true)
+    public List<ClienteProductoDTO> listarRelacionesActivas() {
+        return clienteProductoRepository.findByActivoTrue().stream()
+                .map(this::convertirADTO)
+                .collect(Collectors.toList());
+    }
+    
+    // Asignación masiva de múltiples productos a múltiples clientes
+    public List<ClienteProductoDTO> asignarMasivo(List<ClienteProductoDTO> asignaciones) {
+        System.out.println("=== INICIO ASIGNACIÓN MASIVA ===");
+        System.out.println("Total de asignaciones recibidas: " + asignaciones.size());
         
-        List<ProductoDTO> productosAsignados = new ArrayList<>();
-        int totalAsignaciones = 0;
+        List<ClienteProductoDTO> resultados = new ArrayList<>();
+        List<String> errores = new ArrayList<>();
         
-        for (String productoId : dto.getProductosIds()) {
-            UUID prodId = UUID.fromString(productoId);
+        for (int i = 0; i < asignaciones.size(); i++) {
+            final int indice = i;
+            ClienteProductoDTO dto = asignaciones.get(i);
             
-            // Verificar si ya existe la relación
-            if (!clienteProductoRepository.existsByClienteIdAndProductoId(cliente.getId(), prodId)) {
-                Producto producto = productoRepository.findById(prodId)
-                        .orElseThrow(() -> new RuntimeException("Producto no encontrado: " + productoId));
+            System.out.println("Procesando asignación " + indice + ": Cliente=" + dto.getClienteId() + ", Producto=" + dto.getProductoId());
+            
+            try {
+                // Verificar que los IDs no sean nulos
+                if (dto.getClienteId() == null || dto.getProductoId() == null) {
+                    errores.add("Índice " + indice + ": ClienteId o ProductoId es nulo");
+                    continue;
+                }
                 
-                ClienteProducto relacion = new ClienteProducto(cliente, producto, dto.getObservaciones());
-                clienteProductoRepository.save(relacion);
+                // Verificar que no exista ya la relación
+                boolean existe = clienteProductoRepository.existsByClienteIdAndProductoId(dto.getClienteId(), dto.getProductoId());
+                System.out.println("  - Relación existe: " + existe);
                 
-                productosAsignados.add(convertirProductoADTO(producto));
-                totalAsignaciones++;
+                if (existe) {
+                    errores.add("Índice " + indice + ": El producto ya está asignado a este cliente");
+                    continue;
+                }
+                
+                // Buscar cliente
+                System.out.println("  - Buscando cliente...");
+                Cliente cliente = clienteRepository.findById(dto.getClienteId())
+                        .orElseThrow(() -> new RuntimeException("Índice " + indice + ": Cliente no encontrado"));
+                System.out.println("  - Cliente encontrado: " + cliente.getRazonSocial());
+                
+                // Buscar producto
+                System.out.println("  - Buscando producto...");
+                Producto producto = productoRepository.findById(dto.getProductoId())
+                        .orElseThrow(() -> new RuntimeException("Índice " + indice + ": Producto no encontrado"));
+                System.out.println("  - Producto encontrado: " + producto.getNombre());
+                
+                // Crear relación
+                System.out.println("  - Creando relación...");
+                ClienteProducto clienteProducto = new ClienteProducto(cliente, producto, dto.getObservaciones());
+                clienteProducto = clienteProductoRepository.save(clienteProducto);
+                System.out.println("  - Relación guardada con ID: " + clienteProducto.getId());
+                
+                resultados.add(convertirADTO(clienteProducto));
+                System.out.println("  - ✓ Asignación " + indice + " completada");
+                
+            } catch (Exception e) {
+                System.err.println("  - ✗ Error en asignación " + indice + ": " + e.getMessage());
+                e.printStackTrace();
+                errores.add("Índice " + indice + ": " + e.getMessage());
             }
         }
         
-        ClienteDTO clienteDTO = convertirClienteADTO(cliente);
-        return new ResultadoAsignacionDTO(
-                clienteDTO,
-                productosAsignados,
-                totalAsignaciones,
-                "Se asignaron " + totalAsignaciones + " productos al cliente"
-        );
-    }
-    
-    // Crear cliente con productos (existentes y/o nuevos)
-    public ResultadoAsignacionDTO crearClienteConProductos(ClienteConProductosDTO dto) {
-        // Crear el cliente
-        ClienteDTO clienteCreado = clienteService.crearCliente(dto.getCliente());
-        UUID clienteId = clienteCreado.getId();
+        System.out.println("=== FIN ASIGNACIÓN MASIVA ===");
+        System.out.println("Exitosas: " + resultados.size() + ", Errores: " + errores.size());
         
-        List<ProductoDTO> productosAsignados = new ArrayList<>();
-        int totalAsignaciones = 0;
-        
-        // Asignar productos existentes
-        if (dto.getProductosExistentesIds() != null && !dto.getProductosExistentesIds().isEmpty()) {
-            for (String productoId : dto.getProductosExistentesIds()) {
-                UUID prodId = UUID.fromString(productoId);
-                Producto producto = productoRepository.findById(prodId)
-                        .orElseThrow(() -> new RuntimeException("Producto no encontrado: " + productoId));
-                
-                Cliente cliente = clienteRepository.findById(clienteId).get();
-                ClienteProducto relacion = new ClienteProducto(cliente, producto, dto.getObservaciones());
-                clienteProductoRepository.save(relacion);
-                
-                productosAsignados.add(convertirProductoADTO(producto));
-                totalAsignaciones++;
-            }
+        // Si hubo errores, lanzar excepción con el resumen
+        if (!errores.isEmpty()) {
+            String mensajeError = "Se procesaron " + resultados.size() + " de " + asignaciones.size() + 
+                    " asignaciones. Errores: " + String.join("; ", errores);
+            System.err.println(mensajeError);
+            throw new RuntimeException(mensajeError);
         }
         
-        // Crear y asignar productos nuevos
-        if (dto.getProductosNuevos() != null && !dto.getProductosNuevos().isEmpty()) {
-            for (ProductoCreateDTO productoNuevo : dto.getProductosNuevos()) {
-                ProductoDTO productoCreado = productoService.crearProducto(productoNuevo);
-                
-                Cliente cliente = clienteRepository.findById(clienteId).get();
-                Producto producto = productoRepository.findById(productoCreado.getId()).get();
-                
-                ClienteProducto relacion = new ClienteProducto(cliente, producto, dto.getObservaciones());
-                clienteProductoRepository.save(relacion);
-                
-                productosAsignados.add(productoCreado);
-                totalAsignaciones++;
-            }
-        }
-        
-        return new ResultadoAsignacionDTO(
-                clienteCreado,
-                productosAsignados,
-                totalAsignaciones,
-                "Cliente creado con " + totalAsignaciones + " productos asignados"
-        );
-    }
-    
-    // Crear/asociar producto con cliente (maneja todos los casos)
-    public ResultadoAsignacionDTO crearOAsociarProductoConCliente(ProductoConClienteDTO dto) {
-        Cliente cliente;
-        Producto producto;
-        
-        // Manejar cliente (existente o nuevo)
-        if (dto.getClienteId() != null && !dto.getClienteId().isEmpty()) {
-            cliente = clienteRepository.findById(UUID.fromString(dto.getClienteId()))
-                    .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
-        } else if (dto.getClienteNuevo() != null) {
-            ClienteDTO clienteCreado = clienteService.crearCliente(dto.getClienteNuevo());
-            cliente = clienteRepository.findById(clienteCreado.getId()).get();
-        } else {
-            throw new RuntimeException("Debe proporcionar un clienteId o datos de clienteNuevo");
-        }
-        
-        // Manejar producto (existente o nuevo)
-        if (dto.getProductoId() != null && !dto.getProductoId().isEmpty()) {
-            producto = productoRepository.findById(UUID.fromString(dto.getProductoId()))
-                    .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-        } else if (dto.getProductoNuevo() != null) {
-            ProductoDTO productoCreado = productoService.crearProducto(dto.getProductoNuevo());
-            producto = productoRepository.findById(productoCreado.getId()).get();
-        } else {
-            throw new RuntimeException("Debe proporcionar un productoId o datos de productoNuevo");
-        }
-        
-        // Verificar si ya existe la relación
-        if (clienteProductoRepository.existsByClienteIdAndProductoId(cliente.getId(), producto.getId())) {
-            throw new RuntimeException("El producto ya está asignado a este cliente");
-        }
-        
-        // Crear la relación
-        ClienteProducto relacion = new ClienteProducto(cliente, producto, dto.getObservaciones());
-        clienteProductoRepository.save(relacion);
-        
-        List<ProductoDTO> productos = new ArrayList<>();
-        productos.add(convertirProductoADTO(producto));
-        
-        return new ResultadoAsignacionDTO(
-                convertirClienteADTO(cliente),
-                productos,
-                1,
-                "Producto asociado exitosamente al cliente"
-        );
+        return resultados;
     }
     
     // Métodos auxiliares

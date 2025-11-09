@@ -359,12 +359,52 @@ public class RecepcionMercaderiaController {
         ));
     }
     
+    // Estadísticas resumidas (formato más amigable para frontend)
+    @GetMapping("/estadisticas/resumen")
+    public ResponseEntity<Map<String, Object>> obtenerEstadisticasResumen() {
+        List<Object[]> estadisticas = recepcionService.obtenerEstadisticasPorEstado();
+        
+        Map<String, Long> resumen = new java.util.HashMap<>();
+        resumen.put("PENDIENTE", 0L);
+        resumen.put("EN_VERIFICACION", 0L);
+        resumen.put("APROBADO", 0L);
+        resumen.put("RECHAZADO", 0L);
+        resumen.put("EN_CUARENTENA", 0L);
+        resumen.put("ALMACENADO", 0L);
+        
+        for (Object[] stat : estadisticas) {
+            String estado = stat[0].toString();
+            Long cantidad = ((Number) stat[1]).longValue();
+            resumen.put(estado, cantidad);
+        }
+        
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "data", resumen,
+                "pendientes", resumen.get("PENDIENTE"),
+                "enVerificacion", resumen.get("EN_VERIFICACION"),
+                "aprobadas", resumen.get("APROBADO"),
+                "rechazadas", resumen.get("RECHAZADO")
+        ));
+    }
+    
     // Obtener estados disponibles
     @GetMapping("/estados")
     public ResponseEntity<Map<String, Object>> obtenerEstadosDisponibles() {
         return ResponseEntity.ok(Map.of(
                 "success", true,
                 "data", EstadoRecepcion.values()
+        ));
+    }
+    
+    // Contar recepciones por estado específico
+    @GetMapping("/contar/{estado}")
+    public ResponseEntity<Map<String, Object>> contarPorEstado(@PathVariable EstadoRecepcion estado) {
+        long cantidad = recepcionService.contarPorEstado(estado);
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "estado", estado,
+                "cantidad", cantidad
         ));
     }
     

@@ -43,4 +43,7 @@ public interface ClienteProductoRepository extends JpaRepository<ClienteProducto
     // Contar clientes por producto
     @Query("SELECT COUNT(cp) FROM ClienteProducto cp WHERE cp.producto.id = :productoId AND cp.activo = true")
     Long countClientesByProductoId(@Param("productoId") UUID productoId);
+    
+    // Listar todas las relaciones activas
+    List<ClienteProducto> findByActivoTrue();
 }

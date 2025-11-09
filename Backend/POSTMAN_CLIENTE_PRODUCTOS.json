@@ -1,0 +1,184 @@
+{
+  "info": {
+    "name": "Cliente-Productos API",
+    "description": "Colección completa de endpoints para asignación de productos a clientes",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "2.0.0"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "clienteId",
+      "value": "5f858864-d9e8-4408-8560-67c010546e3f",
+      "type": "string"
+    },
+    {
+      "key": "productoId",
+      "value": "3798c0d8-7913-4507-925b-40afad693efb",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Test Endpoint",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/cliente-productos/test",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "cliente-productos", "test"]
+        },
+        "description": "Endpoint de prueba para verificar que el servidor está funcionando"
+      }
+    },
+    {
+      "name": "1. Asignar UN Producto a UN Cliente",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"productoId\": \"3798c0d8-7913-4507-925b-40afad693efb\",\n  \"clienteId\": \"5f858864-d9e8-4408-8560-67c010546e3f\",\n  \"observaciones\": \"Paracetamol 500mg asignado al Hospital Nacional Dos de Mayo\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/cliente-productos",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "cliente-productos"]
+        },
+        "description": "Asigna un producto a un cliente"
+      }
+    },
+    {
+      "name": "2. Asignación MASIVA (15 Productos) ⭐",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "[\n  {\n    \"productoId\": \"3798c0d8-7913-4507-925b-40afad693efb\",\n    \"clienteId\": \"5f858864-d9e8-4408-8560-67c010546e3f\",\n    \"observaciones\": \"Paracetamol 500mg asignado al Hospital Nacional Dos de Mayo para uso en pacientes ambulatorios\"\n  },\n  {\n    \"productoId\": \"a8d74e5c-6c81-4fa9-bfe9-cbe0de2fc5b8\",\n    \"clienteId\": \"8978ed44-ebb6-403d-855a-61eec0c057a2\",\n    \"observaciones\": \"Amoxicilina 875mg distribuida al Hospital Nacional Dos de Julio para el área de infectología\"\n  },\n  {\n    \"productoId\": \"6bfa2810-6110-4179-8cb2-929a0c97b875\",\n    \"clienteId\": \"bad3f749-3a54-4bcf-97f4-ed445edcd3c0\",\n    \"observaciones\": \"Ibuprofeno 400mg asignado al Hospital Nacional Dos de Agosto para analgésicos de emergencia\"\n  },\n  {\n    \"productoId\": \"c1cedc45-bf1e-4aa8-9702-3a2bcd9b7391\",\n    \"clienteId\": \"c73ef6c0-9759-4c2a-bad4-643926838cf7\",\n    \"observaciones\": \"Dexametasona 4mg Inyectable refrigerada, asignada al Hospital Dos de Septiembre\"\n  },\n  {\n    \"productoId\": \"d785e96e-68bf-404d-9326-ab7885588d99\",\n    \"clienteId\": \"51673a67-a21c-408f-8481-cc8a15230cff\",\n    \"observaciones\": \"Aspirina 100mg asignada al Hospital Nacional Dos de Diciembre para pacientes cardiovasculares\"\n  },\n  {\n    \"productoId\": \"b850ca24-407a-48cc-a3c6-1db194d0b5c0\",\n    \"clienteId\": \"23842abe-fe40-4099-95e6-c614c7cccf0a\",\n    \"observaciones\": \"Ranitidina 150mg Tabletas asignada al Hospital Nacional Dos de Noviembre para pacientes hospitalizados\"\n  },\n  {\n    \"productoId\": \"cb079df1-4109-45cc-a6b9-008fa110cb0c\",\n    \"clienteId\": \"5f858864-d9e8-4408-8560-67c010546e3f\",\n    \"observaciones\": \"Omeprazol 20mg Cápsulas entregado al Hospital Nacional Dos de Mayo para control de úlceras gástricas\"\n  },\n  {\n    \"productoId\": \"0adf5999-3064-438d-b9e5-faeba9bb8648\",\n    \"clienteId\": \"8978ed44-ebb6-403d-855a-61eec0c057a2\",\n    \"observaciones\": \"Nitroglicerina 5mg Tabletas Sublinguales entregada al Hospital Dos de Julio para urgencias cardiacas\"\n  },\n  {\n    \"productoId\": \"9a789e4a-5777-48fd-8bfe-5baba74ae690\",\n    \"clienteId\": \"c73ef6c0-9759-4c2a-bad4-643926838cf7\",\n    \"observaciones\": \"Cloranfenicol 250mg Cápsulas asignado al Hospital Dos de Septiembre para área de antibióticos\"\n  },\n  {\n    \"productoId\": \"a8d74e5c-6c81-4fa9-bfe9-cbe0de2fc5b8\",\n    \"clienteId\": \"23842abe-fe40-4099-95e6-c614c7cccf0a\",\n    \"observaciones\": \"Amoxicilina 875mg entregada al Hospital Dos de Noviembre como parte de lote de antibióticos\"\n  },\n  {\n    \"productoId\": \"6bfa2810-6110-4179-8cb2-929a0c97b875\",\n    \"clienteId\": \"51673a67-a21c-408f-8481-cc8a15230cff\",\n    \"observaciones\": \"Ibuprofeno 400mg para el Hospital Dos de Diciembre, servicio de traumatología\"\n  },\n  {\n    \"productoId\": \"d785e96e-68bf-404d-9326-ab7885588d99\",\n    \"clienteId\": \"bad3f749-3a54-4bcf-97f4-ed445edcd3c0\",\n    \"observaciones\": \"Aspirina 100mg asignada al Hospital Dos de Agosto — área de farmacia general\"\n  },\n  {\n    \"productoId\": \"3798c0d8-7913-4507-925b-40afad693efb\",\n    \"clienteId\": \"c73ef6c0-9759-4c2a-bad4-643926838cf7\",\n    \"observaciones\": \"Paracetamol 500mg Tabletas — lote para Hospital Dos de Septiembre\"\n  },\n  {\n    \"productoId\": \"cb079df1-4109-45cc-a6b9-008fa110cb0c\",\n    \"clienteId\": \"bad3f749-3a54-4bcf-97f4-ed445edcd3c0\",\n    \"observaciones\": \"Omeprazol 20mg asignado al Hospital Dos de Agosto\"\n  },\n  {\n    \"productoId\": \"9a789e4a-5777-48fd-8bfe-5baba74ae690\",\n    \"clienteId\": \"23842abe-fe40-4099-95e6-c614c7cccf0a\",\n    \"observaciones\": \"Cloranfenicol 250mg Cápsulas asignado al Hospital Dos de Noviembre para el servicio de pediatría\"\n  }\n]"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/cliente-productos/asignar-masivo",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "cliente-productos", "asignar-masivo"]
+        },
+        "description": "Asigna múltiples productos a múltiples clientes en una sola operación. Incluye las 15 asignaciones de hospitales."
+      }
+    },
+    {
+      "name": "3. Asignación MASIVA (Solo 3 para Prueba)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "[\n  {\n    \"productoId\": \"3798c0d8-7913-4507-925b-40afad693efb\",\n    \"clienteId\": \"5f858864-d9e8-4408-8560-67c010546e3f\",\n    \"observaciones\": \"Paracetamol 500mg - Prueba 1\"\n  },\n  {\n    \"productoId\": \"a8d74e5c-6c81-4fa9-bfe9-cbe0de2fc5b8\",\n    \"clienteId\": \"8978ed44-ebb6-403d-855a-61eec0c057a2\",\n    \"observaciones\": \"Amoxicilina 875mg - Prueba 2\"\n  },\n  {\n    \"productoId\": \"6bfa2810-6110-4179-8cb2-929a0c97b875\",\n    \"clienteId\": \"bad3f749-3a54-4bcf-97f4-ed445edcd3c0\",\n    \"observaciones\": \"Ibuprofeno 400mg - Prueba 3\"\n  }\n]"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/cliente-productos/asignar-masivo",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "cliente-productos", "asignar-masivo"]
+        },
+        "description": "Versión reducida con solo 3 asignaciones para pruebas rápidas"
+      }
+    },
+    {
+      "name": "Obtener Productos de un Cliente",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/cliente-productos/cliente/{{clienteId}}/productos",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "cliente-productos", "cliente", "{{clienteId}}", "productos"]
+        },
+        "description": "Obtiene la lista de productos asignados a un cliente específico"
+      }
+    },
+    {
+      "name": "Obtener Relaciones de un Cliente",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/cliente-productos/cliente/{{clienteId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "cliente-productos", "cliente", "{{clienteId}}"]
+        },
+        "description": "Obtiene las relaciones completas (con detalles) de un cliente"
+      }
+    },
+    {
+      "name": "Obtener Clientes de un Producto",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/cliente-productos/producto/{{productoId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "cliente-productos", "producto", "{{productoId}}"]
+        },
+        "description": "Obtiene todos los clientes que tienen asignado un producto"
+      }
+    },
+    {
+      "name": "Contar Productos de un Cliente",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/cliente-productos/cliente/{{clienteId}}/count",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "cliente-productos", "cliente", "{{clienteId}}", "count"]
+        },
+        "description": "Cuenta cuántos productos tiene asignados un cliente"
+      }
+    },
+    {
+      "name": "Desactivar Relación",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/cliente-productos/cliente/{{clienteId}}/producto/{{productoId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "cliente-productos", "cliente", "{{clienteId}}", "producto", "{{productoId}}"]
+        },
+        "description": "Desactiva la relación entre un cliente y un producto"
+      }
+    },
+    {
+      "name": "Activar Relación",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/cliente-productos/cliente/{{clienteId}}/producto/{{productoId}}/activar",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "cliente-productos", "cliente", "{{clienteId}}", "producto", "{{productoId}}", "activar"]
+        },
+        "description": "Activa una relación previamente desactivada"
+      }
+    }
+  ]
+}

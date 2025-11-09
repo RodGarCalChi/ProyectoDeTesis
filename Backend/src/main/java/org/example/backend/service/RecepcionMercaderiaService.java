@@ -231,6 +231,12 @@ public class RecepcionMercaderiaService {
     public List<Object[]> obtenerEstadisticasPorEstado() {
         return recepcionRepository.countRecepcionesByEstado();
     }
+    
+    // Contar recepciones por estado específico
+    @Transactional(readOnly = true)
+    public long contarPorEstado(EstadoRecepcion estado) {
+        return recepcionRepository.findByEstado(estado).size();
+    }
 
     // Obtener recepciones pendientes
     @Transactional(readOnly = true)

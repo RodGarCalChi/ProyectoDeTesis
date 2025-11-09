@@ -1,0 +1,11 @@
+id,nombres,apellidos,documento,email,password_hash,rol,activo,ultimo_acceso,fecha_creacion,fecha_actualizacion,tipo_usuario
+550e8400-e29b-41d4-a716-446655440001,Administrador,Sistema,12345678,admin@pharmaflow.com,password,DirectorTecnico,1,,2024-01-15 10:00:00,2024-01-15 10:00:00,
+550e8400-e29b-41d4-a716-446655440002,María,García,87654321,recepcion@pharmaflow.com,password,Recepcion,1,,2024-01-15 10:00:00,2024-01-15 10:00:00,
+550e8400-e29b-41d4-a716-446655440003,Juan,Pérez,11223344,operaciones@pharmaflow.com,password,Operaciones,1,,2024-01-15 10:00:00,2024-01-15 10:00:00,
+550e8400-e29b-41d4-a716-446655440004,Ana,López,55667788,calidad@pharmaflow.com,password,Calidad,1,,2024-01-15 10:00:00,2024-01-15 10:00:00,
+550e8400-e29b-41d4-a716-446655440005,Carlos,Rodríguez,99887766,despacho@pharmaflow.com,password,Despacho,1,,2024-01-15 10:00:00,2024-01-15 10:00:00,
+550e8400-e29b-41d4-a716-446655440006,Pedro,Martínez,44332211,cliente@pharmaflow.com,password,Cliente,1,,2024-01-15 10:00:00,2024-01-15 10:00:00,
+550e8400-e29b-41d4-a716-446655440007,Laura,Fernández,12121212,recepcion2@pharmaflow.com,password,Recepcion,1,,2024-01-15 10:00:00,2024-01-15 10:00:00,
+550e8400-e29b-41d4-a716-446655440008,Roberto,Silva,34343434,recepcion3@pharmaflow.com,password,Recepcion,1,,2024-01-15 10:00:00,2024-01-15 10:00:00,
+550e8400-e29b-41d4-a716-446655440009,Carmen,Torres,56565656,operaciones2@pharmaflow.com,password,Operaciones,1,,2024-01-15 10:00:00,2024-01-15 10:00:00,
+550e8400-e29b-41d4-a716-446655440010,Diego,Ramírez,78787878,calidad2@pharmaflow.com,password,Calidad,1,,2024-01-15 10:00:00,2024-01-15 10:00:00,

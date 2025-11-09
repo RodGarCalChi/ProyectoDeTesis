@@ -1,0 +1,77 @@
+[
+  {
+    "productoId": "3798c0d8-7913-4507-925b-40afad693efb",
+    "clienteId": "5f858864-d9e8-4408-8560-67c010546e3f",
+    "observaciones": "Paracetamol 500mg asignado al Hospital Nacional Dos de Mayo para uso en pacientes ambulatorios"
+  },
+  {
+    "productoId": "a8d74e5c-6c81-4fa9-bfe9-cbe0de2fc5b8",
+    "clienteId": "8978ed44-ebb6-403d-855a-61eec0c057a2",
+    "observaciones": "Amoxicilina 875mg distribuida al Hospital Nacional Dos de Julio para el área de infectología"
+  },
+  {
+    "productoId": "6bfa2810-6110-4179-8cb2-929a0c97b875",
+    "clienteId": "bad3f749-3a54-4bcf-97f4-ed445edcd3c0",
+    "observaciones": "Ibuprofeno 400mg asignado al Hospital Nacional Dos de Agosto para analgésicos de emergencia"
+  },
+  {
+    "productoId": "c1cedc45-bf1e-4aa8-9702-3a2bcd9b7391",
+    "clienteId": "c73ef6c0-9759-4c2a-bad4-643926838cf7",
+    "observaciones": "Dexametasona 4mg Inyectable refrigerada, asignada al Hospital Dos de Septiembre"
+  },
+  {
+    "productoId": "d785e96e-68bf-404d-9326-ab7885588d99",
+    "clienteId": "51673a67-a21c-408f-8481-cc8a15230cff",
+    "observaciones": "Aspirina 100mg asignada al Hospital Nacional Dos de Diciembre para pacientes cardiovasculares"
+  },
+  {
+    "productoId": "b850ca24-407a-48cc-a3c6-1db194d0b5c0",
+    "clienteId": "23842abe-fe40-4099-95e6-c614c7cccf0a",
+    "observaciones": "Ranitidina 150mg Tabletas asignada al Hospital Nacional Dos de Noviembre para pacientes hospitalizados"
+  },
+  {
+    "productoId": "cb079df1-4109-45cc-a6b9-008fa110cb0c",
+    "clienteId": "5f858864-d9e8-4408-8560-67c010546e3f",
+    "observaciones": "Omeprazol 20mg Cápsulas entregado al Hospital Nacional Dos de Mayo para control de úlceras gástricas"
+  },
+  {
+    "productoId": "0adf5999-3064-438d-b9e5-faeba9bb8648",
+    "clienteId": "8978ed44-ebb6-403d-855a-61eec0c057a2",
+    "observaciones": "Nitroglicerina 5mg Tabletas Sublinguales entregada al Hospital Dos de Julio para urgencias cardiacas"
+  },
+  {
+    "productoId": "9a789e4a-5777-48fd-8bfe-5baba74ae690",
+    "clienteId": "c73ef6c0-9759-4c2a-bad4-643926838cf7",
+    "observaciones": "Cloranfenicol 250mg Cápsulas asignado al Hospital Dos de Septiembre para área de antibióticos"
+  },
+  {
+    "productoId": "a8d74e5c-6c81-4fa9-bfe9-cbe0de2fc5b8",
+    "clienteId": "23842abe-fe40-4099-95e6-c614c7cccf0a",
+    "observaciones": "Amoxicilina 875mg entregada al Hospital Dos de Noviembre como parte de lote de antibióticos"
+  },
+  {
+    "productoId": "6bfa2810-6110-4179-8cb2-929a0c97b875",
+    "clienteId": "51673a67-a21c-408f-8481-cc8a15230cff",
+    "observaciones": "Ibuprofeno 400mg para el Hospital Dos de Diciembre, servicio de traumatología"
+  },
+  {
+    "productoId": "d785e96e-68bf-404d-9326-ab7885588d99",
+    "clienteId": "bad3f749-3a54-4bcf-97f4-ed445edcd3c0",
+    "observaciones": "Aspirina 100mg asignada al Hospital Dos de Agosto — área de farmacia general"
+  },
+  {
+    "productoId": "3798c0d8-7913-4507-925b-40afad693efb",
+    "clienteId": "c73ef6c0-9759-4c2a-bad4-643926838cf7",
+    "observaciones": "Paracetamol 500mg Tabletas — lote para Hospital Dos de Septiembre"
+  },
+  {
+    "productoId": "cb079df1-4109-45cc-a6b9-008fa110cb0c",
+    "clienteId": "bad3f749-3a54-4bcf-97f4-ed445edcd3c0",
+    "observaciones": "Omeprazol 20mg asignado al Hospital Dos de Agosto"
+  },
+  {
+    "productoId": "9a789e4a-5777-48fd-8bfe-5baba74ae690",
+    "clienteId": "23842abe-fe40-4099-95e6-c614c7cccf0a",
+    "observaciones": "Cloranfenicol 250mg Cápsulas asignado al Hospital Dos de Noviembre para el servicio de pediatría"
+  }
+]

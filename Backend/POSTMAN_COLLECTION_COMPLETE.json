@@ -1,0 +1,356 @@
+{
+	"info": {
+		"name": "PharmaFlow - Colección Completa con Datos",
+		"description": "Colección completa con APIs de carga masiva y datos de prueba",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8081",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "1. Carga Masiva de Datos",
+			"item": [
+				{
+					"name": "Seed - Crear Todos los Datos de Prueba",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/seed/seed-all",
+							"host": ["{{base_url}}"],
+							"path": ["api", "seed", "seed-all"]
+						}
+					}
+				},
+				{
+					"name": "Seed - Crear Usuarios Masivamente",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n  {\n    \"nombres\": \"Administrador\",\n    \"apellidos\": \"Sistema\",\n    \"documento\": \"12345678\",\n    \"email\": \"admin@pharmaflow.com\",\n    \"password\": \"password\",\n    \"rol\": \"DirectorTecnico\"\n  },\n  {\n    \"nombres\": \"María\",\n    \"apellidos\": \"García\",\n    \"documento\": \"87654321\",\n    \"email\": \"recepcion@pharmaflow.com\",\n    \"password\": \"password\",\n    \"rol\": \"Recepcion\"\n  },\n  {\n    \"nombres\": \"Juan\",\n    \"apellidos\": \"Pérez\",\n    \"documento\": \"11223344\",\n    \"email\": \"operaciones@pharmaflow.com\",\n    \"password\": \"password\",\n    \"rol\": \"Operaciones\"\n  },\n  {\n    \"nombres\": \"Ana\",\n    \"apellidos\": \"López\",\n    \"documento\": \"55667788\",\n    \"email\": \"calidad@pharmaflow.com\",\n    \"password\": \"password\",\n    \"rol\": \"Calidad\"\n  },\n  {\n    \"nombres\": \"Carlos\",\n    \"apellidos\": \"Rodríguez\",\n    \"documento\": \"99887766\",\n    \"email\": \"despacho@pharmaflow.com\",\n    \"password\": \"password\",\n    \"rol\": \"Despacho\"\n  },\n  {\n    \"nombres\": \"Pedro\",\n    \"apellidos\": \"Martínez\",\n    \"documento\": \"44332211\",\n    \"email\": \"cliente@pharmaflow.com\",\n    \"password\": \"password\",\n    \"rol\": \"Cliente\"\n  },\n  {\n    \"nombres\": \"Laura\",\n    \"apellidos\": \"Fernández\",\n    \"documento\": \"12121212\",\n    \"email\": \"recepcion2@pharmaflow.com\",\n    \"password\": \"password\",\n    \"rol\": \"Recepcion\"\n  },\n  {\n    \"nombres\": \"Roberto\",\n    \"apellidos\": \"Silva\",\n    \"documento\": \"34343434\",\n    \"email\": \"recepcion3@pharmaflow.com\",\n    \"password\": \"password\",\n    \"rol\": \"Recepcion\"\n  },\n  {\n    \"nombres\": \"Carmen\",\n    \"apellidos\": \"Torres\",\n    \"documento\": \"56565656\",\n    \"email\": \"operaciones2@pharmaflow.com\",\n    \"password\": \"password\",\n    \"rol\": \"Operaciones\"\n  },\n  {\n    \"nombres\": \"Diego\",\n    \"apellidos\": \"Ramírez\",\n    \"documento\": \"78787878\",\n    \"email\": \"calidad2@pharmaflow.com\",\n    \"password\": \"password\",\n    \"rol\": \"Calidad\"\n  },\n  {\n    \"nombres\": \"Patricia\",\n    \"apellidos\": \"Gómez\",\n    \"documento\": \"13579246\",\n    \"email\": \"administrativa@pharmaflow.com\",\n    \"password\": \"password\",\n    \"rol\": \"AreaAdministrativa\"\n  },\n  {\n    \"nombres\": \"Miguel\",\n    \"apellidos\": \"Sánchez\",\n    \"documento\": \"24681357\",\n    \"email\": \"recepcion4@pharmaflow.com\",\n    \"password\": \"password\",\n    \"rol\": \"Recepcion\"\n  },\n  {\n    \"nombres\": \"Sofía\",\n    \"apellidos\": \"Vargas\",\n    \"documento\": \"98765432\",\n    \"email\": \"despacho2@pharmaflow.com\",\n    \"password\": \"password\",\n    \"rol\": \"Despacho\"\n  },\n  {\n    \"nombres\": \"Ricardo\",\n    \"apellidos\": \"Morales\",\n    \"documento\": \"11111111\",\n    \"email\": \"cliente2@pharmaflow.com\",\n    \"password\": \"password\",\n    \"rol\": \"Cliente\"\n  },\n  {\n    \"nombres\": \"Valentina\",\n    \"apellidos\": \"Castro\",\n    \"documento\": \"22222222\",\n    \"email\": \"cliente3@pharmaflow.com\",\n    \"password\": \"password\",\n    \"rol\": \"Cliente\"\n  }\n]"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/seed/usuarios",
+							"host": ["{{base_url}}"],
+							"path": ["api", "seed", "usuarios"]
+						}
+					}
+				},
+				{
+					"name": "Seed - Contar Usuarios",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/seed/usuarios/count",
+							"host": ["{{base_url}}"],
+							"path": ["api", "seed", "usuarios", "count"]
+						}
+					}
+				},
+				{
+					"name": "Seed - Eliminar Todos los Usuarios",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/seed/usuarios/all",
+							"host": ["{{base_url}}"],
+							"path": ["api", "seed", "usuarios", "all"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Autenticación",
+			"item": [
+				{
+					"name": "Login - Usuario Recepción",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.token) {",
+									"        pm.collectionVariables.set('token', response.token);",
+									"    }",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"recepcion@pharmaflow.com\",\n  \"password\": \"password\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Login - Usuario Admin",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@pharmaflow.com\",\n  \"password\": \"password\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Registrar Usuario Individual",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombres\": \"Nuevo\",\n  \"apellidos\": \"Usuario\",\n  \"documento\": \"99999999\",\n  \"email\": \"nuevo@pharmaflow.com\",\n  \"password\": \"password\",\n  \"rol\": \"Recepcion\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "register"]
+						}
+					}
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/logout",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "logout"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Movimientos de Inventario",
+			"item": [
+				{
+					"name": "Validar Acceso a Movimientos",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/movimientos/validar-acceso",
+							"host": ["{{base_url}}"],
+							"path": ["api", "movimientos", "validar-acceso"]
+						}
+					}
+				},
+				{
+					"name": "Registrar Entrada - Ejemplo 1",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"referencia\": \"PO-2024-001\",\n  \"proveedor\": \"Laboratorio Farmacéutico ABC\",\n  \"producto\": \"Paracetamol 500mg\",\n  \"cantidad\": 1000,\n  \"ubicacion\": \"Almacén Principal - Estante A1\",\n  \"recibidoPor\": \"María García\",\n  \"dia\": \"2024-01-15\",\n  \"hora\": \"10:30\",\n  \"notas\": \"Producto en perfecto estado, temperatura controlada durante transporte\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/movimientos/entrada",
+							"host": ["{{base_url}}"],
+							"path": ["api", "movimientos", "entrada"]
+						}
+					}
+				},
+				{
+					"name": "Registrar Entrada - Ejemplo 2",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"referencia\": \"PO-2024-002\",\n  \"proveedor\": \"Distribuidora Médica XYZ\",\n  \"producto\": \"Ibuprofeno 400mg\",\n  \"cantidad\": 500,\n  \"ubicacion\": \"Almacén Principal - Estante B2\",\n  \"recibidoPor\": \"Laura Fernández\",\n  \"dia\": \"2024-01-15\",\n  \"hora\": \"14:45\",\n  \"notas\": \"Lote verificado, documentación completa\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/movimientos/entrada",
+							"host": ["{{base_url}}"],
+							"path": ["api", "movimientos", "entrada"]
+						}
+					}
+				},
+				{
+					"name": "Registrar Entrada - Ejemplo 3",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"referencia\": \"PO-2024-003\",\n  \"proveedor\": \"Suministros Hospitalarios DEF\",\n  \"producto\": \"Amoxicilina 250mg\",\n  \"cantidad\": 750,\n  \"ubicacion\": \"Área de Cuarentena - Estante C3\",\n  \"recibidoPor\": \"Roberto Silva\",\n  \"dia\": \"2024-01-16\",\n  \"hora\": \"09:15\",\n  \"notas\": \"Requiere inspección de calidad antes de almacenamiento final\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/movimientos/entrada",
+							"host": ["{{base_url}}"],
+							"path": ["api", "movimientos", "entrada"]
+						}
+					}
+				},
+				{
+					"name": "Registrar Salida - Ejemplo 1",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"referencia\": \"SO-2024-001\",\n  \"destino\": \"Farmacia Central\",\n  \"producto\": \"Paracetamol 500mg\",\n  \"cantidad\": 200,\n  \"ubicacion\": \"Almacén Principal - Estante A1\",\n  \"autorizadoPor\": \"Carlos Rodríguez\",\n  \"dia\": \"2024-01-16\",\n  \"hora\": \"11:00\",\n  \"notas\": \"Entrega urgente para farmacia central\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/movimientos/salida",
+							"host": ["{{base_url}}"],
+							"path": ["api", "movimientos", "salida"]
+						}
+					}
+				},
+				{
+					"name": "Obtener Proveedores",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/movimientos/proveedores",
+							"host": ["{{base_url}}"],
+							"path": ["api", "movimientos", "proveedores"]
+						}
+					}
+				},
+				{
+					"name": "Obtener Productos",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/movimientos/productos",
+							"host": ["{{base_url}}"],
+							"path": ["api", "movimientos", "productos"]
+						}
+					}
+				},
+				{
+					"name": "Obtener Ubicaciones",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/movimientos/ubicaciones",
+							"host": ["{{base_url}}"],
+							"path": ["api", "movimientos", "ubicaciones"]
+						}
+					}
+				}
+			]
+		}
+	]
+}
