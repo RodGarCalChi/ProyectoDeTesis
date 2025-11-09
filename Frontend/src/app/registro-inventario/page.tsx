@@ -1,10 +1,25 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigation } from '@/components/Navigation';
+
+interface Cliente {
+  id: string;
+  razonSocial: string;
+}
+
+interface Producto {
+  id: string;
+  codigoSKU: string;
+  nombre: string;
+  tipo: string;
+  requiereCadenaFrio: boolean;
+  unidadMedida: string;
+  condicionAlmacen: string;
+}
 
 function RegistroInventarioContent() {
   const router = useRouter();
@@ -23,6 +38,98 @@ function RegistroInventarioContent() {
     descripcion: ''
   });
 
+  // Estados para el catálogo
+  const [productos, setProductos] = useState<Producto[]>([]);
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [filtros, setFiltros] = useState({
+    clienteId: '',
+    nombre: '',
+    codigoSKU: ''
+  });
+  const [pagination, setPagination] = useState({
+    currentPage: 0,
+    totalPages: 0,
+    totalElements: 0,
+    size: 10
+  });
+
+  // Cargar clientes al montar el componente
+  useEffect(() => {
+    cargarClientes();
+  }, []);
+
+  // Cargar productos cuando cambian los filtros
+  useEffect(() => {
+    if (activeTab === 'productos') {
+      cargarProductos();
+    }
+  }, [activeTab, filtros, pagination.currentPage]);
+
+  const cargarClientes = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/api/clientes');
+      const data = await response.json();
+      if (data.success) {
+        setClientes(data.data);
+      }
+    } catch (error) {
+      console.error('Error al cargar clientes:', error);
+    }
+  };
+
+  const cargarProductos = async () => {
+    setLoading(true);
+    try {
+      let url = `http://localhost:8080/api/productos/buscar?page=${pagination.currentPage}&size=${pagination.size}`;
+      
+      if (filtros.clienteId) {
+        url += `&clienteId=${filtros.clienteId}`;
+      }
+      if (filtros.nombre) {
+        url += `&nombre=${encodeURIComponent(filtros.nombre)}`;
+      }
+      if (filtros.codigoSKU) {
+        url += `&codigoSKU=${encodeURIComponent(filtros.codigoSKU)}`;
+      }
+
+      const response = await fetch(url);
+      const data = await response.json();
+      
+      if (data.success) {
+        setProductos(data.data);
+        setPagination(prev => ({
+          ...prev,
+          totalPages: data.totalPages,
+          totalElements: data.totalElements,
+          currentPage: data.currentPage
+        }));
+      }
+    } catch (error) {
+      console.error('Error al cargar productos:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFiltroChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFiltros(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    setPagination(prev => ({ ...prev, currentPage: 0 })); // Reset a primera página
+  };
+
+  const limpiarFiltros = () => {
+    setFiltros({
+      clienteId: '',
+      nombre: '',
+      codigoSKU: ''
+    });
+    setPagination(prev => ({ ...prev, currentPage: 0 }));
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
     setFormData(prev => ({
@@ -36,8 +143,6 @@ function RegistroInventarioContent() {
     console.log('Datos del producto:', formData);
     alert('Producto registrado exitosamente');
   };
-
-  // Datos de ejemplo para la tabla
  
 
   return (
@@ -87,45 +192,176 @@ function RegistroInventarioContent() {
         {activeTab === 'productos' && (
           <div className="bg-white shadow-sm border border-gray-200 rounded-lg">
             <div className="p-6 border-gray-200 border-b">
-              <div className="flex justify-between items-center mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex justify-center items-center bg-blue-100 rounded-full w-8 h-8">
-                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                    </svg>
-                  </div>
-                  <h3 className="font-semibold text-blue-700 text-lg">Catálogo de Productos Farmacéuticos</h3>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex justify-center items-center bg-blue-100 rounded-full w-8 h-8">
+                  <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
                 </div>
-                <div className="flex gap-2">
+                <h3 className="font-semibold text-blue-700 text-lg">Catálogo de Productos Farmacéuticos</h3>
+              </div>
+
+              {/* Filtros */}
+              <div className="gap-4 grid grid-cols-1 md:grid-cols-4 mb-4">
+                {/* Filtro por Cliente */}
+                <div>
+                  <label className="block mb-2 font-medium text-gray-700 text-sm">
+                    Cliente
+                  </label>
+                  <select
+                    name="clienteId"
+                    value={filtros.clienteId}
+                    onChange={handleFiltroChange}
+                    className="px-3 py-2 border border-gray-300 focus:border-blue-500 rounded-lg focus:outline-none w-full text-sm"
+                  >
+                    <option value="">Todos los clientes</option>
+                    {clientes.map(cliente => (
+                      <option key={cliente.id} value={cliente.id}>
+                        {cliente.razonSocial}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Filtro por Nombre */}
+                <div>
+                  <label className="block mb-2 font-medium text-gray-700 text-sm">
+                    Nombre del Producto
+                  </label>
                   <input
                     type="text"
-                    placeholder="Buscar producto..."
-                    className="px-3 py-2 border border-gray-300 focus:border-blue-500 rounded-lg focus:outline-none text-sm"
+                    name="nombre"
+                    value={filtros.nombre}
+                    onChange={handleFiltroChange}
+                    placeholder="Buscar por nombre..."
+                    className="px-3 py-2 border border-gray-300 focus:border-blue-500 rounded-lg focus:outline-none w-full text-sm"
                   />
-                  <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-white text-sm transition-colors">
-                    Buscar
+                </div>
+
+                {/* Filtro por Código SKU */}
+                <div>
+                  <label className="block mb-2 font-medium text-gray-700 text-sm">
+                    Código SKU
+                  </label>
+                  <input
+                    type="text"
+                    name="codigoSKU"
+                    value={filtros.codigoSKU}
+                    onChange={handleFiltroChange}
+                    placeholder="Buscar por código..."
+                    className="px-3 py-2 border border-gray-300 focus:border-blue-500 rounded-lg focus:outline-none w-full text-sm"
+                  />
+                </div>
+
+                {/* Botón Limpiar */}
+                <div className="flex items-end">
+                  <button
+                    onClick={limpiarFiltros}
+                    className="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg w-full text-gray-700 text-sm transition-colors"
+                  >
+                    Limpiar Filtros
                   </button>
                 </div>
+              </div>
+
+              {/* Información de resultados */}
+              <div className="text-gray-600 text-sm">
+                Mostrando {productos.length} de {pagination.totalElements} productos
               </div>
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">Código</th>
-                    <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">Producto</th>
-                    <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">Categoría</th>
-                    <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">Stock</th>
-                    <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">Precio</th>
-                    <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">Ubicación</th>
-                    <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">Estado</th>
-                    <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">Acciones</th>
-                  </tr>
-                </thead>
-               
-              </table>
+              {loading ? (
+                <div className="flex justify-center items-center py-12">
+                  <div className="border-4 border-blue-200 border-t-blue-600 rounded-full w-12 h-12 animate-spin"></div>
+                </div>
+              ) : productos.length === 0 ? (
+                <div className="py-12 text-center text-gray-500">
+                  No se encontraron productos con los filtros seleccionados
+                </div>
+              ) : (
+                <table className="w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">Código</th>
+                      <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">Producto</th>
+                      <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">Categoría</th>
+                      <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">Unidad</th>
+                      <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">Condición</th>
+                      <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">Estado</th>
+                      <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {productos.map((producto) => (
+                      <tr key={producto.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {producto.codigoSKU}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {producto.nombre}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <span className="inline-flex px-2 py-1 bg-blue-100 rounded-full font-semibold text-blue-800 text-xs">
+                            {producto.tipo}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {producto.unidadMedida}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {producto.condicionAlmacen}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          {producto.requiereCadenaFrio ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-1 bg-cyan-100 rounded-full font-semibold text-cyan-800 text-xs">
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                              </svg>
+                              Cadena Frío
+                            </span>
+                          ) : (
+                            <span className="inline-flex px-2 py-1 bg-green-100 rounded-full font-semibold text-green-800 text-xs">
+                              Normal
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <button className="text-blue-600 hover:text-blue-900">
+                            Ver Detalle
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
+
+            {/* Paginación */}
+            {!loading && productos.length > 0 && (
+              <div className="flex justify-between items-center px-6 py-4 border-gray-200 border-t">
+                <div className="text-gray-700 text-sm">
+                  Página {pagination.currentPage + 1} de {pagination.totalPages}
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setPagination(prev => ({ ...prev, currentPage: Math.max(0, prev.currentPage - 1) }))}
+                    disabled={pagination.currentPage === 0}
+                    className="disabled:opacity-50 bg-gray-200 hover:bg-gray-300 disabled:hover:bg-gray-200 px-4 py-2 rounded-lg text-gray-700 text-sm transition-colors disabled:cursor-not-allowed"
+                  >
+                    Anterior
+                  </button>
+                  <button
+                    onClick={() => setPagination(prev => ({ ...prev, currentPage: Math.min(prev.totalPages - 1, prev.currentPage + 1) }))}
+                    disabled={pagination.currentPage >= pagination.totalPages - 1}
+                    className="disabled:opacity-50 bg-gray-200 hover:bg-gray-300 disabled:hover:bg-gray-200 px-4 py-2 rounded-lg text-gray-700 text-sm transition-colors disabled:cursor-not-allowed"
+                  >
+                    Siguiente
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

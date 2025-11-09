@@ -161,7 +161,7 @@ function ValidacionActasContent() {
                 </svg>
               </div>
               <div className="ml-4">
-                <p className="font-medium text-gray-600 text-sm">Pendientes</p>
+                <p className="font-medium text-gray-600 text-sm">Cuarentena</p>
                 <p className="font-semibold text-gray-900 text-2xl">
                   {recepciones.filter(r => r.estado === 'EN_CUARENTENA').length}
                 </p>
