@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -243,5 +245,111 @@ public class ClienteProductoService {
         dto.setFechaCreacion(cliente.getFechaCreacion());
         dto.setFechaActualizacion(cliente.getFechaActualizacion());
         return dto;
+    }
+    
+    /**
+     * Genera productos y los asocia automáticamente a los clientes especificados
+     */
+    public Map<String, Object> generarProductosYAsociarClientes(GenerarProductosConClientesDTO request) {
+        System.out.println("=== INICIO GENERACIÓN DE PRODUCTOS CON CLIENTES ===");
+        System.out.println("Productos a crear: " + request.getProductos().size());
+        System.out.println("Clientes destino: " + request.getClienteIds().size());
+        
+        List<ProductoDTO> productosCreados = new ArrayList<>();
+        List<ClienteProductoDTO> asociacionesCreadas = new ArrayList<>();
+        List<String> errores = new ArrayList<>();
+        
+        // Validar que todos los clientes existan
+        for (UUID clienteId : request.getClienteIds()) {
+            if (!clienteRepository.existsById(clienteId)) {
+                throw new RuntimeException("Cliente no encontrado con ID: " + clienteId);
+            }
+        }
+        
+        // Crear cada producto y asociarlo a todos los clientes
+        for (int i = 0; i < request.getProductos().size(); i++) {
+            GenerarProductosConClientesDTO.ProductoGeneracionDTO productoGen = request.getProductos().get(i);
+            
+            try {
+                // Verificar si el producto ya existe por SKU
+                if (productoRepository.existsByCodigoSKU(productoGen.getCodigoSKU())) {
+                    System.out.println("  - Producto con SKU " + productoGen.getCodigoSKU() + " ya existe, omitiendo creación");
+                    errores.add("Producto " + (i + 1) + " (SKU: " + productoGen.getCodigoSKU() + ") ya existe");
+                    continue;
+                }
+                
+                // Crear el producto
+                System.out.println("  - Creando producto: " + productoGen.getNombre() + " (SKU: " + productoGen.getCodigoSKU() + ")");
+                ProductoCreateDTO productoCreateDTO = new ProductoCreateDTO(
+                        productoGen.getCodigoSKU(),
+                        productoGen.getNombre(),
+                        productoGen.getTipo(),
+                        productoGen.getCondicionAlmacen(),
+                        productoGen.getRequiereCadenaFrio(),
+                        productoGen.getRegistroSanitario(),
+                        productoGen.getUnidadMedida(),
+                        productoGen.getVidaUtilMeses(),
+                        productoGen.getTempMin(),
+                        productoGen.getTempMax()
+                );
+                
+                ProductoDTO productoCreado = productoService.crearProducto(productoCreateDTO);
+                productosCreados.add(productoCreado);
+                System.out.println("  - ✓ Producto creado con ID: " + productoCreado.getId());
+                
+                // Asociar el producto a todos los clientes especificados
+                for (UUID clienteId : request.getClienteIds()) {
+                    try {
+                        // Verificar si ya existe la relación
+                        if (clienteProductoRepository.existsByClienteIdAndProductoId(clienteId, productoCreado.getId())) {
+                            System.out.println("    - Relación ya existe para cliente " + clienteId + ", omitiendo");
+                            continue;
+                        }
+                        
+                        // Crear la asociación
+                        ClienteProductoDTO asociacionDTO = new ClienteProductoDTO();
+                        asociacionDTO.setClienteId(clienteId);
+                        asociacionDTO.setProductoId(productoCreado.getId());
+                        asociacionDTO.setObservaciones(request.getObservaciones());
+                        
+                        ClienteProductoDTO asociacionCreada = asignarProductoACliente(asociacionDTO);
+                        asociacionesCreadas.add(asociacionCreada);
+                        System.out.println("    - ✓ Asociado a cliente: " + clienteId);
+                        
+                    } catch (Exception e) {
+                        System.err.println("    - ✗ Error asociando a cliente " + clienteId + ": " + e.getMessage());
+                        errores.add("Error asociando producto " + productoGen.getNombre() + " a cliente " + clienteId + ": " + e.getMessage());
+                    }
+                }
+                
+            } catch (Exception e) {
+                System.err.println("  - ✗ Error creando producto " + (i + 1) + ": " + e.getMessage());
+                errores.add("Error creando producto " + (i + 1) + " (" + productoGen.getNombre() + "): " + e.getMessage());
+            }
+        }
+        
+        System.out.println("=== FIN GENERACIÓN ===");
+        System.out.println("Productos creados: " + productosCreados.size());
+        System.out.println("Asociaciones creadas: " + asociacionesCreadas.size());
+        System.out.println("Errores: " + errores.size());
+        
+        // Construir respuesta
+        Map<String, Object> resultado = new HashMap<>();
+        resultado.put("productosCreados", productosCreados);
+        resultado.put("asociacionesCreadas", asociacionesCreadas);
+        resultado.put("totalProductosCreados", productosCreados.size());
+        resultado.put("totalAsociacionesCreadas", asociacionesCreadas.size());
+        resultado.put("errores", errores);
+        resultado.put("exitoso", errores.isEmpty());
+        
+        if (!errores.isEmpty()) {
+            resultado.put("mensaje", "Se crearon " + productosCreados.size() + " productos y " + 
+                    asociacionesCreadas.size() + " asociaciones, pero hubo " + errores.size() + " errores");
+        } else {
+            resultado.put("mensaje", "Se crearon exitosamente " + productosCreados.size() + 
+                    " productos y " + asociacionesCreadas.size() + " asociaciones");
+        }
+        
+        return resultado;
     }
 }

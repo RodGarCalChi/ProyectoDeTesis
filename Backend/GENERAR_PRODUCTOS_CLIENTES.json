@@ -1,0 +1,71 @@
+{
+  "productos": [
+    {
+      "codigoSKU": "PAR500",
+      "nombre": "Paracetamol 500mg",
+      "tipo": "Medicamento",
+      "condicionAlmacen": "Ambiente_15_25",
+      "requiereCadenaFrio": false,
+      "registroSanitario": "RS001234",
+      "unidadMedida": "Tabletas",
+      "vidaUtilMeses": 24,
+      "tempMin": 15.0,
+      "tempMax": 25.0
+    },
+    {
+      "codigoSKU": "IBU400",
+      "nombre": "Ibuprofeno 400mg",
+      "tipo": "Medicamento",
+      "condicionAlmacen": "Ambiente_15_25",
+      "requiereCadenaFrio": false,
+      "registroSanitario": "RS001235",
+      "unidadMedida": "Tabletas",
+      "vidaUtilMeses": 36,
+      "tempMin": 15.0,
+      "tempMax": 25.0
+    },
+    {
+      "codigoSKU": "AMX250",
+      "nombre": "Amoxicilina 250mg",
+      "tipo": "Medicamento",
+      "condicionAlmacen": "Ambiente_15_25",
+      "requiereCadenaFrio": false,
+      "registroSanitario": "RS001236",
+      "unidadMedida": "Cápsulas",
+      "vidaUtilMeses": 24,
+      "tempMin": 15.0,
+      "tempMax": 25.0
+    },
+    {
+      "codigoSKU": "VAC001",
+      "nombre": "Vacuna COVID-19",
+      "tipo": "Biologico",
+      "condicionAlmacen": "Refrigerado_2_8",
+      "requiereCadenaFrio": true,
+      "registroSanitario": "RS001237",
+      "unidadMedida": "Viales",
+      "vidaUtilMeses": 12,
+      "tempMin": 2.0,
+      "tempMax": 8.0
+    },
+    {
+      "codigoSKU": "ASP100",
+      "nombre": "Aspirina 100mg",
+      "tipo": "Medicamento",
+      "condicionAlmacen": "Ambiente_15_25",
+      "requiereCadenaFrio": false,
+      "registroSanitario": "RS001238",
+      "unidadMedida": "Tabletas",
+      "vidaUtilMeses": 36,
+      "tempMin": 15.0,
+      "tempMax": 25.0
+    }
+  ],
+  "clienteIds": [
+    "REEMPLAZAR_CON_UUID_CLIENTE_1",
+    "REEMPLAZAR_CON_UUID_CLIENTE_2",
+    "REEMPLAZAR_CON_UUID_CLIENTE_3"
+  ],
+  "observaciones": "Productos generados automáticamente y asignados a clientes mediante API"
+}
+

@@ -16,10 +16,10 @@ import java.util.UUID;
 @RequestMapping("/api/cliente-productos")
 @CrossOrigin(origins = "*")
 public class ClienteProductoController {
-    
+
     @Autowired
     private ClienteProductoService clienteProductoService;
-    
+
     // Asignar producto a cliente
     @PostMapping
     public ResponseEntity<?> asignarProductoACliente(@Valid @RequestBody ClienteProductoDTO dto) {
@@ -37,7 +37,7 @@ public class ClienteProductoController {
             ));
         }
     }
-    
+
     // Obtener productos de un cliente (solo productos)
     @GetMapping("/cliente/{clienteId}/productos")
     public ResponseEntity<Map<String, Object>> obtenerProductosDeCliente(@PathVariable UUID clienteId) {
@@ -55,7 +55,7 @@ public class ClienteProductoController {
             ));
         }
     }
-    
+
     // Obtener relaciones completas de un cliente
     @GetMapping("/cliente/{clienteId}")
     public ResponseEntity<Map<String, Object>> obtenerRelacionesDeCliente(@PathVariable UUID clienteId) {
@@ -73,7 +73,7 @@ public class ClienteProductoController {
             ));
         }
     }
-    
+
     // Obtener relaciones de un producto
     @GetMapping("/producto/{productoId}")
     public ResponseEntity<Map<String, Object>> obtenerRelacionesDeProducto(@PathVariable UUID productoId) {
@@ -91,7 +91,7 @@ public class ClienteProductoController {
             ));
         }
     }
-    
+
     // Desactivar relación
     @DeleteMapping("/cliente/{clienteId}/producto/{productoId}")
     public ResponseEntity<Map<String, Object>> desactivarRelacion(
@@ -110,7 +110,7 @@ public class ClienteProductoController {
             ));
         }
     }
-    
+
     // Activar relación
     @PatchMapping("/cliente/{clienteId}/producto/{productoId}/activar")
     public ResponseEntity<Map<String, Object>> activarRelacion(
@@ -129,7 +129,7 @@ public class ClienteProductoController {
             ));
         }
     }
-    
+
     // Contar productos de un cliente
     @GetMapping("/cliente/{clienteId}/count")
     public ResponseEntity<Map<String, Object>> contarProductosDeCliente(@PathVariable UUID clienteId) {
@@ -159,7 +159,7 @@ public class ClienteProductoController {
                         "message", "La lista de asignaciones no puede estar vacía"
                 ));
             }
-            
+
             List<ClienteProductoDTO> resultados = clienteProductoService.asignarMasivo(asignaciones);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
                     "success", true,
@@ -183,7 +183,7 @@ public class ClienteProductoController {
             ));
         }
     }
-    
+
     // Endpoint de prueba simple
     @GetMapping("/test")
     public ResponseEntity<?> test() {
@@ -193,7 +193,7 @@ public class ClienteProductoController {
                 "timestamp", System.currentTimeMillis()
         ));
     }
-    
+
     // Listar todas las relaciones cliente-producto
     @GetMapping("/listar")
     public ResponseEntity<Map<String, Object>> listarTodasLasRelaciones() {
@@ -211,7 +211,7 @@ public class ClienteProductoController {
             ));
         }
     }
-    
+
     // Listar solo relaciones activas
     @GetMapping("/listar/activas")
     public ResponseEntity<Map<String, Object>> listarRelacionesActivas() {
@@ -226,6 +226,81 @@ public class ClienteProductoController {
             return ResponseEntity.badRequest().body(Map.of(
                     "success", false,
                     "message", e.getMessage()
+            ));
+        }
+    }
+    
+    /**
+     * Genera productos y los asocia automáticamente a los clientes especificados
+     * 
+     * POST /api/cliente-productos/generar-productos-con-clientes
+     * 
+     * Body:
+     * {
+     *   "productos": [
+     *     {
+     *       "codigoSKU": "PROD001",
+     *       "nombre": "Paracetamol 500mg",
+     *       "tipo": "Medicamento",
+     *       "condicionAlmacen": "Ambiente_15_25",
+     *       "requiereCadenaFrio": false,
+     *       "registroSanitario": "RS123456",
+     *       "unidadMedida": "Tabletas",
+     *       "vidaUtilMeses": 24,
+     *       "tempMin": 15.0,
+     *       "tempMax": 25.0
+     *     }
+     *   ],
+     *   "clienteIds": ["uuid-cliente-1", "uuid-cliente-2"],
+     *   "observaciones": "Asignación automática"
+     * }
+     */
+    @PostMapping("/generar-productos-con-clientes")
+    public ResponseEntity<?> generarProductosYAsociarClientes(
+            @Valid @RequestBody GenerarProductosConClientesDTO request) {
+        try {
+            // Validaciones básicas
+            if (request.getProductos() == null || request.getProductos().isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "success", false,
+                        "message", "La lista de productos no puede estar vacía"
+                ));
+            }
+            
+            if (request.getClienteIds() == null || request.getClienteIds().isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "success", false,
+                        "message", "La lista de clientes no puede estar vacía"
+                ));
+            }
+            
+            Map<String, Object> resultado = clienteProductoService.generarProductosYAsociarClientes(request);
+            
+            if ((Boolean) resultado.get("exitoso")) {
+                return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
+                        "success", true,
+                        "message", resultado.get("mensaje"),
+                        "data", resultado
+                ));
+            } else {
+                return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).body(Map.of(
+                        "success", true,
+                        "message", resultado.get("mensaje"),
+                        "data", resultado
+                ));
+            }
+            
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", e.getMessage()
+            ));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                    "success", false,
+                    "message", "Error inesperado: " + e.getMessage()
             ));
         }
     }

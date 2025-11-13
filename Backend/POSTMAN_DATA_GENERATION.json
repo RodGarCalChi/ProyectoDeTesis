@@ -1,0 +1,884 @@
+{
+    "info": {
+        "name": "PharmaFlow - Generación de Data",
+        "description": "Colección para generar datos de prueba en las tablas de Operador Logístico, Zona, Lotes y Palets",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "0. Almacenes",
+            "item": [
+                {
+                    "name": "Crear Almacén 1 - Principal Lima",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nombre\": \"Almacén Principal Lima\",\n  \"direccion\": \"Av. Industrial 1234, Ate, Lima\",\n  \"operadorLogisticoId\": \"{{operador_logistico_id}}\",\n  \"clienteId\": \"{{cliente_id}}\",\n  \"tieneAreaControlados\": true\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/almacenes",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "almacenes"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Crear Almacén 2 - Cadena Frío",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nombre\": \"Almacén Cadena de Frío\",\n  \"direccion\": \"Av. Los Frutales 567, Santa Anita, Lima\",\n  \"operadorLogisticoId\": \"{{operador_logistico_id}}\",\n  \"clienteId\": \"{{cliente_id}}\",\n  \"tieneAreaControlados\": true\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/almacenes",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "almacenes"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Crear Almacén 3 - Distribución Norte",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nombre\": \"Centro de Distribución Norte\",\n  \"direccion\": \"Panamericana Norte Km 15, Puente Piedra, Lima\",\n  \"operadorLogisticoId\": \"{{operador_logistico_id}}\",\n  \"clienteId\": \"{{cliente_id}}\",\n  \"tieneAreaControlados\": false\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/almacenes",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "almacenes"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Listar Almacenes",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "http://localhost:8080/api/almacenes",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "almacenes"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "1. Operadores Logísticos",
+            "item": [
+                {
+                    "name": "Crear Operador Logístico 1 - DHL",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nombre\": \"DHL Express Perú\",\n  \"ruc\": \"20123456789\",\n  \"direccion\": \"Av. Javier Prado Este 4200, Santiago de Surco, Lima\",\n  \"telefono\": \"01-6157000\",\n  \"email\": \"contacto@dhl.com.pe\",\n  \"activo\": true\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/operadores-logisticos",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "operadores-logisticos"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Crear Operador Logístico 2 - FedEx",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nombre\": \"FedEx Perú\",\n  \"ruc\": \"20234567890\",\n  \"direccion\": \"Av. República de Panamá 3591, San Isidro, Lima\",\n  \"telefono\": \"01-2117000\",\n  \"email\": \"info@fedex.com.pe\",\n  \"activo\": true\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/operadores-logisticos",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "operadores-logisticos"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Crear Operador Logístico 3 - Olva Courier",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nombre\": \"Olva Courier\",\n  \"ruc\": \"20345678901\",\n  \"direccion\": \"Av. Angamos Este 2681, Surquillo, Lima\",\n  \"telefono\": \"01-7089000\",\n  \"email\": \"atencion@olvacourier.pe\",\n  \"activo\": true\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/operadores-logisticos",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "operadores-logisticos"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Crear Operador Logístico 4 - Shalom",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nombre\": \"Shalom Empresarial\",\n  \"ruc\": \"20456789012\",\n  \"direccion\": \"Av. Universitaria 1801, San Miguel, Lima\",\n  \"telefono\": \"01-5617000\",\n  \"email\": \"contacto@shalom.com.pe\",\n  \"activo\": true\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/operadores-logisticos",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "operadores-logisticos"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Listar Operadores Logísticos",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "http://localhost:8080/api/operadores-logisticos",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "operadores-logisticos"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "2. Zonas (Según TipoZona)",
+            "item": [
+                {
+                    "name": "Crear Zona 1 - CONGELADO (-20°C o menos)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nombre\": \"Cámara de Congelación\",\n  \"tipo\": \"CONGELADO\",\n  \"almacenId\": \"{{almacen_id}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/zonas",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "zonas"
+                            ]
+                        },
+                        "description": "Zona para productos que requieren -20°C o menos (vacunas, plasma, etc.)"
+                    }
+                },
+                {
+                    "name": "Crear Zona 2 - REFRIGERADO (2°C a 8°C)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nombre\": \"Cámara Refrigerada\",\n  \"tipo\": \"REFRIGERADO\",\n  \"almacenId\": \"{{almacen_id}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/zonas",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "zonas"
+                            ]
+                        },
+                        "description": "Zona para productos que requieren 2°C a 8°C (insulina, vacunas, biológicos)"
+                    }
+                },
+                {
+                    "name": "Crear Zona 3 - SECO (15°C a 25°C)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nombre\": \"Almacenamiento Ambiente Controlado\",\n  \"tipo\": \"SECO\",\n  \"almacenId\": \"{{almacen_id}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/zonas",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "zonas"
+                            ]
+                        },
+                        "description": "Zona para productos que requieren ambiente controlado 15-25°C (mayoría de medicamentos)"
+                    }
+                },
+                {
+                    "name": "Crear Zona 4 - ULT (-70°C o menos)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nombre\": \"Ultra Low Temperature\",\n  \"tipo\": \"ULT\",\n  \"almacenId\": \"{{almacen_id}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/zonas",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "zonas"
+                            ]
+                        },
+                        "description": "Zona para productos que requieren -70°C o menos (vacunas especiales, muestras biológicas)"
+                    }
+                },
+                {
+                    "name": "Crear Zona 5 - SECO Adicional (Medicamentos Generales)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nombre\": \"Almacén General Medicamentos\",\n  \"tipo\": \"SECO\",\n  \"almacenId\": \"{{almacen_id}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/zonas",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "zonas"
+                            ]
+                        },
+                        "description": "Segunda zona seca para mayor capacidad de almacenamiento"
+                    }
+                },
+                {
+                    "name": "Crear Zona 6 - REFRIGERADO Adicional",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nombre\": \"Cámara Refrigerada Secundaria\",\n  \"tipo\": \"REFRIGERADO\",\n  \"almacenId\": \"{{almacen_id}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/zonas",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "zonas"
+                            ]
+                        },
+                        "description": "Segunda cámara refrigerada para mayor capacidad"
+                    }
+                },
+                {
+                    "name": "Listar Zonas",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "http://localhost:8080/api/zonas",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "zonas"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "3. Lotes",
+            "item": [
+                {
+                    "name": "Crear Lote 1 - Paracetamol",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"numero\": \"LOTE-PAR-2024-001\",\n  \"productoId\": \"{{producto_paracetamol_id}}\",\n  \"fechaFabricacion\": \"2024-01-15\",\n  \"fechaVencimiento\": \"2026-01-15\",\n  \"cantidadInicial\": 5000,\n  \"cantidadDisponible\": 5000,\n  \"estado\": \"DISPONIBLE\",\n  \"proveedor\": \"Laboratorios Bagó\",\n  \"observaciones\": \"Lote en condiciones óptimas\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/lotes",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "lotes"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Crear Lote 2 - Ibuprofeno",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"numero\": \"LOTE-IBU-2024-001\",\n  \"productoId\": \"{{producto_ibuprofeno_id}}\",\n  \"fechaFabricacion\": \"2024-02-10\",\n  \"fechaVencimiento\": \"2026-02-10\",\n  \"cantidadInicial\": 3000,\n  \"cantidadDisponible\": 3000,\n  \"estado\": \"DISPONIBLE\",\n  \"proveedor\": \"Laboratorios Roemmers\",\n  \"observaciones\": \"Almacenar en lugar fresco y seco\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/lotes",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "lotes"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Crear Lote 3 - Amoxicilina",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"numero\": \"LOTE-AMO-2024-001\",\n  \"productoId\": \"{{producto_amoxicilina_id}}\",\n  \"fechaFabricacion\": \"2024-03-05\",\n  \"fechaVencimiento\": \"2026-03-05\",\n  \"cantidadInicial\": 4000,\n  \"cantidadDisponible\": 4000,\n  \"estado\": \"DISPONIBLE\",\n  \"proveedor\": \"Laboratorios Farmindustria\",\n  \"observaciones\": \"Antibiótico - Requiere receta médica\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/lotes",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "lotes"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Crear Lote 4 - Insulina (Cadena Frío)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"numero\": \"LOTE-INS-2024-001\",\n  \"productoId\": \"{{producto_insulina_id}}\",\n  \"fechaFabricacion\": \"2024-04-01\",\n  \"fechaVencimiento\": \"2025-04-01\",\n  \"cantidadInicial\": 1000,\n  \"cantidadDisponible\": 1000,\n  \"estado\": \"DISPONIBLE\",\n  \"proveedor\": \"Novo Nordisk\",\n  \"observaciones\": \"CADENA DE FRÍO - Mantener entre 2°C y 8°C\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/lotes",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "lotes"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Crear Lote 5 - Omeprazol",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"numero\": \"LOTE-OME-2024-001\",\n  \"productoId\": \"{{producto_omeprazol_id}}\",\n  \"fechaFabricacion\": \"2024-05-20\",\n  \"fechaVencimiento\": \"2026-05-20\",\n  \"cantidadInicial\": 6000,\n  \"cantidadDisponible\": 6000,\n  \"estado\": \"DISPONIBLE\",\n  \"proveedor\": \"Laboratorios Tecnoquímicas\",\n  \"observaciones\": \"Proteger de la luz y humedad\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/lotes",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "lotes"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Listar Lotes",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "http://localhost:8080/api/lotes",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "lotes"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "4. Palets",
+            "item": [
+                {
+                    "name": "Crear Palet 1 - Paracetamol",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"codigo\": \"PLT-PAR-001\",\n  \"loteId\": \"{{lote_paracetamol_id}}\",\n  \"ubicacionId\": \"{{ubicacion_id}}\",\n  \"capacidadMaxima\": 50,\n  \"cajasActuales\": 0,\n  \"pesoMaximoKg\": 1000.0,\n  \"pesoActualKg\": 0.0,\n  \"disponible\": true,\n  \"observaciones\": \"Palet para almacenamiento de Paracetamol\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/palets",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "palets"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Crear Palet 2 - Ibuprofeno",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"codigo\": \"PLT-IBU-001\",\n  \"loteId\": \"{{lote_ibuprofeno_id}}\",\n  \"ubicacionId\": \"{{ubicacion_id}}\",\n  \"capacidadMaxima\": 40,\n  \"cajasActuales\": 0,\n  \"pesoMaximoKg\": 800.0,\n  \"pesoActualKg\": 0.0,\n  \"disponible\": true,\n  \"observaciones\": \"Palet para almacenamiento de Ibuprofeno\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/palets",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "palets"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Crear Palet 3 - Amoxicilina",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"codigo\": \"PLT-AMO-001\",\n  \"loteId\": \"{{lote_amoxicilina_id}}\",\n  \"ubicacionId\": \"{{ubicacion_id}}\",\n  \"capacidadMaxima\": 45,\n  \"cajasActuales\": 0,\n  \"pesoMaximoKg\": 900.0,\n  \"pesoActualKg\": 0.0,\n  \"disponible\": true,\n  \"observaciones\": \"Palet para almacenamiento de Amoxicilina\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/palets",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "palets"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Crear Palet 4 - Insulina (Cadena Frío)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"codigo\": \"PLT-INS-CF-001\",\n  \"loteId\": \"{{lote_insulina_id}}\",\n  \"ubicacionId\": \"{{ubicacion_cadena_frio_id}}\",\n  \"capacidadMaxima\": 30,\n  \"cajasActuales\": 0,\n  \"pesoMaximoKg\": 500.0,\n  \"pesoActualKg\": 0.0,\n  \"disponible\": true,\n  \"observaciones\": \"Palet en cámara frigorífica - Temperatura controlada 2-8°C\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/palets",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "palets"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Crear Palet 5 - Omeprazol",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"codigo\": \"PLT-OME-001\",\n  \"loteId\": \"{{lote_omeprazol_id}}\",\n  \"ubicacionId\": \"{{ubicacion_id}}\",\n  \"capacidadMaxima\": 60,\n  \"cajasActuales\": 0,\n  \"pesoMaximoKg\": 1200.0,\n  \"pesoActualKg\": 0.0,\n  \"disponible\": true,\n  \"observaciones\": \"Palet para almacenamiento de Omeprazol\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/palets",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "palets"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Crear Palet 6 - Paracetamol (Adicional)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"codigo\": \"PLT-PAR-002\",\n  \"loteId\": \"{{lote_paracetamol_id}}\",\n  \"ubicacionId\": \"{{ubicacion_id}}\",\n  \"capacidadMaxima\": 50,\n  \"cajasActuales\": 25,\n  \"pesoMaximoKg\": 1000.0,\n  \"pesoActualKg\": 500.0,\n  \"disponible\": true,\n  \"observaciones\": \"Palet parcialmente ocupado\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/palets",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "palets"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Listar Palets",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "http://localhost:8080/api/palets",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "palets"
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ],
+    "variable": [
+        {
+            "key": "operador_logistico_id",
+            "value": "REEMPLAZAR_CON_ID_OPERADOR",
+            "type": "string"
+        },
+        {
+            "key": "cliente_id",
+            "value": "REEMPLAZAR_CON_ID_CLIENTE",
+            "type": "string"
+        },
+        {
+            "key": "almacen_id",
+            "value": "REEMPLAZAR_CON_ID_ALMACEN",
+            "type": "string"
+        },
+        {
+            "key": "producto_paracetamol_id",
+            "value": "REEMPLAZAR_CON_ID_PRODUCTO",
+            "type": "string"
+        },
+        {
+            "key": "producto_ibuprofeno_id",
+            "value": "REEMPLAZAR_CON_ID_PRODUCTO",
+            "type": "string"
+        },
+        {
+            "key": "producto_amoxicilina_id",
+            "value": "REEMPLAZAR_CON_ID_PRODUCTO",
+            "type": "string"
+        },
+        {
+            "key": "producto_insulina_id",
+            "value": "REEMPLAZAR_CON_ID_PRODUCTO",
+            "type": "string"
+        },
+        {
+            "key": "producto_omeprazol_id",
+            "value": "REEMPLAZAR_CON_ID_PRODUCTO",
+            "type": "string"
+        },
+        {
+            "key": "lote_paracetamol_id",
+            "value": "REEMPLAZAR_CON_ID_LOTE",
+            "type": "string"
+        },
+        {
+            "key": "lote_ibuprofeno_id",
+            "value": "REEMPLAZAR_CON_ID_LOTE",
+            "type": "string"
+        },
+        {
+            "key": "lote_amoxicilina_id",
+            "value": "REEMPLAZAR_CON_ID_LOTE",
+            "type": "string"
+        },
+        {
+            "key": "lote_insulina_id",
+            "value": "REEMPLAZAR_CON_ID_LOTE",
+            "type": "string"
+        },
+        {
+            "key": "lote_omeprazol_id",
+            "value": "REEMPLAZAR_CON_ID_LOTE",
+            "type": "string"
+        },
+        {
+            "key": "ubicacion_id",
+            "value": "REEMPLAZAR_CON_ID_UBICACION",
+            "type": "string"
+        },
+        {
+            "key": "ubicacion_cadena_frio_id",
+            "value": "REEMPLAZAR_CON_ID_UBICACION_CADENA_FRIO",
+            "type": "string"
+        }
+    ]
+}
