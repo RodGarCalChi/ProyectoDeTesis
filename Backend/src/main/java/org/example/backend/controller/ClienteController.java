@@ -1,287 +1,215 @@
 package org.example.backend.controller;
 
-import jakarta.validation.Valid;
-import org.example.backend.dto.ClienteCreateDTO;
-import org.example.backend.dto.ClienteDTO;
-import org.example.backend.dto.ClienteUpdateDTO;
+import org.example.backend.entity.Cliente;
+import org.example.backend.entity.Producto;
 import org.example.backend.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/clientes")
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:9002"})
 public class ClienteController {
     
     @Autowired
     private ClienteService clienteService;
     
-    // Crear cliente
-    @PostMapping
-    public ResponseEntity<?> crearCliente(@Valid @RequestBody ClienteCreateDTO createDTO) {
+    /**
+     * Asignar múltiples productos a un cliente
+     * POST /api/clientes/{clienteId}/productos
+     */
+    @PostMapping("/{clienteId}/productos")
+    public ResponseEntity<Map<String, Object>> asignarProductos(
+            @PathVariable UUID clienteId,
+            @RequestBody List<UUID> productosIds) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
         try {
-            ClienteDTO cliente = clienteService.crearCliente(createDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
-                    "success", true,
-                    "message", "Cliente creado exitosamente",
-                    "data", cliente
-            ));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of(
-                    "success", false,
-                    "message", e.getMessage()
-            ));
-        }
-    }
-    
-    // Obtener todos los clientes
-    @GetMapping
-    public ResponseEntity<Map<String, Object>> obtenerClientes(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "razonSocial") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir,
-            @RequestParam(defaultValue = "true") Boolean soloActivos) {
-        
-        Sort sort = sortDir.equalsIgnoreCase("desc") ? 
-                Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
-        
-        Pageable pageable = PageRequest.of(page, size, sort);
-        
-        if (soloActivos) {
-            // Para clientes activos, usar búsqueda con filtros
-            Page<ClienteDTO> clientes = clienteService.buscarClientesConFiltros(
-                    null, null, null, null, true, pageable);
+            Cliente cliente = clienteService.asignarProductos(clienteId, productosIds);
             
-            return ResponseEntity.ok(Map.of(
-                    "success", true,
-                    "data", clientes.getContent(),
-                    "totalElements", clientes.getTotalElements(),
-                    "totalPages", clientes.getTotalPages(),
-                    "currentPage", clientes.getNumber(),
-                    "size", clientes.getSize()
+            response.put("success", true);
+            response.put("message", "Productos asignados exitosamente");
+            response.put("cliente", Map.of(
+                "id", cliente.getId(),
+                "nombre", cliente.getNombre(),
+                "ruc", cliente.getRuc()
             ));
-        } else {
-            Page<ClienteDTO> clientes = clienteService.obtenerClientesPaginados(pageable);
+            response.put("total_productos", cliente.getProductos().size());
             
-            return ResponseEntity.ok(Map.of(
-                    "success", true,
-                    "data", clientes.getContent(),
-                    "totalElements", clientes.getTotalElements(),
-                    "totalPages", clientes.getTotalPages(),
-                    "currentPage", clientes.getNumber(),
-                    "size", clientes.getSize()
-            ));
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
         }
     }
     
-    // Obtener cliente por ID
-    @GetMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> obtenerClientePorId(@PathVariable UUID id) {
-        Optional<ClienteDTO> cliente = clienteService.obtenerClientePorId(id);
+    /**
+     * Asignar un solo producto a un cliente
+     * POST /api/clientes/{clienteId}/productos/{productoId}
+     */
+    @PostMapping("/{clienteId}/productos/{productoId}")
+    public ResponseEntity<Map<String, Object>> asignarProducto(
+            @PathVariable UUID clienteId,
+            @PathVariable UUID productoId) {
         
-        if (cliente.isPresent()) {
-            return ResponseEntity.ok(Map.of(
-                    "success", true,
-                    "data", cliente.get()
-            ));
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-    
-    // Obtener cliente por RUC/DNI
-    @GetMapping("/ruc/{rucDni}")
-    public ResponseEntity<Map<String, Object>> obtenerClientePorRucDni(@PathVariable String rucDni) {
-        Optional<ClienteDTO> cliente = clienteService.obtenerClientePorRucDni(rucDni);
+        Map<String, Object> response = new HashMap<>();
         
-        if (cliente.isPresent()) {
-            return ResponseEntity.ok(Map.of(
-                    "success", true,
-                    "data", cliente.get()
-            ));
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-    
-    // Buscar clientes con filtros
-    @GetMapping("/buscar")
-    public ResponseEntity<Map<String, Object>> buscarClientes(
-            @RequestParam(required = false) String razonSocial,
-            @RequestParam(required = false) String rucDni,
-            @RequestParam(required = false) String distrito,
-            @RequestParam(required = false) String tipoCliente,
-            @RequestParam(required = false) Boolean activo,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "razonSocial") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir) {
-        
-        Sort sort = sortDir.equalsIgnoreCase("desc") ? 
-                Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
-        
-        Pageable pageable = PageRequest.of(page, size, sort);
-        Page<ClienteDTO> clientes = clienteService.buscarClientesConFiltros(
-                razonSocial, rucDni, distrito, tipoCliente, activo, pageable);
-        
-        return ResponseEntity.ok(Map.of(
-                "success", true,
-                "data", clientes.getContent(),
-                "totalElements", clientes.getTotalElements(),
-                "totalPages", clientes.getTotalPages(),
-                "currentPage", clientes.getNumber(),
-                "size", clientes.getSize()
-        ));
-    }
-    
-    // Obtener clientes por tipo
-    @GetMapping("/tipo/{tipoCliente}")
-    public ResponseEntity<Map<String, Object>> obtenerClientesPorTipo(@PathVariable String tipoCliente) {
-        List<ClienteDTO> clientes = clienteService.obtenerClientesPorTipo(tipoCliente);
-        return ResponseEntity.ok(Map.of(
-                "success", true,
-                "data", clientes
-        ));
-    }
-    
-    // Obtener clientes por distrito
-    @GetMapping("/distrito/{distrito}")
-    public ResponseEntity<Map<String, Object>> obtenerClientesPorDistrito(@PathVariable String distrito) {
-        List<ClienteDTO> clientes = clienteService.obtenerClientesPorDistrito(distrito);
-        return ResponseEntity.ok(Map.of(
-                "success", true,
-                "data", clientes
-        ));
-    }
-    
-    // Obtener solo clientes activos (lista simple)
-    @GetMapping("/activos")
-    public ResponseEntity<Map<String, Object>> obtenerClientesActivos() {
-        List<ClienteDTO> clientes = clienteService.obtenerClientesActivos();
-        return ResponseEntity.ok(Map.of(
-                "success", true,
-                "data", clientes
-        ));
-    }
-    
-    // Actualizar cliente
-    @PutMapping("/{id}")
-    public ResponseEntity<?> actualizarCliente(@PathVariable UUID id, 
-                                              @Valid @RequestBody ClienteUpdateDTO updateDTO) {
         try {
-            ClienteDTO cliente = clienteService.actualizarCliente(id, updateDTO);
-            return ResponseEntity.ok(Map.of(
-                    "success", true,
-                    "message", "Cliente actualizado exitosamente",
-                    "data", cliente
-            ));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of(
-                    "success", false,
-                    "message", e.getMessage()
-            ));
+            Cliente cliente = clienteService.asignarProducto(clienteId, productoId);
+            
+            response.put("success", true);
+            response.put("message", "Producto asignado exitosamente");
+            response.put("total_productos", cliente.getProductos().size());
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
         }
     }
     
-    // Cambiar estado del cliente (activar/desactivar)
-    @PatchMapping("/{id}/estado")
-    public ResponseEntity<?> cambiarEstadoCliente(@PathVariable UUID id, 
-                                                 @RequestBody Map<String, Boolean> request) {
+    /**
+     * Obtener todos los productos de un cliente
+     * GET /api/clientes/{clienteId}/productos
+     */
+    @GetMapping("/{clienteId}/productos")
+    public ResponseEntity<Map<String, Object>> obtenerProductos(@PathVariable UUID clienteId) {
+        Map<String, Object> response = new HashMap<>();
+        
         try {
-            Boolean activo = request.get("activo");
-            if (activo == null) {
-                return ResponseEntity.badRequest().body(Map.of(
-                        "success", false,
-                        "message", "El campo 'activo' es requerido"
+            Set<Producto> productos = clienteService.obtenerProductosDeCliente(clienteId);
+            
+            List<Map<String, Object>> productosDTO = new ArrayList<>();
+            for (Producto producto : productos) {
+                productosDTO.add(Map.of(
+                    "id", producto.getId(),
+                    "codigoSKU", producto.getCodigoSKU(),
+                    "nombre", producto.getNombre(),
+                    "tipo", producto.getTipo().name(),
+                    "requiereCadenaFrio", producto.getRequiereCadenaFrio()
                 ));
             }
             
-            ClienteDTO cliente = clienteService.cambiarEstadoCliente(id, activo);
-            return ResponseEntity.ok(Map.of(
-                    "success", true,
-                    "message", activo ? "Cliente activado exitosamente" : "Cliente desactivado exitosamente",
-                    "data", cliente
-            ));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of(
-                    "success", false,
-                    "message", e.getMessage()
-            ));
+            response.put("success", true);
+            response.put("total", productos.size());
+            response.put("productos", productosDTO);
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
         }
     }
     
-    // Eliminar cliente (soft delete)
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> eliminarCliente(@PathVariable UUID id) {
+    /**
+     * Remover un producto de un cliente
+     * DELETE /api/clientes/{clienteId}/productos/{productoId}
+     */
+    @DeleteMapping("/{clienteId}/productos/{productoId}")
+    public ResponseEntity<Map<String, Object>> removerProducto(
+            @PathVariable UUID clienteId,
+            @PathVariable UUID productoId) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
         try {
-            clienteService.eliminarCliente(id);
-            return ResponseEntity.ok(Map.of(
-                    "success", true,
-                    "message", "Cliente desactivado exitosamente"
-            ));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of(
-                    "success", false,
-                    "message", e.getMessage()
-            ));
+            clienteService.removerProducto(clienteId, productoId);
+            
+            response.put("success", true);
+            response.put("message", "Producto removido exitosamente");
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
         }
     }
     
-    // Eliminar cliente permanentemente
-    @DeleteMapping("/{id}/permanente")
-    public ResponseEntity<Map<String, Object>> eliminarClientePermanente(@PathVariable UUID id) {
+    /**
+     * Remover todos los productos de un cliente
+     * DELETE /api/clientes/{clienteId}/productos
+     */
+    @DeleteMapping("/{clienteId}/productos")
+    public ResponseEntity<Map<String, Object>> removerTodosLosProductos(@PathVariable UUID clienteId) {
+        Map<String, Object> response = new HashMap<>();
+        
         try {
-            clienteService.eliminarClientePermanente(id);
-            return ResponseEntity.ok(Map.of(
-                    "success", true,
-                    "message", "Cliente eliminado permanentemente"
-            ));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of(
-                    "success", false,
-                    "message", e.getMessage()
-            ));
+            clienteService.removerTodosLosProductos(clienteId);
+            
+            response.put("success", true);
+            response.put("message", "Todos los productos han sido removidos del cliente");
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
         }
     }
     
-    // Estadísticas por tipo
-    @GetMapping("/estadisticas/tipo")
-    public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorTipo() {
-        List<Object[]> estadisticas = clienteService.obtenerEstadisticasPorTipo();
-        return ResponseEntity.ok(Map.of(
-                "success", true,
-                "data", estadisticas
-        ));
+    /**
+     * Obtener todos los clientes que tienen un producto específico
+     * GET /api/clientes/por-producto/{productoId}
+     */
+    @GetMapping("/por-producto/{productoId}")
+    public ResponseEntity<Map<String, Object>> obtenerClientesPorProducto(@PathVariable UUID productoId) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            Set<Cliente> clientes = clienteService.obtenerClientesDeProducto(productoId);
+            
+            List<Map<String, Object>> clientesDTO = new ArrayList<>();
+            for (Cliente cliente : clientes) {
+                clientesDTO.add(Map.of(
+                    "id", cliente.getId(),
+                    "nombre", cliente.getNombre(),
+                    "ruc", cliente.getRuc(),
+                    "email", cliente.getEmail() != null ? cliente.getEmail() : ""
+                ));
+            }
+            
+            response.put("success", true);
+            response.put("total", clientes.size());
+            response.put("clientes", clientesDTO);
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
     }
     
-    // Estadísticas por distrito
-    @GetMapping("/estadisticas/distrito")
-    public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorDistrito() {
-        List<Object[]> estadisticas = clienteService.obtenerEstadisticasPorDistrito();
-        return ResponseEntity.ok(Map.of(
-                "success", true,
-                "data", estadisticas
-        ));
-    }
-    
-    // Clientes con email
-    @GetMapping("/con-email")
-    public ResponseEntity<Map<String, Object>> obtenerClientesConEmail() {
-        List<ClienteDTO> clientes = clienteService.obtenerClientesConEmail();
-        return ResponseEntity.ok(Map.of(
-                "success", true,
-                "data", clientes
-        ));
+    /**
+     * Verificar si un cliente tiene un producto específico
+     * GET /api/clientes/{clienteId}/tiene-producto/{productoId}
+     */
+    @GetMapping("/{clienteId}/tiene-producto/{productoId}")
+    public ResponseEntity<Map<String, Object>> verificarProducto(
+            @PathVariable UUID clienteId,
+            @PathVariable UUID productoId) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            boolean tieneProducto = clienteService.clienteTieneProducto(clienteId, productoId);
+            
+            response.put("success", true);
+            response.put("tieneProducto", tieneProducto);
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
     }
 }

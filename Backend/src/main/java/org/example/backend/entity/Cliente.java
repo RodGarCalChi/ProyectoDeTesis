@@ -10,7 +10,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -21,6 +23,15 @@ public class Cliente {
     @Id
     @UuidGenerator
     private UUID id;
+
+    @ManyToMany
+    @JoinTable(
+        name = "cliente_producto",
+        joinColumns = @JoinColumn(name = "cliente_id"),
+        inverseJoinColumns = @JoinColumn(name = "producto_id")
+    )
+    @JsonIgnoreProperties("clientes")
+    private Set<Producto> productos = new HashSet<>();
 
     @NotBlank(message = "La razón social es obligatoria")
     @Size(max = 100, message = "La razón social no puede exceder 100 caracteres")
@@ -183,6 +194,23 @@ public class Cliente {
 
     public void setFechaActualizacion(LocalDateTime fechaActualizacion) {
         this.fechaActualizacion = fechaActualizacion;
+    }
+
+    public Set<Producto> getProductos() {
+        return productos;
+    }
+
+    public void setProductos(Set<Producto> productos) {
+        this.productos = productos;
+    }
+
+    // Métodos de conveniencia para getNombre() y getRuc()
+    public String getNombre() {
+        return razonSocial;
+    }
+
+    public String getRuc() {
+        return rucDni;
     }
 
     // equals y hashCode

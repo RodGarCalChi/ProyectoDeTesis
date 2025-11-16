@@ -20,20 +20,17 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class ProductoService {
-    
+
     @Autowired
     private ProductoRepository productoRepository;
-    
-    @Autowired
-    private org.example.backend.repository.ClienteProductoRepository clienteProductoRepository;
-    
+
     // Crear producto
     public ProductoDTO crearProducto(ProductoCreateDTO createDTO) {
         // Verificar que no exista el código SKU
         if (productoRepository.existsByCodigoSKU(createDTO.getCodigoSKU())) {
             throw new RuntimeException("Ya existe un producto con el código SKU: " + createDTO.getCodigoSKU());
         }
-        
+
         Producto producto = new Producto(
                 createDTO.getCodigoSKU(),
                 createDTO.getNombre(),
@@ -46,11 +43,11 @@ public class ProductoService {
                 createDTO.getTempMin(),
                 createDTO.getTempMax()
         );
-        
+
         Producto savedProducto = productoRepository.save(producto);
         return convertToDTO(savedProducto);
     }
-    
+
     // Obtener todos los productos
     @Transactional(readOnly = true)
     public List<ProductoDTO> obtenerTodosLosProductos() {
@@ -58,37 +55,37 @@ public class ProductoService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
-    
+
     // Obtener productos con paginación
     @Transactional(readOnly = true)
     public Page<ProductoDTO> obtenerProductosPaginados(Pageable pageable) {
         return productoRepository.findAll(pageable)
                 .map(this::convertToDTO);
     }
-    
+
     // Obtener producto por ID
     @Transactional(readOnly = true)
     public Optional<ProductoDTO> obtenerProductoPorId(UUID id) {
         return productoRepository.findById(id)
                 .map(this::convertToDTO);
     }
-    
+
     // Obtener producto por código SKU
     @Transactional(readOnly = true)
     public Optional<ProductoDTO> obtenerProductoPorSKU(String codigoSKU) {
         return productoRepository.findByCodigoSKU(codigoSKU)
                 .map(this::convertToDTO);
     }
-    
+
     // Buscar productos con filtros
     @Transactional(readOnly = true)
-    public Page<ProductoDTO> buscarProductosConFiltros(String nombre, String codigoSKU, 
-                                                      TipoProducto tipo, Boolean requiereCadenaFrio,
-                                                      Pageable pageable) {
+    public Page<ProductoDTO> buscarProductosConFiltros(String nombre, String codigoSKU,
+            TipoProducto tipo, Boolean requiereCadenaFrio,
+            Pageable pageable) {
         return productoRepository.findProductosWithFilters(nombre, codigoSKU, tipo, requiereCadenaFrio, pageable)
                 .map(this::convertToDTO);
     }
-    
+
     // Buscar por nombre
     @Transactional(readOnly = true)
     public List<ProductoDTO> buscarPorNombre(String nombre) {
@@ -96,7 +93,7 @@ public class ProductoService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
-    
+
     // Obtener productos por tipo
     @Transactional(readOnly = true)
     public List<ProductoDTO> obtenerProductosPorTipo(TipoProducto tipo) {
@@ -104,7 +101,7 @@ public class ProductoService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
-    
+
     // Obtener productos que requieren cadena de frío
     @Transactional(readOnly = true)
     public List<ProductoDTO> obtenerProductosCadenaFrio(Boolean requiereCadenaFrio) {
@@ -112,12 +109,12 @@ public class ProductoService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
-    
+
     // Actualizar producto
     public ProductoDTO actualizarProducto(UUID id, ProductoUpdateDTO updateDTO) {
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + id));
-        
+
         // Verificar código SKU si se está actualizando
         if (updateDTO.getCodigoSKU() != null && !updateDTO.getCodigoSKU().equals(producto.getCodigoSKU())) {
             if (productoRepository.existsByCodigoSKU(updateDTO.getCodigoSKU())) {
@@ -125,7 +122,7 @@ public class ProductoService {
             }
             producto.setCodigoSKU(updateDTO.getCodigoSKU());
         }
-        
+
         // Actualizar campos si no son null
         if (updateDTO.getNombre() != null) {
             producto.setNombre(updateDTO.getNombre());
@@ -154,11 +151,11 @@ public class ProductoService {
         if (updateDTO.getTempMax() != null) {
             producto.setTempMax(updateDTO.getTempMax());
         }
-        
+
         Producto updatedProducto = productoRepository.save(producto);
         return convertToDTO(updatedProducto);
     }
-    
+
     // Eliminar producto
     public void eliminarProducto(UUID id) {
         if (!productoRepository.existsById(id)) {
@@ -166,66 +163,20 @@ public class ProductoService {
         }
         productoRepository.deleteById(id);
     }
-    
+
     // Estadísticas
     @Transactional(readOnly = true)
     public List<Object[]> obtenerEstadisticasPorTipo() {
         return productoRepository.countProductosByTipo();
     }
-    
+
     @Transactional(readOnly = true)
     public List<ProductoDTO> obtenerProductosProximosAVencer(Integer mesesLimite) {
         return productoRepository.findProductosProximosAVencer(mesesLimite).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
-    
-    // Obtener productos de un cliente específico con paginación
-    @Transactional(readOnly = true)
-    public Page<ProductoDTO> obtenerProductosPorCliente(UUID clienteId, Pageable pageable) {
-        List<Producto> productos = clienteProductoRepository.findProductosByClienteId(clienteId);
-        
-        // Convertir a Page manualmente
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), productos.size());
-        
-        List<ProductoDTO> productosDTO = productos.subList(start, end).stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-        
-        return new org.springframework.data.domain.PageImpl<>(
-                productosDTO, pageable, productos.size());
-    }
-    
-    // Buscar productos de un cliente con filtros adicionales
-    @Transactional(readOnly = true)
-    public Page<ProductoDTO> buscarProductosPorClienteConFiltros(
-            UUID clienteId, String nombre, String codigoSKU, 
-            TipoProducto tipo, Boolean requiereCadenaFrio, Pageable pageable) {
-        
-        // Obtener productos del cliente
-        List<Producto> productosCliente = clienteProductoRepository.findProductosByClienteId(clienteId);
-        
-        // Aplicar filtros
-        List<Producto> productosFiltrados = productosCliente.stream()
-                .filter(p -> nombre == null || p.getNombre().toLowerCase().contains(nombre.toLowerCase()))
-                .filter(p -> codigoSKU == null || p.getCodigoSKU().toLowerCase().contains(codigoSKU.toLowerCase()))
-                .filter(p -> tipo == null || p.getTipo().equals(tipo))
-                .filter(p -> requiereCadenaFrio == null || p.getRequiereCadenaFrio().equals(requiereCadenaFrio))
-                .collect(Collectors.toList());
-        
-        // Aplicar paginación
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), productosFiltrados.size());
-        
-        List<ProductoDTO> productosDTO = productosFiltrados.subList(start, end).stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-        
-        return new org.springframework.data.domain.PageImpl<>(
-                productosDTO, pageable, productosFiltrados.size());
-    }
-    
+
     // Método auxiliar para convertir Entity a DTO
     private ProductoDTO convertToDTO(Producto producto) {
         return new ProductoDTO(
@@ -243,5 +194,21 @@ public class ProductoService {
                 producto.getFechaCreacion(),
                 producto.getFechaActualizacion()
         );
+    }
+
+    // Obtener productos por cliente
+    @Transactional(readOnly = true)
+    public Page<ProductoDTO> obtenerProductosPorCliente(UUID clienteId, Pageable pageable) {
+        return productoRepository.findByClientesId(clienteId, pageable)
+                .map(this::convertToDTO);
+    }
+
+    // Buscar productos por cliente con filtros
+    @Transactional(readOnly = true)
+    public Page<ProductoDTO> buscarProductosPorClienteConFiltros(UUID clienteId, String nombre, 
+            String codigoSKU, TipoProducto tipo, Boolean requiereCadenaFrio, Pageable pageable) {
+        return productoRepository.findByClientesIdWithFilters(clienteId, nombre, codigoSKU, 
+                tipo, requiereCadenaFrio, pageable)
+                .map(this::convertToDTO);
     }
 }

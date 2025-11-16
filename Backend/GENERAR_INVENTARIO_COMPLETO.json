@@ -1,0 +1,167 @@
+{
+  "clienteIds": [
+    "REEMPLAZAR_CON_UUID_CLIENTE_1",
+    "REEMPLAZAR_CON_UUID_CLIENTE_2"
+  ],
+  "operadorLogistico": {
+    "nombre": "Logística Farmacéutica S.A.",
+    "ruc": "20123456789",
+    "direccion": "Av. Industrial 123, Lima",
+    "telefono": "01-2345678",
+    "email": "contacto@logisticafarmaceutica.com"
+  },
+  "almacen": {
+    "nombre": "Almacén Central Farmacéutico",
+    "direccion": "Av. Los Frutales 456, Ate, Lima",
+    "tieneAreaControlados": true
+  },
+  "zonas": [
+    {
+      "nombre": "Zona Ultra Congelada A",
+      "tipo": "ULT",
+      "ubicaciones": [
+        {
+          "codigo": "ULT-A-01-01",
+          "capacidadMaxima": 50,
+          "tempObjetivoMin": -70.0,
+          "tempObjetivoMax": -65.0,
+          "disponible": true
+        },
+        {
+          "codigo": "ULT-A-01-02",
+          "capacidadMaxima": 50,
+          "tempObjetivoMin": -70.0,
+          "tempObjetivoMax": -65.0,
+          "disponible": true
+        }
+      ]
+    },
+    {
+      "nombre": "Zona Refrigerada B",
+      "tipo": "REFRIGERADO",
+      "ubicaciones": [
+        {
+          "codigo": "REF-B-01-01",
+          "capacidadMaxima": 100,
+          "tempObjetivoMin": 2.0,
+          "tempObjetivoMax": 8.0,
+          "disponible": true
+        },
+        {
+          "codigo": "REF-B-01-02",
+          "capacidadMaxima": 100,
+          "tempObjetivoMin": 2.0,
+          "tempObjetivoMax": 8.0,
+          "disponible": true
+        }
+      ]
+    },
+    {
+      "nombre": "Zona Seca C",
+      "tipo": "SECO",
+      "ubicaciones": [
+        {
+          "codigo": "SEC-C-01-01",
+          "capacidadMaxima": 200,
+          "tempObjetivoMin": 15.0,
+          "tempObjetivoMax": 25.0,
+          "disponible": true
+        },
+        {
+          "codigo": "SEC-C-01-02",
+          "capacidadMaxima": 200,
+          "tempObjetivoMin": 15.0,
+          "tempObjetivoMax": 25.0,
+          "disponible": true
+        }
+      ]
+    }
+  ],
+  "productosInventario": [
+    {
+      "codigoSKU": "VAC-COVID-001",
+      "nombre": "Vacuna COVID-19 Pfizer",
+      "tipo": "Biologico",
+      "condicionAlmacen": "ULT_m70",
+      "requiereCadenaFrio": true,
+      "registroSanitario": "RS-VAC-001",
+      "unidadMedida": "Viales",
+      "vidaUtilMeses": 12,
+      "tempMin": -70.0,
+      "tempMax": -65.0,
+      "numeroLote": "LOTE-VAC-2025-001",
+      "fechaFabricacion": "2025-01-15",
+      "fechaVencimiento": "2026-01-15",
+      "cantidadInicial": 10000,
+      "proveedor": "Pfizer Inc.",
+      "observacionesLote": "Vacuna COVID-19 - Requiere almacenamiento ULT",
+      "codigoPalet": "PAL-VAC-2025-001",
+      "capacidadMaximaPalet": 20,
+      "cajasActuales": 0,
+      "pesoMaximoKg": 500.0,
+      "pesoActualKg": 0.0,
+      "observacionesPalet": "Palet para vacunas COVID-19",
+      "cantidadDisponible": 10000,
+      "codigoBarras": "7891234567890",
+      "temperaturaAlmacenamiento": -68.0,
+      "observacionesInventario": "Inventario inicial de vacunas COVID-19"
+    },
+    {
+      "codigoSKU": "INS-GLU-001",
+      "nombre": "Insulina Glargina 100 UI/ml",
+      "tipo": "Medicamento",
+      "condicionAlmacen": "Refrigerado_2_8",
+      "requiereCadenaFrio": true,
+      "registroSanitario": "RS-INS-001",
+      "unidadMedida": "Viales",
+      "vidaUtilMeses": 24,
+      "tempMin": 2.0,
+      "tempMax": 8.0,
+      "numeroLote": "LOTE-INS-2025-001",
+      "fechaFabricacion": "2025-02-01",
+      "fechaVencimiento": "2027-02-01",
+      "cantidadInicial": 5000,
+      "proveedor": "Sanofi Aventis",
+      "observacionesLote": "Insulina - Requiere refrigeración constante",
+      "codigoPalet": "PAL-INS-2025-001",
+      "capacidadMaximaPalet": 30,
+      "cajasActuales": 0,
+      "pesoMaximoKg": 300.0,
+      "pesoActualKg": 0.0,
+      "observacionesPalet": "Palet para insulina",
+      "cantidadDisponible": 5000,
+      "codigoBarras": "7891234567891",
+      "temperaturaAlmacenamiento": 5.0,
+      "observacionesInventario": "Inventario inicial de insulina"
+    },
+    {
+      "codigoSKU": "PAR-500-001",
+      "nombre": "Paracetamol 500mg",
+      "tipo": "Medicamento",
+      "condicionAlmacen": "Ambiente_15_25",
+      "requiereCadenaFrio": false,
+      "registroSanitario": "RS-PAR-001",
+      "unidadMedida": "Tabletas",
+      "vidaUtilMeses": 36,
+      "tempMin": 15.0,
+      "tempMax": 25.0,
+      "numeroLote": "LOTE-PAR-2025-001",
+      "fechaFabricacion": "2025-01-10",
+      "fechaVencimiento": "2028-01-10",
+      "cantidadInicial": 20000,
+      "proveedor": "Laboratorios Bagó",
+      "observacionesLote": "Paracetamol - Almacenar en lugar seco",
+      "codigoPalet": "PAL-PAR-2025-001",
+      "capacidadMaximaPalet": 50,
+      "cajasActuales": 0,
+      "pesoMaximoKg": 1000.0,
+      "pesoActualKg": 0.0,
+      "observacionesPalet": "Palet para paracetamol",
+      "cantidadDisponible": 20000,
+      "codigoBarras": "7891234567892",
+      "temperaturaAlmacenamiento": 20.0,
+      "observacionesInventario": "Inventario inicial de paracetamol"
+    }
+  ]
+}
+

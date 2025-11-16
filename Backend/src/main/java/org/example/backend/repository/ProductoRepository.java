@@ -55,4 +55,22 @@ public interface ProductoRepository extends JpaRepository<Producto, UUID> {
     // Productos próximos a vencer (basado en vida útil)
     @Query("SELECT p FROM Producto p WHERE p.vidaUtilMeses IS NOT NULL AND p.vidaUtilMeses <= :mesesLimite")
     List<Producto> findProductosProximosAVencer(@Param("mesesLimite") Integer mesesLimite);
+    
+    // Buscar productos por cliente
+    Page<Producto> findByClientesId(UUID clienteId, Pageable pageable);
+    
+    // Buscar productos por cliente con filtros
+    @Query("SELECT p FROM Producto p JOIN p.clientes c WHERE c.id = :clienteId AND " +
+           "(:nombre IS NULL OR LOWER(p.nombre) LIKE LOWER(CONCAT('%', :nombre, '%'))) AND " +
+           "(:codigoSKU IS NULL OR LOWER(p.codigoSKU) LIKE LOWER(CONCAT('%', :codigoSKU, '%'))) AND " +
+           "(:tipo IS NULL OR p.tipo = :tipo) AND " +
+           "(:requiereCadenaFrio IS NULL OR p.requiereCadenaFrio = :requiereCadenaFrio)")
+    Page<Producto> findByClientesIdWithFilters(
+            @Param("clienteId") UUID clienteId,
+            @Param("nombre") String nombre,
+            @Param("codigoSKU") String codigoSKU,
+            @Param("tipo") TipoProducto tipo,
+            @Param("requiereCadenaFrio") Boolean requiereCadenaFrio,
+            Pageable pageable
+    );
 }

@@ -1,5 +1,6 @@
 package org.example.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,7 +12,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -21,6 +24,10 @@ public class Producto {
     @Id
     @UuidGenerator
     private UUID id;
+
+    @ManyToMany(mappedBy = "productos")
+    @JsonIgnoreProperties("productos")
+    private Set<Cliente> clientes = new HashSet<>();
     
     @NotBlank(message = "El código SKU es obligatorio")
     @Size(max = 20, message = "El código SKU no puede exceder 20 caracteres")
@@ -192,6 +199,14 @@ public class Producto {
     
     public void setFechaActualizacion(LocalDateTime fechaActualizacion) {
         this.fechaActualizacion = fechaActualizacion;
+    }
+
+    public Set<Cliente> getClientes() {
+        return clientes;
+    }
+
+    public void setClientes(Set<Cliente> clientes) {
+        this.clientes = clientes;
     }
     
     // equals y hashCode
