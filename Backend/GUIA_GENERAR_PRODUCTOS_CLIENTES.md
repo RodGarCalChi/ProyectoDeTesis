@@ -201,3 +201,5 @@ curl -X POST "http://localhost:8080/api/cliente-productos/generar-productos-con-
 - **GET** `/api/cliente-productos/cliente/{clienteId}/productos` - Ver productos de un cliente
 - **POST** `/api/cliente-productos/asignar-masivo` - Asignar productos existentes a clientes
 
+
+

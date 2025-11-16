@@ -271,3 +271,5 @@ public class GenerarInventarioCompletoDTO {
     public void setProductosInventario(List<ProductoInventarioDTO> productosInventario) { this.productosInventario = productosInventario; }
 }
 
+
+

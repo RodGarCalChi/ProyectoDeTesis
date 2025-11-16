@@ -22,6 +22,82 @@ public class ClienteService {
     @Autowired
     private ProductoRepository productoRepository;
     
+    // ==================== CRUD BÁSICO DE CLIENTES ====================
+    
+    /**
+     * Obtener todos los clientes
+     */
+    @Transactional(readOnly = true)
+    public List<Cliente> obtenerTodosLosClientes() {
+        return clienteRepository.findAll();
+    }
+    
+    /**
+     * Obtener clientes activos
+     */
+    @Transactional(readOnly = true)
+    public List<Cliente> obtenerClientesActivos() {
+        return clienteRepository.findByActivoTrue();
+    }
+    
+    /**
+     * Obtener cliente por ID
+     */
+    @Transactional(readOnly = true)
+    public Cliente obtenerClientePorId(UUID id) {
+        return clienteRepository.findById(id).orElse(null);
+    }
+    
+    /**
+     * Buscar clientes por razón social
+     */
+    @Transactional(readOnly = true)
+    public List<Cliente> buscarPorRazonSocial(String razonSocial) {
+        return clienteRepository.findByRazonSocialContainingIgnoreCase(razonSocial);
+    }
+    
+    /**
+     * Crear nuevo cliente
+     */
+    public Cliente crearCliente(Cliente cliente) {
+        // Verificar que no exista el RUC/DNI
+        if (clienteRepository.existsByRucDni(cliente.getRucDni())) {
+            throw new RuntimeException("Ya existe un cliente con el RUC/DNI: " + cliente.getRucDni());
+        }
+        return clienteRepository.save(cliente);
+    }
+    
+    /**
+     * Actualizar cliente
+     */
+    public Cliente actualizarCliente(UUID id, Cliente clienteActualizado) {
+        Cliente cliente = clienteRepository.findById(id).orElse(null);
+        if (cliente == null) {
+            return null;
+        }
+        
+        // Actualizar campos
+        cliente.setRazonSocial(clienteActualizado.getRazonSocial());
+        cliente.setDireccionEntrega(clienteActualizado.getDireccionEntrega());
+        cliente.setDistrito(clienteActualizado.getDistrito());
+        cliente.setTelefono(clienteActualizado.getTelefono());
+        cliente.setEmail(clienteActualizado.getEmail());
+        cliente.setTipoCliente(clienteActualizado.getTipoCliente());
+        cliente.setFormaPago(clienteActualizado.getFormaPago());
+        cliente.setActivo(clienteActualizado.getActivo());
+        
+        return clienteRepository.save(cliente);
+    }
+    
+    /**
+     * Eliminar cliente
+     */
+    public void eliminarCliente(UUID id) {
+        clienteRepository.deleteById(id);
+    }
+    
+    // ==================== GESTIÓN DE PRODUCTOS DEL CLIENTE ====================
+    
     /**
      * Asignar múltiples productos a un cliente
      */
@@ -122,5 +198,54 @@ public class ClienteService {
         
         return cliente.getProductos().stream()
             .anyMatch(p -> p.getId().equals(productoId));
+    }
+    
+    // ==================== OPERACIONES AVANZADAS ====================
+    
+    /**
+     * Crear cliente con productos (existentes y/o nuevos)
+     */
+    public Cliente crearClienteConProductos(Cliente cliente, List<UUID> productosExistentesIds, 
+                                           List<Producto> productosNuevos) {
+        // 1. Crear el cliente
+        Cliente nuevoCliente = crearCliente(cliente);
+        
+        // 2. Asignar productos existentes si hay
+        if (productosExistentesIds != null && !productosExistentesIds.isEmpty()) {
+            List<Producto> productosExistentes = productoRepository.findAllById(productosExistentesIds);
+            productosExistentes.forEach(producto -> {
+                nuevoCliente.getProductos().add(producto);
+                producto.getClientes().add(nuevoCliente);
+            });
+        }
+        
+        // 3. Crear y asignar productos nuevos si hay
+        if (productosNuevos != null && !productosNuevos.isEmpty()) {
+            productosNuevos.forEach(producto -> {
+                Producto nuevoProducto = productoRepository.save(producto);
+                nuevoCliente.getProductos().add(nuevoProducto);
+                nuevoProducto.getClientes().add(nuevoCliente);
+            });
+        }
+        
+        return clienteRepository.save(nuevoCliente);
+    }
+    
+    /**
+     * Asignar productos masivamente a un cliente
+     */
+    public Cliente asignarProductosMasivo(UUID clienteId, List<UUID> productosIds) {
+        return asignarProductos(clienteId, productosIds);
+    }
+    
+    /**
+     * Obtener todos los clientes con sus productos
+     */
+    @Transactional(readOnly = true)
+    public List<Cliente> obtenerClientesConProductos() {
+        List<Cliente> clientes = clienteRepository.findAll();
+        // Forzar la carga de productos (lazy loading)
+        clientes.forEach(cliente -> cliente.getProductos().size());
+        return clientes;
     }
 }

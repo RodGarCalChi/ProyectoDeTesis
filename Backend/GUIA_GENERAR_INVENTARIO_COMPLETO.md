@@ -345,3 +345,5 @@ Cliente
 3. **Pruebas**: Generar datos de prueba completos para desarrollo
 4. **Expansión**: Agregar nuevos almacenes y productos a clientes existentes
 
+
+
