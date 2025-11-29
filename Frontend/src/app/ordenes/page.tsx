@@ -1,354 +1,406 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigation } from '@/components/Navigation';
+import { recepcionesApi } from '@/lib/api';
+import { GestionLotes } from '@/components/GestionLotes';
+import { RegistroInventario } from '@/components/RegistroInventario';
 
-function OrdenesContent() {
+// --- Interfaces ---
+
+interface Recepcion {
+  id: string;
+  numeroOrdenCompra: string;
+  numeroGuiaRemision: string;
+  clienteNombre: string;
+  fechaRecepcion: string;
+  responsableRecepcion: string;
+  estado: string;
+  totalProductos?: number;
+  productosConformes?: number;
+  productosNoConformes?: number;
+}
+
+const getEstadoColor = (estado: string) => {
+  const colores: Record<string, string> = {
+    'EN_VERIFICACION': 'bg-blue-100 text-blue-800',
+    'EN_CUARENTENA': 'bg-orange-100 text-orange-800',
+    'APROBADO': 'bg-green-100 text-green-800',
+    'RECHAZADO': 'bg-red-100 text-red-800'
+  };
+  return colores[estado] || 'bg-gray-100 text-gray-800';
+};
+
+// --- Componente de Validación de Actas ---
+
+function ValidacionActasView() {
   const router = useRouter();
-  const { user, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState('pendientes');
-  const [showNewOrderModal, setShowNewOrderModal] = useState(false);
+  const [recepciones, setRecepciones] = useState<Recepcion[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [filtroEstado, setFiltroEstado] = useState('EN_CUARENTENA');
 
-  const [ordenes, setOrdenes] = useState([
-    {
-      id: '1',
-      numero: 'ORD-2024-001',
-      tipo: 'Compra',
-      proveedor: 'Laboratorio ABC',
-      fecha: '2024-10-05',
-      estado: 'Pendiente',
-      total: 15000,
-      items: 5,
-      fechaEntrega: '2024-10-12'
-    },
-    {
-      id: '2',
-      numero: 'ORD-2024-002',
-      tipo: 'Venta',
-      cliente: 'Farmacia Central',
-      fecha: '2024-10-06',
-      estado: 'Confirmada',
-      total: 8500,
-      items: 3,
-      fechaEntrega: '2024-10-08'
-    },
-    {
-      id: '3',
-      numero: 'ORD-2024-003',
-      tipo: 'Transferencia',
-      destino: 'Almacén Secundario',
-      fecha: '2024-10-07',
-      estado: 'En Proceso',
-      total: 12000,
-      items: 8,
-      fechaEntrega: '2024-10-09'
-    }
-  ]);
+  useEffect(() => {
+    cargarRecepciones();
+  }, [filtroEstado]);
 
-  const handleLogout = async () => {
-    await logout();
-    router.push('/login');
-  };
+  const cargarRecepciones = async () => {
+    setLoading(true);
+    setError('');
 
-  const getEstadoColor = (estado: string) => {
-    switch (estado) {
-      case 'Pendiente':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'Confirmada':
-        return 'bg-green-100 text-green-800';
-      case 'En Proceso':
-        return 'bg-blue-100 text-blue-800';
-      case 'Completada':
-        return 'bg-gray-100 text-gray-800';
-      case 'Cancelada':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
+    try {
+      const params: any = {
+        page: 0,
+        size: 100,
+        sortBy: 'fechaRecepcion',
+        sortDir: 'desc'
+      };
+
+      const data = await recepcionesApi.obtenerTodas(params);
+
+      if (data.success) {
+        const recepcionesFiltradas = data.data.filter((r: Recepcion) => {
+          if (filtroEstado === 'TODOS') return true;
+          return r.estado === filtroEstado;
+        });
+
+        setRecepciones(recepcionesFiltradas);
+      } else {
+        setError('Error al cargar recepciones');
+      }
+    } catch (error) {
+      console.error('Error al cargar recepciones:', error);
+      setError('Error al conectar con el servidor');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const filteredOrdenes = ordenes.filter(orden => {
-    switch (activeTab) {
-      case 'pendientes':
-        return orden.estado === 'Pendiente';
-      case 'proceso':
-        return orden.estado === 'En Proceso' || orden.estado === 'Confirmada';
-      case 'completadas':
-        return orden.estado === 'Completada';
-      default:
-        return true;
+  const handleValidar = (recepcionId: string) => {
+    router.push(`/validacion-actas/detalle?id=${recepcionId}`);
+  };
+
+  const handleCambiarEstado = async (recepcionId: string, nuevoEstado: string) => {
+    if (!confirm(`¿Está seguro de cambiar el estado a ${nuevoEstado.replace('_', ' ')}?`)) {
+      return;
     }
-  });
+
+    try {
+      const response = await fetch(`http://localhost:8080/api/recepciones/${recepcionId}/cambiar-estado`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          estado: nuevoEstado,
+          actualizadoPor: 'Usuario Admin'
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert('Estado actualizado exitosamente');
+        cargarRecepciones();
+      } else {
+        alert('Error al actualizar estado: ' + data.message);
+      }
+    } catch (error) {
+      console.error('Error al cambiar estado:', error);
+      alert('Error al conectar con el servidor');
+    }
+  };
+
+  const formatearFecha = (fecha: string) => {
+    return new Date(fecha).toLocaleString('es-PE', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation />
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="mb-6">
+        <h3 className="font-bold text-gray-900 text-2xl">Validación de Actas de Recepción</h3>
+        <p className="mt-2 text-gray-600 text-sm">
+          Revise y valide las actas de recepción para registrar productos en el inventario
+        </p>
+      </div>
 
-      {/* Main Content */}
-      <div className="p-6">
-        {/* Header Actions */}
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">Gestión de Órdenes</h2>
-          <button
-            onClick={() => setShowNewOrderModal(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg flex items-center gap-2"
+      {/* Filtros */}
+      <div className="bg-white shadow-sm p-6 rounded-lg">
+        <div className="flex items-center gap-4">
+          <label className="font-medium text-gray-700 text-sm">
+            Filtrar por estado:
+          </label>
+          <select
+            value={filtroEstado}
+            onChange={(e) => setFiltroEstado(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            Nueva Orden
-          </button>
+            <option value="EN_CUARENTENA">Pendientes de Validación</option>
+            <option value="EN_VERIFICACION">En Verificación</option>
+            <option value="APROBADO">Aprobadas</option>
+            <option value="RECHAZADO">Rechazadas</option>
+            <option value="TODOS">Todas</option>
+          </select>
         </div>
+      </div>
 
-        {/* Cards de Resumen - Estilo Figma */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-medium text-gray-600">Órdenes Pendientes</h3>
-                <p className="text-2xl font-bold text-blue-600">4</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
+      {/* Estadísticas */}
+      <div className="gap-4 grid grid-cols-1 md:grid-cols-4">
+        <div className="bg-white shadow-sm p-6 rounded-lg">
+          <div className="flex items-center">
+            <div className="flex-shrink-0 bg-orange-100 p-3 rounded-md">
+              <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
             </div>
-          </div>
-
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-medium text-gray-600">En Proceso</h3>
-                <p className="text-2xl font-bold text-yellow-600">1</p>
-              </div>
-              <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-medium text-gray-600">Completadas</h3>
-                <p className="text-2xl font-bold text-green-600">1</p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
+            <div className="ml-4">
+              <p className="font-medium text-gray-600 text-sm">Cuarentena</p>
+              <p className="font-semibold text-gray-900 text-2xl">
+                {recepciones.filter(r => r.estado === 'EN_CUARENTENA').length}
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="mb-6">
-          <div className="flex border-b border-gray-200">
-            <button
-              onClick={() => setActiveTab('pendientes')}
-              className={`py-2 px-4 text-sm font-medium border-b-2 ${
-                activeTab === 'pendientes'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              Pendientes ({ordenes.filter(o => o.estado === 'Pendiente').length})
-            </button>
-            <button
-              onClick={() => setActiveTab('proceso')}
-              className={`py-2 px-4 text-sm font-medium border-b-2 ${
-                activeTab === 'proceso'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              En Proceso ({ordenes.filter(o => o.estado === 'En Proceso' || o.estado === 'Confirmada').length})
-            </button>
-            <button
-              onClick={() => setActiveTab('completadas')}
-              className={`py-2 px-4 text-sm font-medium border-b-2 ${
-                activeTab === 'completadas'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              Completadas ({ordenes.filter(o => o.estado === 'Completada').length})
-            </button>
-            <button
-              onClick={() => setActiveTab('todas')}
-              className={`py-2 px-4 text-sm font-medium border-b-2 ${
-                activeTab === 'todas'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              Todas ({ordenes.length})
-            </button>
+        <div className="bg-white shadow-sm p-6 rounded-lg">
+          <div className="flex items-center">
+            <div className="flex-shrink-0 bg-blue-100 p-3 rounded-md">
+              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            </div>
+            <div className="ml-4">
+              <p className="font-medium text-gray-600 text-sm">En Verificación</p>
+              <p className="font-semibold text-gray-900 text-2xl">
+                {recepciones.filter(r => r.estado === 'EN_VERIFICACION').length}
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Orders Table */}
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">
-                {activeTab === 'pendientes' && 'Órdenes Pendientes'}
-                {activeTab === 'proceso' && 'Órdenes en Proceso'}
-                {activeTab === 'completadas' && 'Órdenes Completadas'}
-                {activeTab === 'todas' && 'Todas las Órdenes'}
-              </h3>
-              <div className="flex gap-2">
-                <button className="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200">
-                  Filtros
-                </button>
-                <button className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
-                  Exportar
-                </button>
-              </div>
+        <div className="bg-white shadow-sm p-6 rounded-lg">
+          <div className="flex items-center">
+            <div className="flex-shrink-0 bg-green-100 p-3 rounded-md">
+              <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className="ml-4">
+              <p className="font-medium text-gray-600 text-sm">Aprobadas</p>
+              <p className="font-semibold text-gray-900 text-2xl">
+                {recepciones.filter(r => r.estado === 'APROBADO').length}
+              </p>
             </div>
           </div>
+        </div>
 
+        <div className="bg-white shadow-sm p-6 rounded-lg">
+          <div className="flex items-center">
+            <div className="flex-shrink-0 bg-red-100 p-3 rounded-md">
+              <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className="ml-4">
+              <p className="font-medium text-gray-600 text-sm">Rechazadas</p>
+              <p className="font-semibold text-gray-900 text-2xl">
+                {recepciones.filter(r => r.estado === 'RECHAZADO').length}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Tabla de Actas */}
+      <div className="bg-white shadow-sm rounded-lg overflow-hidden">
+        {error && (
+          <div className="bg-red-50 p-4 border-red-500 border-l-4 text-red-700">
+            {error}
+          </div>
+        )}
+
+        {loading ? (
+          <div className="p-8 text-center">
+            <div className="inline-block border-blue-600 border-b-2 rounded-full w-8 h-8 animate-spin"></div>
+            <p className="mt-2 text-gray-600">Cargando actas...</p>
+          </div>
+        ) : recepciones.length === 0 ? (
+          <div className="p-8 text-gray-500 text-center">
+            No hay actas {filtroEstado !== 'TODOS' ? 'en este estado' : 'registradas'}
+          </div>
+        ) : (
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="divide-y divide-gray-200 min-w-full">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Número
+                  <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">
+                    Nº Orden
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Tipo
+                  <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">
+                    Cliente
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Cliente/Proveedor
+                  <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">
+                    Fecha Recepción
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Fecha
+                  <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">
+                    Responsable
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Entrega
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Items
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Total
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">
                     Estado
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 font-medium text-gray-500 text-xs text-center uppercase tracking-wider">
+                    Cambiar Estado
+                  </th>
+                  <th className="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">
                     Acciones
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredOrdenes.map((orden) => (
-                  <tr key={orden.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
-                      {orden.numero}
+                {recepciones.map((recepcion) => (
+                  <tr key={recepcion.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 font-medium text-gray-900 text-sm whitespace-nowrap">
+                      {recepcion.numeroOrdenCompra}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {orden.tipo}
+                    <td className="px-6 py-4 text-gray-900 text-sm whitespace-nowrap">
+                      {recepcion.clienteNombre}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {orden.proveedor || orden.cliente || orden.destino}
+                    <td className="px-6 py-4 text-gray-500 text-sm whitespace-nowrap">
+                      {formatearFecha(recepcion.fechaRecepcion)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {orden.fecha}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {orden.fechaEntrega}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {orden.items}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
-                      S/ {orden.total.toLocaleString()}
+                    <td className="px-6 py-4 text-gray-500 text-sm whitespace-nowrap">
+                      {recepcion.responsableRecepcion}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getEstadoColor(orden.estado)}`}>
-                        {orden.estado}
+                      <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getEstadoColor(recepcion.estado)}`}>
+                        {recepcion.estado.replace('_', ' ')}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex gap-2">
-                        <button className="text-blue-600 hover:text-blue-900">Ver</button>
-                        <button className="text-green-600 hover:text-green-900">Editar</button>
-                        {orden.estado === 'Pendiente' && (
-                          <button className="text-purple-600 hover:text-purple-900">Confirmar</button>
-                        )}
-                      </div>
+                    <td className="px-6 py-4 text-center whitespace-nowrap">
+                      <select
+                        value={recepcion.estado}
+                        onChange={(e) => handleCambiarEstado(recepcion.id, e.target.value)}
+                        className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                      >
+                        <option value="PENDIENTE">Pendiente</option>
+                        <option value="EN_VERIFICACION">En Verificación</option>
+                        <option value="EN_CUARENTENA">En Cuarentena</option>
+                        <option value="APROBADO">Aprobado</option>
+                        <option value="RECHAZADO">Rechazado</option>
+                      </select>
+                    </td>
+                    <td className="px-6 py-4 font-medium text-sm whitespace-nowrap">
+                      <button
+                        onClick={() => handleValidar(recepcion.id)}
+                        className="mr-3 text-blue-600 hover:text-blue-900"
+                      >
+                        {recepcion.estado === 'EN_CUARENTENA' ? 'Validar' : 'Ver Detalle'}
+                      </button>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+        )}
 
-          {filteredOrdenes.length === 0 && (
-            <div className="text-center py-12">
-              <svg className="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        {/* Resumen */}
+        {!loading && recepciones.length > 0 && (
+          <div className="bg-gray-50 px-6 py-4 border-gray-200 border-t">
+            <p className="text-gray-700 text-sm">
+              Mostrando <span className="font-medium">{recepciones.length}</span> actas
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// --- Layout Principal con Sidebar ---
+
+function OrdenesContent() {
+  const [activeTab, setActiveTab] = useState('ordenes');
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'validacion':
+        return <ValidacionActasView />;
+      case 'ordenes':
+        return <GestionLotes />;
+      case 'registro':
+        return <RegistroInventario />;
+      default:
+        return <GestionLotes />;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navigation />
+
+      <div className="flex h-[calc(100vh-64px)]">
+        {/* Sidebar */}
+        <div className="w-64 bg-white border-r border-gray-200 flex-shrink-0">
+          <div className="p-6">
+            <h2 className="text-xl font-bold text-gray-800">Gestión</h2>
+            <p className="text-sm text-gray-500">Administración de Lotes</p>
+          </div>
+          <nav className="px-4 space-y-2">
+            <button
+              onClick={() => setActiveTab('validacion')}
+              className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors ${activeTab === 'validacion'
+                  ? 'bg-blue-50 text-blue-700'
+                  : 'text-gray-700 hover:bg-gray-50'
+                }`}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No hay órdenes</h3>
-              <p className="text-gray-500">No se encontraron órdenes en esta categoría.</p>
-            </div>
-          )}
+              Validación Actas
+            </button>
+
+            <button
+              onClick={() => setActiveTab('ordenes')}
+              className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors ${activeTab === 'ordenes'
+                  ? 'bg-blue-50 text-blue-700'
+                  : 'text-gray-700 hover:bg-gray-50'
+                }`}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+              Gestión de Lotes
+            </button>
+
+            <button
+              onClick={() => setActiveTab('registro')}
+              className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors ${activeTab === 'registro'
+                  ? 'bg-blue-50 text-blue-700'
+                  : 'text-gray-700 hover:bg-gray-50'
+                }`}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              Registro Inventario
+            </button>
+          </nav>
         </div>
 
-        {/* Quick Actions */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <div className="flex items-center mb-4">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <h3 className="ml-3 text-lg font-medium text-gray-900">Orden de Compra</h3>
-            </div>
-            <p className="text-gray-600 mb-4">Crear nueva orden de compra a proveedores</p>
-            <button className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
-              Crear Orden
-            </button>
-          </div>
-
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <div className="flex items-center mb-4">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
-              </div>
-              <h3 className="ml-3 text-lg font-medium text-gray-900">Orden de Venta</h3>
-            </div>
-            <p className="text-gray-600 mb-4">Procesar pedidos de clientes</p>
-            <button className="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">
-              Nueva Venta
-            </button>
-          </div>
-
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <div className="flex items-center mb-4">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                </svg>
-              </div>
-              <h3 className="ml-3 text-lg font-medium text-gray-900">Transferencia</h3>
-            </div>
-            <p className="text-gray-600 mb-4">Transferir productos entre almacenes</p>
-            <button className="w-full bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700">
-              Nueva Transferencia
-            </button>
-          </div>
+        {/* Main Content Area */}
+        <div className="flex-1 overflow-auto p-8">
+          {renderContent()}
         </div>
       </div>
     </div>
@@ -357,7 +409,7 @@ function OrdenesContent() {
 
 export default function OrdenesPage() {
   return (
-    <ProtectedRoute requiredRole={['AreaAdministrativa', 'DirectorTecnico']}>
+    <ProtectedRoute requiredRole={['AreaAdministrativa', 'DirectorTecnico', 'Operaciones']}>
       <OrdenesContent />
     </ProtectedRoute>
   );

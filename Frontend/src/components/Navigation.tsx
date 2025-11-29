@@ -60,24 +60,9 @@ export const Navigation: React.FC = () => {
       pages.push({ key: 'control', label: 'Control Calidad', path: '/control' });
     }
 
-    // Validación de Actas - para Área Administrativa
-    if (['AreaAdministrativa', 'DirectorTecnico'].includes(role || '')) {
-      pages.push({ key: 'validacion-actas', label: 'Validación Actas', path: '/validacion-actas' });
-    }
-
-    // Órdenes - principalmente para Área Administrativa
-    if (['AreaAdministrativa', 'DirectorTecnico'].includes(role || '')) {
-      pages.push({ key: 'ordenes', label: 'Órdenes', path: '/ordenes' });
-    }
-
-    // Movimientos (legacy) - disponible para algunos roles
-    if (['Recepcion', 'Despacho', 'DirectorTecnico'].includes(role || '')) {
-      pages.push({ key: 'movimientos', label: 'Movimientos', path: '/movimientos' });
-    }
-
-    // Registro - para gestión de inventario
-    if (['Operaciones', 'AreaAdministrativa', 'DirectorTecnico'].includes(role || '')) {
-      pages.push({ key: 'registro-inventario', label: 'Registro', path: '/registro-inventario' });
+    // Gestión Integral (Validación, Lotes, Registro) - Consolida las vistas anteriores
+    if (['AreaAdministrativa', 'DirectorTecnico', 'Operaciones'].includes(role || '')) {
+      pages.push({ key: 'gestion', label: 'Gestión', path: '/ordenes' });
     }
 
     return pages;
@@ -105,7 +90,7 @@ export const Navigation: React.FC = () => {
               {pathname === '/movimientos-stock' && 'Movimientos de Stock'}
               {pathname === '/despacho' && 'Centro de Despacho'}
               {pathname === '/control' && 'Control de Calidad'}
-              {pathname === '/ordenes' && 'Gestión de Órdenes'}
+              {pathname === '/ordenes' && 'Gestión Integral'}
               {pathname === '/movimientos' && 'Movimientos de Inventario'}
               {pathname === '/registro-inventario' && 'Registro de Inventario'}
             </span>
@@ -142,11 +127,10 @@ export const Navigation: React.FC = () => {
               <button
                 key={page.key}
                 onClick={() => router.push(page.path)}
-                className={`pb-2 text-sm transition-colors ${
-                  pathname === page.path
+                className={`pb-2 text-sm transition-colors ${pathname === page.path
                     ? 'text-blue-600 border-b-2 border-blue-600 font-medium'
                     : 'text-gray-600 hover:text-gray-900'
-                }`}
+                  }`}
               >
                 {page.label}
               </button>
